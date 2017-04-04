@@ -6,6 +6,20 @@ body, html {
   margin: 0;
   padding: 0; }
 
+.error-message {
+  background: red;
+  padding: 9px;
+  margin-top: -2px;
+  border-radius: 5px;
+  margin-bottom: 13px;
+  width: 100%;
+}
+
+.error-message p {
+  color:white;
+  margin: 0;
+}
+
 #site-container {
   margin-bottom: 0; }
 
@@ -96,10 +110,6 @@ body, html {
     padding: 0 15px; }
   .no-cd-shipments h3 {
     margin-top: 0; }
-
-div.error-message p {
-  color: #a94442;
-  margin: 0; }
 
 .spinner {
   margin: 100px auto;

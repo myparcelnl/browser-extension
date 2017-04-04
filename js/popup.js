@@ -133,13 +133,17 @@ postShipment = function() {
     subject: 'newShipment',
     shipment: shipmentData()
   }, function(response) {
-    var field, i, len, ref;
+    var field, i, len, ref, message;
     readyShipmentForm();
     if (response.status === 'success') {
       $("div.error-message").addClass("hidden");
       newShipmentCreated();
     } else {
-      $("div.error-message").removeClass("hidden");
+      message = 'Het aanmaken van de zending is niet gelukt, controleer de in het rood gemarkeerde velden.'
+      if (typeof(response.errors) === 'undefined') {
+        message = 'Jouw API-key is niet ingevoerd. Ga naar de Instellingen in de rechter bovenhoek. '
+      }
+      $("div.error-message p").html(message).parent().removeClass("hidden");
       ref = response.errors;
       for (i = 0, len = ref.length; i < len; i++) {
         field = ref[i];

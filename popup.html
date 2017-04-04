@@ -1,0 +1,543 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MyParcel - Nieuwe zending aanmaken</title>
+  <link rel="stylesheet" href="css/myparcel.css">
+  <link rel="stylesheet" href="css/popup.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:700,400|Exo:700,500">
+  <script src="vendor/jquery-2.2.0.min.js"></script>
+  <script src="vendor/bootstrap-3.3.6.min.js"></script>
+  <script src="js/popup.js"></script>
+  <script src="js/address.js"></script>
+</head>
+<body>
+  <div id="site-container" class="site-body">
+    <div id="header-container">
+      <div class="header">
+        <header class="header">
+          <div class="header-primary">
+            <div class="container">
+              <div class="row header-space">
+                <div class="col-xs-8">
+                  <!-- dummy link to prevent focus border when opening popup -->
+                  <a href="#"></a>
+                  <div id="matched_platform"></div>
+                  <!-- load fallback image when svg is not supported -->
+                  <img class="header-logo" src="https://backoffice.myparcel.nl/images/logo-myparcel.svg" data-fallback="https://backoffice.myparcel.nl/images/logo-myparcel.svg" alt="My Parcel">
+                </div>
+                <div class="col-xs-4 btn-group navbar-right">
+                  <button type="button" class="btn btn-sm btn-primary print-labels">Print labels <span class="create-labels badge">0</span></button>
+                  <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a href="https://backoffice.myparcel.nl/shipments" target="new">Bewerk zendingen</a></li>
+                    <li><a href="https://backoffice.myparcel.nl/support" target="new">Support</a></li>
+                    <li><a href="#" class="settings">Instellingen</a>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" class="clear">Verwijder zendingen</a></li>
+                    <li><a href="#" class="logout">Logout</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+    </div>
+    <div class="outer-page-container">
+      <section class="please-wait">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
+      </section>
+      <section class="no-cd-shipments">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>Helaas</h3>
+            <p>Op dit moment ondersteunen we zendingen met douane formulieren nog niet. Je kunt deze zending aanmaken via de MyParcel website.</p>
+            <a class="btn btn-primary btn-sm cta" href="https://backoffice.myparcel.nl/shipmentform" target="new">Ga naar MyParcel</a>
+            <a class="btn btn-default btn-sm cancel" href="#">Wijzig land</a>
+          </div>
+        </div>
+      </section>
+      <section class="no-match">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>Helaas</h3>
+            <p>We herkennen dit adres (nog) niet. </p>
+            <a class="btn btn-default btn-sm cancel" href="#">Maak label handmatig aan</a>
+          </div>
+        </div>
+      </section>
+      <section id="shipment_form" class="hidden">
+        <div class="container">
+            <div class="page-container" id="page-container">
+                <div class="shipment-form">
+                  <form class="form-horizontal">
+        
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-xs-4 control-label">Soort zending</label>
+                        <div class="col-xs-8">
+                          <div class="radio-group" id="package_type">
+                            <label>
+                              <input class="package_type" checked="checked" type="radio" name="type" value="1"> Pakket
+                          </label>
+                          <label>
+                              <input class="package_type" type="radio" name="type" value="2"> Brievenbus
+                          </label>
+                          <label>
+                              <input class="package_type" type="radio" name="type" value="3"> Ongefrankeerd
+                          </label>
+                      </div>
+                  </div>
+              </div>
+        
+              <!-- Country input -->
+              <div class="form-group">
+                  <label class="control-label col-xs-4" for="cc">Land</label>
+                  <div class="col-xs-8">
+                    <select class="form-control user-success" data-binder-type="default" id="cc" placeholder="Country">
+                      <optgroup id="Addressbook-country_code-optgroup-" label="">
+                        <option value="NL">Nederland</option>
+                        <option value="BE">België</option>
+                        <option value="DE">Duitsland</option>
+                        <option value="FR">Frankrijk</option>
+                        <option value="IT">Italië</option>
+                        <option value="ES">Spanje</option>
+                        <option value="GB">Verenigd Koninkrijk</option>
+                    </optgroup>
+                    <optgroup id="Addressbook-country_code-optgroup-- - - - - - - - - - - - - - -" label="- - - - - - - - - - - - - - -">
+                        <option value="AF">Afghanistan</option>
+                        <option value="AL">Albanië</option>
+                        <option value="DZ">Algerije</option>
+                        <option value="VI">Amerikaanse Maagdeneil.</option>
+                        <option value="AD">Andorra</option>
+                        <option value="AO">Angola</option>
+                        <option value="AG">Antigua en Barbuda</option>
+                        <option value="AR">Argentinië</option>
+                        <option value="AM">Armenië</option>
+                        <option value="AW">Aruba</option>
+                        <option value="AU">Australië</option>
+                        <option value="AZ">Azerbeidzjan</option>
+                        <option value="BS">Bahama’s</option>
+                        <option value="BH">Bahrein</option>
+                        <option value="BD">Bangladesh</option>
+                        <option value="BB">Barbados</option>
+                        <option value="BZ">Belize</option>
+                        <option value="BJ">Benin</option>
+                        <option value="BM">Bermuda</option>
+                        <option value="BT">Bhutan</option>
+                        <option value="BO">Bolivia</option>
+                        <option value="BQ">Bonaire, Sint Eustatius en Saba</option>
+                        <option value="BA">Bosnië-Herzegovina</option>
+                        <option value="BW">Botswana</option>
+                        <option value="BR">Brazilië</option>
+                        <option value="VG">Britse Maagdeneilanden</option>
+                        <option value="BN">Brunei Darussalam</option>
+                        <option value="BG">Bulgarije</option>
+                        <option value="BF">Burkina Faso</option>
+                        <option value="BI">Burundi</option>
+                        <option value="KH">Cambodja</option>
+                        <option value="CA">Canada</option>
+                        <option value="IC">Canarische Eilanden</option>
+                        <option value="KY">Caymaneilanden</option>
+                        <option value="CF">Centraal-Afrikaanse Rep.</option>
+                        <option value="CL">Chili</option>
+                        <option value="CN">China</option>
+                        <option value="CO">Colombia</option>
+                        <option value="KM">Comoren</option>
+                        <option value="CG">Congo-Brazzaville</option>
+                        <option value="CD">Congo-Kinshasa</option>
+                        <option value="CR">Costa Rica</option>
+                        <option value="CU">Cuba</option>
+                        <option value="CW">Curaçao</option>
+                        <option value="CY">Cyprus</option>
+                        <option value="DK">Denemarken</option>
+                        <option value="DJ">Djibouti</option>
+                        <option value="DM">Dominica</option>
+                        <option value="DO">Dominicaanse Republiek</option>
+                        <option value="EC">Ecuador</option>
+                        <option value="EG">Egypte</option>
+                        <option value="SV">El Salvador</option>
+                        <option value="GQ">Equatoriaal-Guinea</option>
+                        <option value="ER">Eritrea</option>
+                        <option value="EE">Estland</option>
+                        <option value="ET">Ethiopië</option>
+                        <option value="FO">Faeröer Eilanden</option>
+                        <option value="FK">Falklandeilanden</option>
+                        <option value="FJ">Fiji</option>
+                        <option value="PH">Filipijnen</option>
+                        <option value="FI">Finland</option>
+                        <option value="GF">Frans Guyana</option>
+                        <option value="PF">Frans Polynesië</option>
+                        <option value="GA">Gabon</option>
+                        <option value="GM">Gambia</option>
+                        <option value="GE">Georgië</option>
+                        <option value="GH">Ghana</option>
+                        <option value="GI">Gibraltar</option>
+                        <option value="GD">Grenada</option>
+                        <option value="GR">Griekenland</option>
+                        <option value="GL">Groenland</option>
+                        <option value="GP">Guadeloupe</option>
+                        <option value="GT">Guatemala</option>
+                        <option value="GG">Guernsey</option>
+                        <option value="GN">Guinee</option>
+                        <option value="GW">Guinee-Bissau</option>
+                        <option value="GY">Guyana</option>
+                        <option value="HT">Haïti</option>
+                        <option value="HN">Honduras</option>
+                        <option value="HU">Hongarije</option>
+                        <option value="HK">Hongkong</option>
+                        <option value="IE">Ierland</option>
+                        <option value="IS">IJsland</option>
+                        <option value="IM">Isle of Man</option>
+                        <option value="IN">India</option>
+                        <option value="ID">Indonesië</option>
+                        <option value="IQ">Irak</option>
+                        <option value="IR">Iran</option>
+                        <option value="IL">Israël</option>
+                        <option value="CI">Ivoorkust</option>
+                        <option value="JM">Jamaica</option>
+                        <option value="JP">Japan</option>
+                        <option value="YE">Jemen</option>
+                        <option value="JE">Jersey</option>
+                        <option value="JO">Jordanië</option>
+                        <option value="CV">Kaapverdië</option>
+                        <option value="CM">Kameroen</option>
+                        <option value="KZ">Kazachstan</option>
+                        <option value="KE">Kenya</option>
+                        <option value="KG">Kirgizië</option>
+                        <option value="KI">Kiribati</option>
+                        <option value="KW">Koeweit</option>
+                        <option value="HR">Kroatië</option>
+                        <option value="LA">Laos</option>
+                        <option value="LS">Lesotho</option>
+                        <option value="LV">Letland</option>
+                        <option value="LB">Libanon</option>
+                        <option value="LR">Liberia</option>
+                        <option value="LY">Libië</option>
+                        <option value="LI">Liechtenstein</option>
+                        <option value="LT">Litouwen</option>
+                        <option value="LU">Luxemburg</option>
+                        <option value="MO">Macao</option>
+                        <option value="MK">Macedonië</option>
+                        <option value="MG">Madagaskar</option>
+                        <option value="MW">Malawi</option>
+                        <option value="MV">Maldiven</option>
+                        <option value="MY">Maleisië</option>
+                        <option value="ML">Mali</option>
+                        <option value="MT">Malta</option>
+                        <option value="MA">Marokko</option>
+                        <option value="MQ">Martinique</option>
+                        <option value="MR">Mauretanië</option>
+                        <option value="MU">Mauritius</option>
+                        <option value="MX">Mexico</option>
+                        <option value="MD">Moldavië</option>
+                        <option value="MN">Mongolië</option>
+                        <option value="ME">Montenegro</option>
+                        <option value="MS">Montserrat</option>
+                        <option value="MZ">Mozambique</option>
+                        <option value="MM">Myanmar</option>
+                        <option value="NA">Namibië</option>
+                        <option value="NR">Nauru</option>
+                        <option value="AN">Nederlandse Antillen</option>
+                        <option value="NP">Nepal</option>
+                        <option value="NI">Nicaragua</option>
+                        <option value="NC">Nieuw-Caledonië</option>
+                        <option value="NZ">Nieuw-Zeeland</option>
+                        <option value="NE">Niger</option>
+                        <option value="NG">Nigeria</option>
+                        <option value="KP">Noord-Korea</option>
+                        <option value="NO">Noorwegen</option>
+                        <option value="UA">Oekraïne</option>
+                        <option value="UZ">Oezbekistan</option>
+                        <option value="OM">Oman</option>
+                        <option value="TL">Oost Timor</option>
+                        <option value="AT">Oostenrijk</option>
+                        <option value="PK">Pakistan</option>
+                        <option value="PA">Panama</option>
+                        <option value="PG">Papoea-Nieuw-Guinea</option>
+                        <option value="PY">Paraguay</option>
+                        <option value="PE">Peru</option>
+                        <option value="PN">Pitcairneilanden</option>
+                        <option value="PL">Polen</option>
+                        <option value="PT">Portugal</option>
+                        <option value="PR">Puerto Rico</option>
+                        <option value="QA">Qatar</option>
+                        <option value="RE">Reunion</option>
+                        <option value="RO">Roemenië</option>
+                        <option value="RU">Rusland</option>
+                        <option value="RW">Rwanda</option>
+                        <option value="KN">Saint Kitts en Nevis</option>
+                        <option value="LC">Saint Lucia</option>
+                        <option value="VC">Saint Vincent &amp; Gren.</option>
+                        <option value="PM">Saint-Pierre en Miquelon</option>
+                        <option value="WS">Samoa</option>
+                        <option value="SM">San Marino</option>
+                        <option value="ST">Sao Tomé en Principe</option>
+                        <option value="SA">Saoedi-Arabië</option>
+                        <option value="SN">Senegal</option>
+                        <option value="RS">Servië</option>
+                        <option value="SC">Seychellen</option>
+                        <option value="SL">Sierra Leone</option>
+                        <option value="SG">Singapore</option>
+                        <option value="SX">Sint Maarten</option>
+                        <option value="SI">Slovenië</option>
+                        <option value="SK">Slowakije</option>
+                        <option value="SO">Somalië</option>
+                        <option value="LK">Sri Lanka</option>
+                        <option value="SD">Sudan</option>
+                        <option value="SR">Suriname</option>
+                        <option value="SZ">Swaziland</option>
+                        <option value="SY">Syrië</option>
+                        <option value="TJ">Tadzjikistan</option>
+                        <option value="TW">Taiwan</option>
+                        <option value="TZ">Tanzania</option>
+                        <option value="TH">Thailand</option>
+                        <option value="TG">Togo</option>
+                        <option value="TO">Tonga</option>
+                        <option value="TT">Trinidad en Tobago</option>
+                        <option value="TD">Tsjaad</option>
+                        <option value="CZ">Tsjechië</option>
+                        <option value="TN">Tunesië</option>
+                        <option value="TR">Turkije</option>
+                        <option value="TM">Turkmenistan</option>
+                        <option value="TC">Turks en Caicoseilanden</option>
+                        <option value="TV">Tuvalu</option>
+                        <option value="UG">Uganda</option>
+                        <option value="UY">Uruguay</option>
+                        <option value="VU">Vanuatu</option>
+                        <option value="VA">Vaticaanstad</option>
+                        <option value="VE">Venezuela</option>
+                        <option value="AE">Ver. Arabische Emiraten</option>
+                        <option value="US">Verenigde Staten</option>
+                        <option value="VN">Vietnam</option>
+                        <option value="BY">Wit-Rusland</option>
+                        <option value="ZM">Zambia</option>
+                        <option value="ZW">Zimbabwe</option>
+                        <option value="ZA">Zuid-Afrika</option>
+                        <option value="KR">Zuid-Korea</option>
+                        <option value="SE">Zweden</option>
+                        <option value="CH">Zwitserland</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <!-- Bedrijfsnaam -->
+        <div class="form-group">
+          <label class="control-label col-xs-4" for="company">Bedrijfsnaam</label>
+          <div class="col-xs-8">
+              <input type="text" maxlength="50" class="form-control ui-autocomplete-input user-success" id="company" placeholder="Bedrijfsnaam ontvanger" data-name="Bedrijfsnaam" autocomplete="off"/>
+          </div>
+        </div>
+        <!-- Naam -->
+        <div class="form-group">
+          <label class="control-label col-xs-4" for="person">Naam*</label>
+          <div class="col-xs-8" id="name-box-form">
+            <input type="text" class="form-control ui-autocomplete-input" data-name="Naam" id="person" placeholder="Naam ontvanger" maxlength="50" autocomplete="off"/>
+        </div>
+        </div>
+        <!-- Postcode en huisnummer -->
+        <div class="form-group nl">
+          <label class="control-label col-xs-4" for="postal_code">PC, Huis nr, toe</label>
+          <div class="row">
+              <div class="col-xs-3 pull-left">
+                <input type="text" class="form-control user-success" maxlength="14" id="postal_code" data-name="Postcode" placeholder="Postcode"/>
+            </div>
+            <div class="col-xs-2 no_pad pull-left">
+                <input type="text" class="form-control" maxlength="6" id="number" data-name="Huisnummer" placeholder="Huis nr."/>
+            </div>
+            <div class="col-xs-2 pull-left">
+                <input type="text" class="form-control" maxlength="4" id="number_suffix" data-name="Toevoeging" placeholder="a"/>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Postal code single line -->
+        <div class="form-group rest">
+          <label class="control-label col-xs-4" for="postal_code_other">Postcode</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control user-success" maxlength="14" id="postal_code_other" data-name="Postcode" placeholder="Postcode"/>
+            </div>
+        </div>
+        
+        <!-- Straat -->
+        <div class="form-group">
+            <label class="control-label col-xs-4" for="street" id="nl-shipment-street">Straat*</label>
+            <label class="control-label col-xs-4 hidden" id="cd-shipment-street">Straat + huisnummer*</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" maxlength="40" id="street" data-name="Straat" placeholder="Straat"/>
+          </div>
+        </div>
+        
+        <!-- Straat extra regel -->
+        <div class="form-group">
+            <label class="control-label col-xs-4" for="street_additional_info"></label>
+            <div class="col-xs-8">
+                <input type="text" class="form-control" maxlength="50" id="street_additional_info" placeholder="Extra veld straat"/>
+            </div>
+        </div>
+        
+        <!-- Plaats -->
+        <div class="form-group">
+            <label class="control-label col-xs-4" for="city">Plaats*</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" maxlength="35" id="city" data-name="Plaats" placeholder="Plaats"/>
+          </div>
+        </div>
+        
+        <!-- Email -->
+        <div class="form-group">
+            <label class="control-label col-xs-4" for="email">Email</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" id="email" placeholder="email@ontvanger.nl" data-name="email"/>
+          </div>
+        </div>
+        
+        <!-- Telefoonnummer -->
+        <div class="form-group">
+            <label class="control-label col-xs-4" for="phone">Telefoonnummer</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" maxlength="25" id="phone" placeholder="Telefoonnummer" data-name="telefoonnummer">
+          </div>
+        </div>
+        
+        <!-- Kenmerk -->
+        <div class="form-group">
+            <label class="control-label col-xs-4" for="note">Kenmerk</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control user-success" maxlength="45" id="note" data-name="Kenmerk" placeholder="Kenmerk">
+              <input type="hidden" id="url" data-name="Url" placeholder="Url">
+          </div>
+        </div>
+        
+        <div class="form-action ">
+            <div class="row">
+                <div class="col-xs-4">
+                    <button class="btn btn-primary submit" type="button">Opslaan</button>
+                </div>
+                <div class="col-xs-8">
+                    <div class="error-message pull-right hidden">
+                        <p>Het aanmaken van de zending is niet gelukt, controleer de in het rood gemarkeerde velden.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </form>
+        </div>
+        </div>
+        </div>
+        
+      </section>
+      <section id="login_form" class="hidden">
+        <div class="container">
+            <div class="page-container" id="page-container">
+                <div class="shipment-form">
+                  <form class="form-horizontal">
+                      <div class="form-group">
+                          <label class="control-label col-xs-4" for="email">Email</label>
+                          <div class="col-xs-8">
+                              <input type="text" maxlength="50" class="form-control ui-autocomplete-input user-success" id="email" placeholder="Email" data-name="Email" autocomplete="off"/>
+                          </div>
+                      </div>
+        
+                      <div class="form-group">
+                          <label class="control-label col-xs-4" for="api_key">API key</label>
+                          <div class="col-xs-8">
+                              <input type="text" maxlength="50" class="form-control ui-autocomplete-input user-success" id="api_key" placeholder="MyParcel API key" data-name="API key" autocomplete="off"/>
+                          </div>
+                      </div>
+        
+                      <div class="form-action">
+                        <button class="btn btn-primary submit" type="button">
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+        
+      </section>
+      <section id="shipment_success" class="hidden">
+        <div class="container">
+            <div class="page-container" id="page-container">
+                <h2>Zending aangemaakt</h2>
+                <p>Gebruik de knop rechtsboven om de labels te printen</p>
+            </div>
+        </div>
+        
+      </section>
+
+      <section id="settings" class="hidden">
+        <div class="container">
+          <div class="page-container" id="page-container">
+            <div class="shipment-form">
+              <form class="form-horizontal">
+                <div class="form-group">
+                  <label class="control-label col-xs-4" for="api_key">API key</label>
+                  <div class="col-xs-8">
+                    <input type="text" maxlength="50" class="form-control ui-autocomplete-input user-success" id="api_key" placeholder="MyParcel API key" data-name="API key" autocomplete="off" name="api_key"/>
+                  </div>
+                </div>
+        
+                <div class="form-group">
+                  <label class="control-label col-xs-4" for="email">Email adres</label>
+                  <div class="col-xs-8">
+                    <input type="text" maxlength="50" class="form-control ui-autocomplete-input user-success" id="email" placeholder="Email adres" data-name="Email" autocomplete="off" name="email"/>
+                  </div>
+                </div>
+        
+                <div class="form-group">
+                <label class="control-label col-xs-4" for="format">Label formaat</label>
+                  <div class="col-xs-8">
+                    <div class="radio-group" id="package_type">
+                      <label>
+                        <input class="package_type" checked="checked" type="radio" name="format" value="a4"> A4
+                      </label>
+                      <label>
+                        <input class="package_type" type="radio" name="format" value="a6"> A6
+                      </label>
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-xs-4 control-label">Soort zending</label>
+                  <div class="col-xs-8">
+                    <div class="radio-group" id="package_type">
+                      <label>
+                        <input class="package_type" checked="checked" type="radio" name="package_type" value="1"> Pakket
+                      </label>
+                      <label>
+                        <input class="package_type" type="radio" name="package_type" value="2"> Brievenbus
+                      </label>
+                      <label>
+                        <input class="package_type" type="radio" name="package_type" value="3"> Ongefrankeerd
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-action">
+                  <button class="btn btn-primary submit" type="button">
+                    Opslaan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+      </section>
+    </div>
+  </div>
+</body>
+</html>

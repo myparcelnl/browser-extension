@@ -20,7 +20,7 @@ body, html {
   margin: 0;
 }
 
-.settings-error-message{
+.settings-error-message, .login-error-message{
   background: red;
   color: white;
   border-radius: 5px;

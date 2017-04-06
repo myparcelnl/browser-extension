@@ -76,8 +76,13 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 login = function() {
-  var api_key;
+  var api_key, email;
+  $('.login-error-message').addClass('hidden')
   api_key = $('input#api_key').val();
+  email = $('.ui-autocomplete-input#email').val();
+  if (!validSettingsInput(api_key, email, ".login-error-message p")) {
+    return false;
+  }
   chrome.runtime.sendMessage({
     from: 'popup',
     subject: 'loginToApi',
@@ -88,7 +93,7 @@ login = function() {
       hideLoginForm();
       showShipmentForm();
     } else {
-      showLoginError();
+      $('.login-error-message p').html('incorrecte gegevens').parent().removeClass('hidden')
     }
   });
 };
@@ -141,7 +146,7 @@ postShipment = function() {
     } else {
       message = 'Het aanmaken van de zending is niet gelukt, controleer de in het rood gemarkeerde velden.'
       if (typeof(response.errors) === 'undefined') {
-        message = 'Jouw API-key / email is niet correct ingevoerd. Ga naar de Instellingen in de rechter bovenhoek. '
+        message = 'Jouw API-key is niet correct ingevoerd. Ga naar de Instellingen in de rechter bovenhoek. '
       }
       $("div.error-message p").html(message).parent().removeClass("hidden");
       ref = response.errors;
@@ -307,17 +312,17 @@ showSettings = function() {
 };
 
 // Validates the API-key and email before saving the settings
-validSettingsInput = function(api_key, email) {
+validSettingsInput = function(api_key, email, errorSelector) {
   // Validate our API key
   if (api_key.length != 40){
-    $(".settings-error-message p").html('Geen geldige API key ingevoerd')
+    $(errorSelector).html('Geen geldige API key ingevoerd')
     .parent().removeClass("hidden");
     return false;
   }
   // Validate email address
   var emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   if (!emailReg.test(email)) {
-    $(".settings-error-message p").html('Geen geldig email adres ingevoerd')
+    $(errorSelector).html('Geen geldig email adres ingevoerd')
     .parent().removeClass("hidden");
     return false;
   }
@@ -338,7 +343,7 @@ saveSettings = function() {
     field = fields[j];
     msg[field] = $("section#settings input[name=" + field + "]:checked").val();
   }
-  if (!validSettingsInput(msg.api_key, msg.email)) {
+  if (!validSettingsInput(msg.api_key, msg.email, ".settings-error-message p")) {
     return false;
   }
   msg['from'] = 'popup';

@@ -76,8 +76,13 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 login = function() {
-  var api_key;
+  var api_key, email;
+  $('.login-error-message').addClass('hidden')
   api_key = $('input#api_key').val();
+  email = $('.ui-autocomplete-input#email').val();
+  if (!validSettingsInput(api_key, email, ".login-error-message p")) {
+    return false;
+  }
   chrome.runtime.sendMessage({
     from: 'popup',
     subject: 'loginToApi',
@@ -88,7 +93,7 @@ login = function() {
       hideLoginForm();
       showShipmentForm();
     } else {
-      showLoginError();
+      $('.login-error-message p').html('incorrecte gegevens').parent().removeClass('hidden')
     }
   });
 };
@@ -133,13 +138,17 @@ postShipment = function() {
     subject: 'newShipment',
     shipment: shipmentData()
   }, function(response) {
-    var field, i, len, ref;
+    var field, i, len, ref, message;
     readyShipmentForm();
     if (response.status === 'success') {
       $("div.error-message").addClass("hidden");
       newShipmentCreated();
     } else {
-      $("div.error-message").removeClass("hidden");
+      message = 'Het aanmaken van de zending is niet gelukt, controleer de in het rood gemarkeerde velden.'
+      if (typeof(response.errors) === 'undefined') {
+        message = 'Jouw API-key is niet correct ingevoerd. Ga naar de Instellingen in de rechter bovenhoek. '
+      }
+      $("div.error-message p").html(message).parent().removeClass("hidden");
       ref = response.errors;
       for (i = 0, len = ref.length; i < len; i++) {
         field = ref[i];
@@ -302,6 +311,24 @@ showSettings = function() {
   });
 };
 
+// Validates the API-key and email before saving the settings
+validSettingsInput = function(api_key, email, errorSelector) {
+  // Validate our API key
+  if (api_key.length != 40){
+    $(errorSelector).html('Geen geldige API key ingevoerd')
+    .parent().removeClass("hidden");
+    return false;
+  }
+  // Validate email address
+  var emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  if (!emailReg.test(email)) {
+    $(errorSelector).html('Geen geldig email adres ingevoerd')
+    .parent().removeClass("hidden");
+    return false;
+  }
+  return true;
+}
+
 saveSettings = function() {
   var field, fields, i, j, len, len1, msg;
   track('saveSettings');
@@ -315,6 +342,9 @@ saveSettings = function() {
   for (j = 0, len1 = fields.length; j < len1; j++) {
     field = fields[j];
     msg[field] = $("section#settings input[name=" + field + "]:checked").val();
+  }
+  if (!validSettingsInput(msg.api_key, msg.email, ".settings-error-message p")) {
+    return false;
   }
   msg['from'] = 'popup';
   msg['subject'] = 'loginToApi';

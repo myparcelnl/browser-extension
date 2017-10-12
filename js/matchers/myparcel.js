@@ -12,22 +12,18 @@ MyparcelMatcher = (function(superClass) {
   MyparcelMatcher.prototype.PATTERN = /(www|backoffice).myparcel.nl/i;
 
   MyparcelMatcher.prototype.address = function(callback) {
-    var address;
-    if (callback == null) {
-      callback = null;
-    }
-    address = {
-      street: 'Hoofdweg',
-      postal_code: '2131BC',
+    var address = {
+      street: 'Siriusdreef',
+      postal_code: '2132WT',
       city: 'Hoofddorp',
       cc: 'NL',
-      person: 'Timo Cochius',
+      person: 'Mr. Parcel',
       company: 'MyParcel',
       phone: '0233030315',
-      street_additional_info: '3e verdieping',
-      number: '679',
-      number_suffix: '3c',
-      email: 'info@myparcel.nl',
+      street_additional_info: '1e verdieping',
+      number: '66-68',
+      number_suffix: '',
+      email: 'noreply@myparcel.nl',
       note: 'Wij helpen webwinkels groeien',
       platform: 'MyParcel',
       url: this.url

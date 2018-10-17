@@ -63,7 +63,7 @@ MyparcelApi = (function() {
     var headers;
     headers = {
       'Authorization': 'Basic; ' + window.btoa(this.api_key),
-      'X-User-Agent': 'MyParcel-chrome_extension/1'
+      'X-User-Agent': 'MyParcelNL-chrome_extension/1'
     };
     return new Headers(headers);
   };

@@ -1,6 +1,8 @@
 var API_HOST, AddressParser, MixpanelApi, MyparcelApi, addStoredShipment, clearStoredShipments, compact, distinctId, getStoredShipments, merge, postShipments, printStoredShipments, returnSavedUserObject, tap, token, track, uniqueId, updateBadgeCount,
   slice = [].slice;
 
+APP_VERSION = chrome.app.getDetails().version;
+
 MyparcelApi = (function() {
   var HOST, serialize;
 
@@ -63,7 +65,7 @@ MyparcelApi = (function() {
     var headers;
     headers = {
       'Authorization': 'Basic; ' + window.btoa(this.api_key),
-      'X-User-Agent': 'MyParcelNL-chrome_extension/1'
+      'X-User-Agent': 'MyParcelNL-chrome_extension/' + APP_VERSION
     };
     return new Headers(headers);
   };

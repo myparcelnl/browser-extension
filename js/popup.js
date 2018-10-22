@@ -49,6 +49,9 @@ window.addEventListener('DOMContentLoaded', function() {
       subject: 'printStoredShipments'
     }, function(response) {
       if (response.status === 'ok') {
+        // Temporary fix to be able to download labels
+        window.open(response.data);
+        /*
         chrome.downloads.download({
           url: response.data,
           headers: [{
@@ -59,6 +62,7 @@ window.addEventListener('DOMContentLoaded', function() {
           updateShipmentCounter();
           readyShipmentForm();
         });
+        */
       }
       readyShipmentForm();
     });

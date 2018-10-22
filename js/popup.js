@@ -49,16 +49,17 @@ window.addEventListener('DOMContentLoaded', function() {
       subject: 'printStoredShipments'
     }, function(response) {
       if (response.status === 'ok') {
-        chrome.downloads.download({
-          url: response.data,
-          headers: [{
-            name: 'Accept',
-            value: 'application/json.file+pdf'
-          }]
-        }, function() {
-          updateShipmentCounter();
-          readyShipmentForm();
-        });
+        window.open(response.data);
+        // chrome.downloads.download({
+        //   url: response.data,
+        //   headers: [{
+        //     name: 'Accept',
+        //     value: 'application/json.file+pdf'
+        //   }]
+        // }, function() {
+        //   updateShipmentCounter();
+        //   readyShipmentForm();
+        // });
       }
       readyShipmentForm();
     });

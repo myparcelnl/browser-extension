@@ -1,0 +1,9 @@
+{
+  "app": "http://chrome.test:9999",
+  "development": true,
+  "popupDimensions": {
+    "width": 500,
+    "height": 620
+  },
+  "contextMenuTitle": "Label aanmaken van selectie"
+}

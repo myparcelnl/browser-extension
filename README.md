@@ -1,1 +1,0 @@
-mypa-extension

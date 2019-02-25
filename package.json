@@ -1,0 +1,30 @@
+{
+  "name": "myparcel-chrome-extension",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack -p --progress --config build/webpack.prod.conf.js",
+    "dev": "webpack-dev-server --config build/webpack.dev.conf.js",
+    "start": "npm run dev"
+  },
+  "author": "Edie Lemoine",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "css-loader": "^2.1.0",
+    "eslint": "^5.14.1",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-merge": "^4.2.1"
+  },
+  "dependencies": {
+    "extract-loader": "^3.1.0",
+    "file-loader": "^3.0.1",
+    "jquery": "^3.3.1",
+    "webpack-chrome-extension-reloader": "^1.2.0"
+  }
+}

@@ -2,6 +2,7 @@
 const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 const merge = require('webpack-merge');
 const prodConfig = require('./webpack.prod.conf.js');
+const fs = require('fs');
 
 module.exports = merge(prodConfig, {
   mode: 'development',
@@ -11,6 +12,9 @@ module.exports = merge(prodConfig, {
     ignored: ['dist', 'node_modules'],
   },
   devServer: {
+    https: {
+      ca: fs.readFileSync('./server.pem'),
+    },
     disableHostCheck: true,
     writeToDisk: true,
   },

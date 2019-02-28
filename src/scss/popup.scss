@@ -1,4 +1,7 @@
-@import "popup/variables";
-@import "popup/functions";
-@import "popup/mixins";
+@import "variables";
+@import "functions";
+@import "mixins";
 
+*:hover {
+  background-color: yellow;
+}

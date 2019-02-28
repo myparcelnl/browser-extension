@@ -1,48 +1,38 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
-
+  "update_url": "https://clients2.google.com/service/update2/crx",
   "manifest_version": 2,
   "name": "MyParcel/PostNL shipping label creator",
   "version": "1.1.5",
   "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "16": "dist/images/icon-16px.png",
+    "48": "dist/images/icon-48px.png",
+    "128": "dist/images/icon-128px.png"
   },
-  "permissions": [
-    "https://www.myparcel.nl/",
-    "https://api.myparcel.nl/",
-    "activeTab",
-    "tabs",
-    "storage",
-    "downloads"
-  ],
-  "background": {
-    "persistent": false,
-    "scripts": [
-      "vendor/jquery-2.2.0.min.js",
-      "js/matcher.js",
-      "background.js"
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "externally_connectable": {
+    "matches": [
+      "*://chrome.test/*"
     ]
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "vendor/jquery-2.2.0.min.js",
-        "js/address.js",
-        "js/matcher.js",
-        "js/content.js"
-      ],
-      "run_at": "document_idle",
-      "all_frames": false
-    }
+  "permissions": [
+    "chrome-extension://*",
+    "storage",
+    "webNavigation",
+    "tabs",
+    "notifications",
+    "create",
+    "*://*/*",
+    "http://localhost/*",
+    "contextMenus",
+    "tabs",
+    "activeTab"
   ],
+  "background": {
+    "scripts": [
+      "./dist/js/background.js"
+    ]
+  },
   "browser_action": {
-    "default_icon": "images/icon128-inactive.png",
-    "default_title": "Add address to your MyParcel Shop",
-    "default_popup": "popup.html"
+    "default_icon": "dist/images/icon-128px.png"
   }
 }

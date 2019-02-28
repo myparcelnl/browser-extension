@@ -4,10 +4,15 @@ module.exports = {
     browser: true,
     webextensions: true,
     jquery: true,
+    jest: true,
   },
   extends: '../myparcel-core/dmp-standards/eslint/.eslintrc.es6.js',
+  parser: 'babel-eslint',
   parserOptions: {
-    parser: 'babel-eslint',
-    sourceType: 'module'
-  }
+    ecmaVersion: 10,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
 };

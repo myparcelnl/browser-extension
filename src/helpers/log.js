@@ -1,3 +1,5 @@
+
+
 /* eslint-disable no-console */
 const log = {
   success(message) {
@@ -17,12 +19,14 @@ const log = {
   },
 
   createMessage(message, style = []) {
-    if (process.env.NODE_ENV !== 'prod') console.log('%c' + message, this.style.apply(null, style));
+    if (process.env.NODE_ENV !== 'prod') {
+      console.log(`%c${message}`, this.style.apply(null, style));
+    }
   },
 
   style(bgc, color = 'white', padding = '1px .5em') {
-    return `background-color: ${bgc}; color: ${color}; border-radius: 2px;` + (padding ? `padding: ${padding};` : '');
-  }
+    return `background-color: ${bgc}; color: ${color}; border-radius: 2px;${padding ? `padding: ${padding};` : ''}`;
+  },
 };
 
 export default log;

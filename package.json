@@ -4,16 +4,22 @@
   "scripts": {
     "build": "webpack -p --progress --config build/webpack.prod.conf.js",
     "dev": "webpack-dev-server --config build/webpack.dev.conf.js",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "test": "jest"
   },
   "author": "Edie Lemoine",
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.1",
+    "copy-webpack-plugin": "^5.0.0",
     "css-loader": "^2.1.0",
     "eslint": "^5.14.1",
+    "jest": "^24.1.0",
+    "jest-puppeteer": "^4.0.0",
     "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.11.0",
+    "puppeteer": "^1.12.2",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "webpack": "^4.29.3",

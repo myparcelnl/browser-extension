@@ -1,9 +1,10 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'production',
   entry: {
-    functions: ['./src/scss/popup.scss', './src/scss/extension.scss'],
+    functions: ['./src/scss/popup.scss', './src/scss/extension.scss', './src/scss/inject.scss'],
     background: './src/background.js',
     inject: './src/inject.js',
   },
@@ -11,6 +12,9 @@ module.exports = {
     filename: 'js/[name].js',
   },
   plugins: [
+    new CopyWebpackPlugin([
+      {from: 'src/images', to: 'images'},
+    ]),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',

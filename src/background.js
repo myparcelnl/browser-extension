@@ -1,6 +1,7 @@
 /* eslint-disable no-magic-numbers,no-console */
-import { CONNECTION_NAME } from './helpers/config';
+// import { CONNECTION_NAME } from './helpers/config';
 import log from './helpers/log';
+import MyParcelAPI from './helpers/MyParcelAPI';
 
 const dirRoot = './dist';
 const cssDir = `${dirRoot}/css`;
@@ -14,6 +15,9 @@ new class MyParcelBackgroundView {
   constructor() {
     this.extensionUrl = window.chrome.extension.getURL('');
     this.extensionID = (/[a-z]{32}/).exec(this.extensionUrl)[0];
+
+
+    this.trackShipment('3SMYPA123778160', '9206AC', 'NL');
 
     this.loadConfig(window.chrome.extension.getURL('config/config.json'))
       .then(() => {
@@ -37,14 +41,11 @@ new class MyParcelBackgroundView {
     }
     const tab = this.activeTab.id;
 
-    chrome.tabs.sendMessage(tab, {action: 'check'}, (response) => {
-      if (response !== 'content') {
-        chrome.tabs.insertCSS(tab, {file: `${cssDir}/inject.css`}, () => {
-          log.success(`Loaded inject.css on ${this.domain}`);
-        });
-        chrome.tabs.executeScript(tab, {file: `${jsDir}/inject.js`}, () => {
-          log.success(`Loaded inject.js on ${this.domain}`);
-        });
+    chrome.tabs.sendMessage(tab, {action: 'checkContentConnected'}, (response) => {
+      if (chrome.runtime.lastError && response !== 'contentConnected') {
+        log.info(`Script not found. Injecting css and js on ${new URL(this.domain).hostname}`);
+        chrome.tabs.insertCSS(tab, {file: `${cssDir}/inject.css`});
+        chrome.tabs.executeScript(tab, {file: `${jsDir}/inject.js`});
 
         this.sendToExternal({action: 'contentConnected'});
       }
@@ -58,6 +59,7 @@ new class MyParcelBackgroundView {
         return;
       }
       if (!this.popup || tabs[0].id !== this.popup.id) {
+        this.sendToExternal({action: 'switchedTab'});
         this.activateTab(tabs[0]);
       }
     });
@@ -89,31 +91,25 @@ new class MyParcelBackgroundView {
 
   bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name === CONNECTION_NAME) {
-        this.connection = port;
-        log.success(`Connected to "${CONNECTION_NAME}" content script`);
+      this.connection = port;
+      log.success(`Connected to "${port.name}" content script`);
+      port.postMessage({action: 'checkContentConnection'});
 
-        port.onMessage.addListener((request) => {
-          console.log(request);
-
-          if (request.action === 'contentConnected') {
-            log.success('Content connected');
-            this.sendToExternal(request);
-          }
-
-          if (request.action === 'mappedField') {
-            this.sendToExternal(request);
-          }
-        });
-      }
+      port.onMessage.addListener((request) => {
+        console.log(request);
+        if (request.action === 'contentConnected') {
+          log.success('Content connected');
+          this.sendToExternal(request);
+        }
+        if (request.action === 'mappedField') {
+          this.moveFocus(this.popup);
+          this.sendToExternal(request);
+        }
+      });
     });
   }
 
   bindPopupScript() {
-    chrome.runtime.onMessageExternal.addListener(() => {
-      console.log('external message');
-    });
-
     chrome.runtime.onConnectExternal.addListener((port) => {
       if (port.sender.tab.id !== this.popup.id) {
         log.error('External connection disallowed.');
@@ -126,21 +122,13 @@ new class MyParcelBackgroundView {
       port.onMessage.addListener((request) => {
         console.log(request);
 
-        if (request.action === 'getPath' && request.item) {
-          this.sendToContent('startSelecting', {
-            text: 'select',
-            id: request.item,
-            name: request.name,
-          });
-
-          chrome.windows.update(this.activeTab.windowId, {
-            focused: true,
-          });
-
-          return true;
-        }
-
-        if (request.action === 'mapField') {
+        if (request.action === 'popupConnected') {
+          this.sendToExternal({action: 'backgroundConnected'});
+          this.sendToContent({action: 'checkContentConnected'});
+        } else if (request.action === 'contentConnected') {
+          this.sendToExternal(request);
+        } else if (request.action === 'mapField') {
+          this.moveFocus();
           this.sendToContent(request);
           return true;
         }
@@ -148,11 +136,15 @@ new class MyParcelBackgroundView {
     });
   }
 
+  moveFocus(tab = this.activeTab) {
+    chrome.windows.update(tab.windowId, {focused: true});
+    chrome.tabs.update(tab.id, {active: true});
+  }
+
   activateTab(tab) {
     this.checkIfWebsite(tab);
 
     if (this.activeTab && tab.id !== this.activeTab.id && this.editMode) {
-      console.log('aHFAHJSFKASHFJKAS');
       this.sendToContent('stopSelecting');
       this.editMode = false;
     }
@@ -162,13 +154,7 @@ new class MyParcelBackgroundView {
     if (this.isWebpage) {
       this.domain = tab.url;
       this.injectScripts();
-      this.contentPageUpdated();
     }
-  }
-
-  contentPageUpdated() {
-    console.log('contentPageUpdated');
-    this.sendToExternal({action: 'changeURL', url: this.activeTab.url});
   }
 
   checkIfWebsite(tab) {
@@ -271,6 +257,14 @@ new class MyParcelBackgroundView {
     if (this.activeTab) {
       this.connection.postMessage(data);
     }
+  }
+
+  trackShipment(barcode, postalCode, countryCode) {
+    console.log('tracking shipment');
+    return MyParcelAPI.get('tracktraces', null, {barcode, postalCode, countryCode}, )
+      .then((response) => {
+        console.log(response);
+      });
   }
 
   resetIcon() {

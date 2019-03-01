@@ -14,6 +14,9 @@
       "*://chrome.test/*"
     ]
   },
+  "omnibox": {
+    "keyword": "3SMYPA"
+  },
   "permissions": [
     "chrome-extension://*",
     "storage",

@@ -5,26 +5,25 @@ import log from './helpers/log';
 class MyParcelContentScript {
 
   constructor() {
+    console.log(this);
     log.info('setting up content script connection');
 
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      console.log(request);
-      if (request.action === 'check') {
-        return sendResponse('content');
-      }
-    });
-
     this.connection = chrome.runtime.connect({name: CONNECTION_NAME});
-    this.sendToBackground = (message) => this.connection.postMessage(message);
+    this.connection.onMessage.addListener((...args) => this.handleMessages(...args));
+  }
 
-    this.connection.onMessage.addListener(this.handleMessages);
-    this.sendToBackground({action: 'contentConnected'});
+  sendToBackground(action, message) {
+    this.connection.postMessage(Object.assign({action}, message));
   }
 
   handleMessages(request, sender) {
     log.success(`received message from: ${sender.sender}`);
+    console.log(request);
 
     switch (request.action) {
+      case 'checkContentConnection':
+        this.sendToBackground('contentConnected');
+        break;
       case 'mapField':
         return this.mapField();
       case 'getElementContent':
@@ -43,8 +42,7 @@ class MyParcelContentScript {
       log.warning('clickedElement is null');
     }
 
-    this.sendToBackground({
-      action: 'mappedField',
+    this.sendToBackground('mappedField', {
       path: element,
     });
   }
@@ -52,8 +50,7 @@ class MyParcelContentScript {
   getElementContent(selector) {
     const element = document.querySelector(selector);
 
-    this.sendToBackground({
-      action: 'foundElementContent',
+    this.sendToBackground('foundElementContent', {
       text: element.innerText,
     });
   }

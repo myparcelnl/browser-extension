@@ -2,7 +2,23 @@
 @import "functions";
 @import "mixins";
 
-.myparcel__select-field-hover {
+.myparcel__mapping-field {
+  background-color: transparentize($secondary, 0.75);
+  outline: 3px solid $primary;
+  box-shadow: 0 0 12px 6px rgba(0, 0, 0, .3) !important;
+  cursor: pointer !important;
+}
+
+.myparcel__mapping-tooltip {
   background-color: $secondary;
-  border: 1px solid $primary;
+  border-color: darken($secondary, 10);
+  border-radius: 3px;
+  color: #fff;
+  display: none;
+  height: 20px;
+  margin-left: 5px;
+  padding: .25em;
+  position: absolute;
+  width: 100px;
+  z-index: 99999;
 }

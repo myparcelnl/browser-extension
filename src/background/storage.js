@@ -8,7 +8,7 @@ export default {
   getSavedMappings() {
     return new Promise((resolve) => {
       chrome.storage.sync.get(['MyParcelFieldMappings'], (result) => {
-        return resolve(result.MyParcelFieldMappings || []);
+        return resolve(result.MyParcelFieldMappings);
       });
     });
   },
@@ -18,7 +18,10 @@ export default {
    * @param url
    * @returns object
    */
-  getSavedMappingsForURL(url) {
+  async getSavedMappingsForURL(url) {
+    if (!this.MyParcelFieldMappings) {
+      this.MyParcelFieldMappings = await this.getSavedMappings();
+    }
     return this.MyParcelFieldMappings.find((entry) => entry.url === url) || {url, fields: {}};
   },
 
@@ -35,10 +38,6 @@ export default {
    * @returns {Promise<void>}
    */
   async saveMappedField(data) {
-    if (!this.MyParcelFieldMappings) {
-      this.MyParcelFieldMappings = await this.getSavedMappings();
-    }
-
     const settings = await this.getSavedMappingsForURL(data.url);
 
     // Add mapped field to local settings object

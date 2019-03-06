@@ -1,36 +1,29 @@
 /* eslint-disable no-magic-numbers,no-console */
-import Actions from './actions';
-import MyParcelAPI from './helpers/MyParcelAPI';
-import Storage from './background/storage';
+import actionNames from './helpers/actions';
+import actions from './background/actions';
+import config from './helpers/config';
 import log from './helpers/log';
+import storage from './background/storage';
 
-const activeIcon = 'icon-128px-alt.png';
+export let popup = null;
+export let popupConnection = null;
+export let contentConnection = null;
 
-const dirRoot = './dist';
-
-const cssDir = `${dirRoot}/css`;
-const imgDir = `${dirRoot}/images`;
-const jsDir = `${dirRoot}/js`;
-const defaultIcon = 'icon-128px.png';
-
-new class MyParcelBackgroundView {
+const background = {
 
   /**
    * Loads config file then binds all scripts and events
    */
-  constructor() {
-    this.loadConfig(chrome.extension.getURL('config/config.json'))
+  boot() {
+    this.loadConfig(chrome.extension.getURL(config.configFile))
       .then(() => {
         log.success(`Config loaded at ${(new Date()).toLocaleTimeString()}`);
-        this.popupUrl = this.popupExternalUrl;
 
-        this.bindPopupScript();
-        this.createContextMenu(this.contextMenuTitle);
         this.bindEvents();
-        this.bindContentScript();
-        this.injectScripts();
+        this.createContextMenu();
+        this.bindScripts();
       });
-  }
+  },
 
   /**
    * Fetch config file and set variables
@@ -42,77 +35,94 @@ new class MyParcelBackgroundView {
       .then((response) => response.json())
       .then((json) => {
         this.popupExternalUrl = json.app;
-        this.contextMenuTitle = json.contextMenuTitle;
         this.popupDimensions = json.popupDimensions;
         this.development = json.development;
       });
-  }
+  },
+
+  /**
+   * Make sure popup script is setup before the content script
+   * @returns {Promise<void>}
+   */
+  async bindScripts() {
+    await this.bindPopupScript();
+    this.bindContentScript();
+  },
 
   /**
    * Bind the popup script connection and map external actions
    */
   bindPopupScript() {
-    chrome.runtime.onConnectExternal.addListener((port) => {
-      if (port.sender.tab.id !== this.popup.id) {
-        log.error('External connection disallowed.');
-        return;
-      }
+    return new Promise((resolve) => {
+      chrome.runtime.onConnectExternal.addListener((port) => {
+        popupConnection = port;
 
-      log.success('popup connected');
-      this.popupConnection = port;
-
-      port.onMessage.addListener((request) => {
-        console.log(request);
-
-        switch (request.action) {
-          case Actions.popupConnected:
-            this.sendToExternal({action: Actions.backgroundConnected});
-            // this.sendToContent({action: Actions.checkContentConnection});
-            break;
-
-          case Actions.contentConnected:
-            this.sendToExternal(request);
-            break;
-
-          case Actions.mapField:
-            this.moveFocus();
-            this.sendToContent(request);
-            break;
-        }
+        port.onMessage.addListener((...args) => this.popupListener(...args));
+        resolve();
       });
     });
-  }
+  },
 
   /**
    * Bind the injected content script connection and map actions
    */
   bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
-      this.connection = port;
-      port.postMessage({action: Actions.checkContentConnection});
+      contentConnection = port;
 
-      port.onMessage.addListener((request, connection) => {
-        console.log(request);
-        const {url} = connection.sender.tab;
-
-        switch (request.action) {
-          case Actions.contentConnected:
-            this.sendToExternal(request);
-            break;
-
-          case Actions.mappedField:
-            this.moveFocus(this.popup);
-            Storage.saveMappedField(Object.assign(request, {url}));
-            this.sendToExternal(request);
-            break;
-
-          case Actions.trackShipment:
-            this.trackShipment(request.barcode);
-            break;
-        }
-      });
+      // port.postMessage({action: Actions.checkContentConnection});
+      port.onMessage.addListener((...args) => this.contentScriptListener(...args));
     });
-  }
+  },
+
+  /**
+   * Listener for popup script actions
+   * @param request
+   */
+  popupListener(request) {
+    console.log(request);
+
+    switch (request.action) {
+      case actionNames.popupConnected:
+        this.sendToExternal({action: actionNames.backgroundConnected});
+        // this.sendToContent({action: Actions.checkContentConnection});
+        break;
+
+      case actionNames.contentConnected:
+        this.sendToExternal(request);
+        break;
+
+      case actionNames.mapField:
+        this.moveFocus();
+        console.log(contentConnection);
+        this.sendToContent(request);
+        break;
+    }
+  },
+
+  /**
+   * Listener for content script actions
+   * @param request
+   * @param connection
+   */
+  contentScriptListener(request, connection) {
+    console.log(request);
+    const {url} = connection.sender.tab;
+
+    switch (request.action) {
+      case actionNames.contentConnected:
+        this.sendToExternal(request);
+        break;
+
+      case actionNames.mappedField:
+        actions.mapField(request, url);
+        break;
+
+      case actionNames.trackShipment:
+        actions.trackShipment(request.barcode);
+        break;
+    }
+  },
 
   /**
    * Binds all browser events
@@ -132,42 +142,58 @@ new class MyParcelBackgroundView {
     // Window listeners
     chrome.windows.onFocusChanged.addListener(() => this.switchTab());
     chrome.windows.onRemoved.addListener((...args) => this.checkPopupClosed(...args));
-  }
+  },
 
   /**
    * Checks if script and css are present on current tab and injects them if not
    */
-  injectScripts() {
-    if (!this.popup || !this.isWebpage || !this.activeTab) {
+  injectScripts(tab) {
+    if (!popup || !this.isWebsite || !this.activeTab) {
       return;
     }
 
-    if (this.connection && this.connection.sender.tab.id === this.activeTab.id) {
-      this.sendToContent({action: Actions.checkContentConnection});
+    const insertScripts = () => {
+      log.warning(`Script not found. Injecting css and js on ${new URL(tab.url).hostname}.`);
+      chrome.tabs.insertCSS(tab.id, {file: config.injectCSS});
+      chrome.tabs.executeScript(tab.id, {file: config.injectJS});
+    };
+
+    if (contentConnection && contentConnection.sender.id !== tab.id) {
+      console.log(contentConnection.sender.url);
+      console.log(tab.url);
+      insertScripts();
     } else {
-      log.warning(`Script not found. Injecting css and js on ${new URL(this.domain).hostname}`);
-      chrome.tabs.insertCSS(this.activeTab.id, {file: `${cssDir}/inject.css`});
-      chrome.tabs.executeScript(this.activeTab.id, {file: `${jsDir}/inject.js`});
+      try {
+        this.sendToContent({action: actionNames.checkContentConnection});
+      } catch (e) {
+        console.log('catch');
+        console.log(e);
+        insertScripts();
+      }
     }
-  }
+  },
 
   /**
    * On switching tabs
    */
-  switchTab() {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      if (!tabs[0] || (this.activeTab && tabs[0].id === this.activeTab.id)) {
-        return;
-      }
+  async switchTab() {
+    const tab = await this.getActiveTab();
 
-      if (!this.popup || tabs[0].id !== this.popup.id) {
-        this.activateTab(tabs[0]);
-        if (this.popupConnection) {
-          this.sendToExternal({action: Actions.switchedTab});
-        }
-      }
+    if (!tab || !popup || tab.id === popup.id || (this.activeTab && tab.id === this.activeTab.id)) {
+      return;
+    }
+
+    this.activateTab(tab);
+    if (popupConnection) {
+      this.sendToExternal({action: actionNames.switchedTab});
+    }
+  },
+
+  getActiveTab() {
+    return new Promise((resolve) => {
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => resolve(tabs[0]));
     });
-  }
+  },
 
   /**
    * On updating tab set new tab as active tab and change app icon
@@ -180,26 +206,17 @@ new class MyParcelBackgroundView {
       this.activateTab(tab);
       this.setIcon();
     }
-  }
-
-  /**
-   * On moving focus update current window and tab
-   * @param tab
-   */
-  moveFocus(tab = this.activeTab) {
-    chrome.windows.update(tab.windowId, {focused: true});
-    chrome.tabs.update(tab.id, {active: true});
-  }
+  },
 
   /**
    * When a window is closed check if it's our popup and clean up if so
    * @param windowId
    */
   checkPopupClosed(windowId) {
-    if (this.popup && windowId === this.popup.windowId) {
+    if (popup && windowId === popup.windowId) {
       this.closePopup(windowId);
     }
-  }
+  },
 
   /**
    * Set given tab to active and inject scripts on tab
@@ -209,19 +226,32 @@ new class MyParcelBackgroundView {
     this.checkIfWebsite(tab);
     this.activeTab = tab;
 
-    if (this.isWebpage) {
-      this.domain = tab.url;
-      this.injectScripts();
+    if (this.isWebsite) {
+      this.injectScripts(tab);
     }
-  }
+  },
+
+  /**
+   * On moving focus update current window and tab
+   * @param tab
+   */
+  moveFocus() {
+    console.log('movefocus');
+    console.log(this.activeTab.url);
+    // chrome.windows.update(this.activeTab.windowId, {focused: true});
+    // chrome.tabs.update(this.activeTab.id, {active: true});
+  },
 
   /**
    * Check if given tab is a website and not a Chrome page
    * @param tab
    */
   checkIfWebsite(tab) {
-    this.isWebpage = tab.url && tab.url.startsWith('http') && tab.windowId !== this.popup;
-  }
+    const {url, windowId} = tab;
+    const notPopup = popup ? windowId !== popup.id : true;
+
+    this.isWebsite = url && url.startsWith('http') && notPopup;
+  },
 
   createPopup(url) {
     const {height, width} = this.popupDimensions;
@@ -229,104 +259,135 @@ new class MyParcelBackgroundView {
       chrome.windows.create({
         url: url,
         type: 'popup',
-        left: win.left + win.width, // - this.popupDimensions.width - 20,
+        left: win.left + win.width,
         top: win.top,
         height,
         width,
       }, (win) => {
-        this.popup = win.tabs[0];
+        popup = win.tabs[0];
       });
     });
-  }
+  },
 
   /**
    * Show popup if it exists or create it
    * @param url
    */
-  openPopup(url = this.popupUrl) {
-    if (this.popup) {
+  async openPopup(url = this.popupExternalUrl) {
+    if (popup) {
       this.showPopup();
     } else {
+      if (!this.activeTab) {
+        this.activeTab = await this.getActiveTab();
+      }
+
+      // todo remove this
       chrome.windows.getAll({windowTypes: ['popup']}, (windows) => {
         windows.forEach((window) => {
           chrome.windows.remove(window.id);
         });
       });
+
       this.createPopup(url);
+      // await new Promise((resolve) => {
+      //   popupConnection.onMessage.addListener((request) => {
+      //     if (request.action === Actions.popupConnected) {
+      //       console.log('resolving');
+      //       resolve();
+      //     }
+      //   });
+      // });
+      // console.log('activating tab');
+      // this.activateTab(this.activeTab);
     }
 
-    this.setIcon(activeIcon);
-  }
+    this.createShipment();
+    this.setIcon(config.activeIcon);
+  },
+
+  async createShipment() {
+    log.info('creating shipment');
+    const settings = await storage.getSavedMappingsForURL(this.activeTab.url);
+    console.log(settings);
+  },
 
   /**
    * Switch focus to our popup
    */
   showPopup() {
     chrome.windows.getCurrent(() => {
-      chrome.windows.update(this.popup.windowId, {
+      chrome.windows.update(popup.windowId, {
         focused: true,
         drawAttention: true,
       });
     });
-  }
+  },
 
   /**
    * Clean up on closing of popup. Resets variables and extension icon.
    */
   closePopup() {
-    this.popup = null;
-    this.popupConnection = null;
+    popup = null;
+    this.sendToContent({action: 'stopListening'});
+    popupConnection = null;
     this.setIcon();
-  }
+  },
 
   /**
    * Create context menu
    * @param title
    */
-  createContextMenu(title) {
+  createContextMenu() {
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
-      id: 'myparcel-create-shipment',
-      title,
+      id: config.contextMenuItemId,
+      title: config.contextMenuTitle,
       contexts: ['selection'],
     });
-  }
+  },
 
   /**
    * Check if user clicked our context menu item. If so, send action and selected text to popup
    * @param item
    */
   checkContextMenu(item) {
-    if (item.menuItemId !== 'myparcel-create-shipment') {
+    if (item.menuItemId !== config.contextMenuItemId) {
       return;
     }
 
     const selection = item.selectionText.trim().replace(/,/, ' ');
     this.openPopup();
-    this.sendToExternal({action: Actions.createShipmentFromSelection, selection});
-  }
+    this.sendToExternal({action: actionNames.createShipmentFromSelection, selection});
+  },
 
   /**
    * Changes the extension icon to given path
    * @param icon
    */
-  setIcon(icon = defaultIcon) {
-    chrome.browserAction.setIcon({path: `${imgDir}/${icon}`});
-  }
+  setIcon(icon = config.defaultIcon) {
+    chrome.browserAction.setIcon({path: icon});
+  },
 
   /**
    * Send data to popup
    * @param data
    */
   sendToExternal(data) {
-    this.popupConnection.postMessage(data);
-  }
+    popupConnection.postMessage(data);
+  },
 
   /**
    * Send data to injected content script
    * @param data
    */
   sendToContent(data) {
-    this.connection.postMessage(data);
-  }
+    contentConnection.postMessage(data);
+  },
 };
+
+/**
+ * Initialize background script
+ */
+background.boot();
+
+export default background;

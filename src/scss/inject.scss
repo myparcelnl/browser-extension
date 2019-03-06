@@ -5,7 +5,7 @@
 .myparcel__mapping-field {
   background-color: transparentize($secondary, 0.75);
   outline: 3px solid $primary;
-  box-shadow: 0 0 12px 6px rgba(0, 0, 0, .3) !important;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25) !important;
   cursor: pointer !important;
 }
 

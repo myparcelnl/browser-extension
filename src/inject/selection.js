@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 import '../helpers/prototype';
 import config from '../helpers/config';
+import log from '../helpers/log';
 
 const listeners = {};
 let tooltip = null;
@@ -8,14 +9,7 @@ let tooltip = null;
 export const clickedElement = () => {
   return new Promise((resolve) => {
     selection.createTooltip();
-
-    listeners.click = (event) => selection.handleClick(event, resolve);
-    listeners.keyup = (event) => selection.handleKeyup(event, resolve);
-    listeners.mouseMove = (event) => selection.handleMouseMove(event, resolve);
-
-    document.addEventListener('click', listeners.click);
-    document.addEventListener('keyup', listeners.keyup);
-    document.addEventListener('mousemove', listeners.mouseMove);
+    selection.startMapping(resolve);
   });
 };
 
@@ -29,7 +23,21 @@ export const elementsContent = (config) => {
 };
 
 const selection = {
+  startMapping(resolve) {
+    log.info('Start mapping');
+
+    listeners.click = (event) => selection.handleClick(event, resolve);
+    listeners.keyup = (event) => selection.handleKeyup(event, resolve);
+    listeners.mouseMove = (event) => selection.handleMouseMove(event, resolve);
+
+    document.addEventListener('click', listeners.click);
+    document.addEventListener('keyup', listeners.keyup);
+    document.addEventListener('mousemove', listeners.mouseMove);
+  },
+
   stopMapping() {
+    log.info('Stop mapping');
+
     document.removeEventListener('click', listeners.click);
     document.removeEventListener('keyup', listeners.keyup);
     document.removeEventListener('mousemove', listeners.mouseMove);

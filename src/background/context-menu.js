@@ -10,7 +10,7 @@ export default {
   selectContentText(selection) {
     selection = selection.trim().replace(/,/, ' ');
     this.open();
-    this.sendToExternal({action: actions.createShipmentFromSelection, selection: selection});
+    this.sendToPopup({action: actions.createShipmentFromSelection, selection: selection});
   },
 
   createContextMenu(title) {

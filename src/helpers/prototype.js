@@ -1,11 +1,11 @@
 import config from './config';
 import getSelector from 'unique-selector';
 
-HTMLElement.prototype.getPath = function () {
+HTMLElement.prototype.getPath = () => {
   return getSelector(this, {excludeRegex: RegExp(`.${config.selectionClass}`)});
 };
 
-Element.prototype.getTextParts = function () {
+Element.prototype.getTextParts = function() {
   const list = [];
   for (let i = 0; i < this.childNodes.length; i++) {
     if (this.childNodes[i].nodeName === '#text' && this.childNodes[i].nodeValue.trim() !== '') {
@@ -15,22 +15,24 @@ Element.prototype.getTextParts = function () {
   return list;
 };
 
-Element.prototype.hasDepth = function (n) {
-  if (n < 1) {
+Element.prototype.hasDepth = function(i) {
+  if (i < 1) {
     return true;
   }
   for (let i = 0; i < this.childNodes.length; i++) {
-    if (this.childNodes[i].childNodes.length > 0 && this.childNodes[i].hasDepth(n - 1)) {
+    if (this.childNodes[i].childNodes.length > 0 && this.childNodes[i].hasDepth(i - 1)) {
       return true;
     }
   }
   return false;
 };
 
-NodeList.prototype.index = HTMLCollection.prototype.index = function (e) {
+HTMLCollection.prototype.index = function(e) {
   for (let i = 0; i < this.length; i++) {
     if (this[i] === e) {
       return i;
     }
   }
 };
+
+NodeList.prototype.index = HTMLCollection.prototype.index;

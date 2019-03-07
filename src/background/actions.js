@@ -1,14 +1,29 @@
 import background, {popup} from '../background';
 import MyParcelAPI from '../helpers/MyParcelAPI';
-import Storage from './storage';
+import storage from './storage';
 
 export default {
-  mapField(request, url) {
+
+  /**
+   * Move focus to popup, save mapped field to local storage and send it to popup
+   * @param request
+   * @param url
+   */
+  saveMappedField(request, url) {
+    console.log('saving mapped field');
+    console.log(request);
+    console.log(url);
     background.moveFocus(popup);
-    Storage.saveMappedField(Object.assign(request, {url}));
-    background.sendToExternal(request);
+    storage.saveMappedField(Object.assign(request, {url}));
+    background.sendToPopup(request);
   },
 
+  /**
+   * Track a shipment using the MyParcel API
+   * @param barcode
+   * @param postalCode
+   * @param countryCode
+   */
   trackShipment(barcode, postalCode, countryCode) {
     MyParcelAPI.get('tracktraces',
       null,

@@ -12,16 +12,16 @@ export let contentConnection = null;
 const background = {
 
   /**
-   * Loads config file then binds all scripts and events
+   * Loads config file then binds all events and scripts
    */
   boot() {
     this.loadConfig(chrome.extension.getURL(config.configFile))
       .then(() => {
-        log.success(`Config loaded at ${(new Date()).toLocaleTimeString()}`);
-
         this.bindEvents();
         this.createContextMenu();
-        this.bindScripts();
+
+        this.bindPopupScript();
+        this.bindContentScript();
       });
   },
 
@@ -41,25 +41,12 @@ const background = {
   },
 
   /**
-   * Make sure popup script is setup before the content script
-   * @returns {Promise<void>}
-   */
-  async bindScripts() {
-    await this.bindPopupScript();
-    this.bindContentScript();
-  },
-
-  /**
    * Bind the popup script connection and map external actions
    */
   bindPopupScript() {
-    return new Promise((resolve) => {
-      chrome.runtime.onConnectExternal.addListener((port) => {
-        popupConnection = port;
-
-        port.onMessage.addListener((...args) => this.popupListener(...args));
-        resolve();
-      });
+    chrome.runtime.onConnectExternal.addListener((port) => {
+      popupConnection = port;
+      port.onMessage.addListener((...args) => this.popupListener(...args));
     });
   },
 
@@ -69,8 +56,6 @@ const background = {
   bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
       contentConnection = port;
-
-      // port.postMessage({action: Actions.checkContentConnection});
       port.onMessage.addListener((...args) => this.contentScriptListener(...args));
     });
   },
@@ -84,17 +69,16 @@ const background = {
 
     switch (request.action) {
       case actionNames.popupConnected:
-        this.sendToExternal({action: actionNames.backgroundConnected});
+        this.sendToPopup({action: actionNames.backgroundConnected});
         // this.sendToContent({action: Actions.checkContentConnection});
         break;
 
       case actionNames.contentConnected:
-        this.sendToExternal(request);
+        this.sendToPopup(request);
         break;
 
       case actionNames.mapField:
         this.moveFocus();
-        console.log(contentConnection);
         this.sendToContent(request);
         break;
     }
@@ -107,15 +91,15 @@ const background = {
    */
   contentScriptListener(request, connection) {
     console.log(request);
-    const {url} = connection.sender.tab;
 
+    const {url} = connection.sender.tab;
     switch (request.action) {
       case actionNames.contentConnected:
-        this.sendToExternal(request);
+        this.sendToPopup(request);
         break;
 
       case actionNames.mappedField:
-        actions.mapField(request, url);
+        actions.saveMappedField(request, url);
         break;
 
       case actionNames.trackShipment:
@@ -159,15 +143,11 @@ const background = {
     };
 
     if (contentConnection && contentConnection.sender.id !== tab.id) {
-      console.log(contentConnection.sender.url);
-      console.log(tab.url);
       insertScripts();
     } else {
       try {
         this.sendToContent({action: actionNames.checkContentConnection});
       } catch (e) {
-        console.log('catch');
-        console.log(e);
         insertScripts();
       }
     }
@@ -185,7 +165,7 @@ const background = {
 
     this.activateTab(tab);
     if (popupConnection) {
-      this.sendToExternal({action: actionNames.switchedTab});
+      this.sendToPopup({action: actionNames.switchedTab});
     }
   },
 
@@ -236,10 +216,8 @@ const background = {
    * @param tab
    */
   moveFocus() {
-    console.log('movefocus');
-    console.log(this.activeTab.url);
-    // chrome.windows.update(this.activeTab.windowId, {focused: true});
-    // chrome.tabs.update(this.activeTab.id, {active: true});
+    chrome.windows.update(this.activeTab.windowId, {focused: true});
+    chrome.tabs.update(this.activeTab.id, {active: true});
   },
 
   /**
@@ -357,7 +335,7 @@ const background = {
 
     const selection = item.selectionText.trim().replace(/,/, ' ');
     this.openPopup();
-    this.sendToExternal({action: actionNames.createShipmentFromSelection, selection});
+    this.sendToPopup({action: actionNames.createShipmentFromSelection, selection});
   },
 
   /**
@@ -372,7 +350,7 @@ const background = {
    * Send data to popup
    * @param data
    */
-  sendToExternal(data) {
+  sendToPopup(data) {
     popupConnection.postMessage(data);
   },
 
@@ -385,9 +363,6 @@ const background = {
   },
 };
 
-/**
- * Initialize background script
- */
 background.boot();
 
 export default background;

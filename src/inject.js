@@ -1,23 +1,26 @@
-import { clickedElement, elementsContent } from './inject/selection';
-import Actions from './helpers/actions';
+import actionNames from './helpers/actions';
+import actions from './inject/actions';
 import log from './helpers/log';
 
 const listeners = {};
+let backgroundConnection = null;
 
-class MyParcelContentScript {
+const content = {
 
-  constructor() {
+  boot() {
     log.info('Setting up content script.');
 
     listeners.background = (...args) => this.backgroundListener(...args);
     listeners.disconnect = () => Selection.stopMapping();
 
-    this.establishConnection().then(() => {
-      this.connection.onMessage.addListener(listeners.background);
-      this.connection.onDisconnect.addListener(listeners.disconnect);
-      this.sendToBackground(Actions.contentConnected, {url: window.location.hostname});
+    this.establishConnection().then((connection) => {
+      backgroundConnection = connection;
+
+      backgroundConnection.onMessage.addListener(listeners.background);
+      backgroundConnection.onDisconnect.addListener(listeners.disconnect);
+      this.sendToBackground(actionNames.contentConnected, {url: window.location.hostname});
     });
-  }
+  },
 
   /**
    * Establish the connection with the background script
@@ -25,10 +28,9 @@ class MyParcelContentScript {
    */
   establishConnection() {
     return new Promise((resolve) => {
-      this.connection = chrome.runtime.connect({name: 'MyParcelContentScript'});
-      resolve();
+      resolve(chrome.runtime.connect({name: 'MyParcelContentScript'}));
     });
-  }
+  },
 
   /**
    * Send data to background script
@@ -36,8 +38,8 @@ class MyParcelContentScript {
    * @param message
    */
   sendToBackground(action, message) {
-    this.connection.postMessage(Object.assign({action}, message));
-  }
+    backgroundConnection.postMessage(Object.assign({action}, message));
+  },
 
   /**
    * Listener for messages from background script
@@ -48,49 +50,25 @@ class MyParcelContentScript {
     console.log(request);
 
     switch (request.action) {
-      case Actions.checkContentConnection:
-        this.sendToBackground(Actions.contentConnected, {url: window.location.hostname});
+      case actionNames.checkContentConnection:
+        this.sendToBackground(actionNames.contentConnected, {url: window.location.hostname});
         break;
 
-      case Actions.mapField:
-        return this.mapField(request.field);
+      case actionNames.mapField:
+        return actions.mapField(request.field);
 
-      case Actions.getSelectorContent:
-        this.getElementsContent(request.selectors);
-        break;
+      case actionNames.getSelectorContent:
+        return actions.getElementsContent(request.selectors);
 
-      case Actions.stopListening:
-        this.connection.onMessage.removeListener(listeners.background);
-        this.connection.disconnect();
+      case actionNames.stopListening:
+        backgroundConnection.onMessage.removeListener(listeners.background);
+        backgroundConnection.disconnect();
         log.info('Popup closed. Content script deactivated.');
         break;
     }
-  }
+  },
+};
 
-  /**
-   * Get values using previously mapped fields (if any)
-   * @param selectors
-   * @returns {Promise<void>}
-   */
-  async getElementsContent(selectors) {
-    const values = await elementsContent(selectors);
-    this.sendToBackground('foundElementContent', {values});
-  }
+content.boot();
 
-  /**
-   * Start creating new field mapping
-   * @param field
-   * @returns {Promise<void>}
-   */
-  async mapField(field) {
-    const path = await clickedElement();
-    this.sendToBackground('mappedField', {path, field});
-  }
-
-  // getElementContent(selector) {
-  //   const text = document.querySelector(selector).innerText;
-  //   this.sendToBackground('foundElementContent', {selector, text});
-  // }
-}
-
-new MyParcelContentScript();
+export default content;

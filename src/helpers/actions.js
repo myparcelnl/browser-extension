@@ -5,6 +5,7 @@ export default {
   createShipmentFromSelection: 'createShipmentFromSelection',
   foundElementContent: 'foundElementContent',
   getSelectorContent: 'getSelectorContent',
+  getStorage: 'getStorage',
   mapField: 'mapField',
   mappedField: 'mappedField',
   popupConnected: 'popupConnected',

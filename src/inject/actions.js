@@ -19,8 +19,8 @@ export default {
    * @param field
    * @returns {Promise<void>}
    */
-  async mapField(field) {
+  async mapField(data) {
     const path = await clickedElement();
-    content.sendToBackground(actionNames.mappedField, {path, field});
+    content.sendToBackground(actionNames.mappedField, Object.assign(data, {path}));
   },
 };

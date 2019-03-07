@@ -4,18 +4,22 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const { scripts } = require('../package.json');
 
-const extensionPath = path.join(__dirname, '../dist');
+const extensionPath = path.join(__dirname, '../');
 
-describe('build & install', () => {
+describe('Build and install Chrome extension', () => {
 
-  // Calls the standard 'npm dist' script used to build the distributable
-  test('extension can build', async() => {
+  /**
+   * Try to build the extension
+   */
+  test('Extension can build', async() => {
     const { stderr } = await exec(scripts.dist);
     expect(stderr).toBeFalsy();
   }, 15000);
 
-  // boots a Chrome instance using Puppeteer and adds the extension we build in the earlier test
-  test('extension can be installed', async() => {
+  /**
+   * Launch a Chrome instance using puppeteer and try to install the extension that was built
+   */
+  test('Extension can be installed', async() => {
     const options = {
       headless: false,
       ignoreHTTPSErrors: true,

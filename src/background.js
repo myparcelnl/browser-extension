@@ -9,6 +9,22 @@ export let popup = null;
 export let popupConnection = null;
 export let contentConnection = null;
 
+/**
+ * Send data to popup
+ * @param data
+ */
+export const sendToPopup = (data) => {
+  popupConnection.postMessage(data);
+};
+
+/**
+ * Send data to injected content script
+ * @param data
+ */
+export const sendToContent = (data) => {
+  contentConnection.postMessage(data);
+};
+
 const background = {
 
   /**
@@ -69,17 +85,21 @@ const background = {
 
     switch (request.action) {
       case actionNames.popupConnected:
-        this.sendToPopup({action: actionNames.backgroundConnected});
-        // this.sendToContent({action: Actions.checkContentConnection});
+        sendToPopup({action: actionNames.backgroundConnected});
+        // sendToContent({action: Actions.checkContentConnection});
         break;
 
       case actionNames.contentConnected:
-        this.sendToPopup(request);
+        sendToPopup(request);
         break;
 
       case actionNames.mapField:
         this.moveFocus();
-        this.sendToContent(request);
+        sendToContent(request);
+        break;
+
+      case actionNames.getStorage:
+        actions.getStorage(request);
         break;
     }
   },
@@ -92,14 +112,15 @@ const background = {
   contentScriptListener(request, connection) {
     console.log(request);
 
-    const {url} = connection.sender.tab;
     switch (request.action) {
       case actionNames.contentConnected:
-        this.sendToPopup(request);
+        sendToPopup(request);
         break;
 
       case actionNames.mappedField:
-        actions.saveMappedField(request, url);
+        actions.saveMappedField(request);
+        sendToPopup(request);
+        this.moveFocus(popup);
         break;
 
       case actionNames.trackShipment:
@@ -146,7 +167,7 @@ const background = {
       insertScripts();
     } else {
       try {
-        this.sendToContent({action: actionNames.checkContentConnection});
+        sendToContent({action: actionNames.checkContentConnection});
       } catch (e) {
         insertScripts();
       }
@@ -165,7 +186,7 @@ const background = {
 
     this.activateTab(tab);
     if (popupConnection) {
-      this.sendToPopup({action: actionNames.switchedTab});
+      sendToPopup({action: actionNames.switchedTab});
     }
   },
 
@@ -215,9 +236,9 @@ const background = {
    * On moving focus update current window and tab
    * @param tab
    */
-  moveFocus() {
-    chrome.windows.update(this.activeTab.windowId, {focused: true});
-    chrome.tabs.update(this.activeTab.id, {active: true});
+  moveFocus(tab = this.activeTab) {
+    chrome.windows.update(tab.windowId, {focused: true});
+    chrome.tabs.update(tab.id, {active: true});
   },
 
   /**
@@ -306,7 +327,7 @@ const background = {
    */
   closePopup() {
     popup = null;
-    this.sendToContent({action: 'stopListening'});
+    sendToContent({action: 'stopListening'});
     popupConnection = null;
     this.setIcon();
   },
@@ -335,7 +356,7 @@ const background = {
 
     const selection = item.selectionText.trim().replace(/,/, ' ');
     this.openPopup();
-    this.sendToPopup({action: actionNames.createShipmentFromSelection, selection});
+    sendToPopup({action: actionNames.createShipmentFromSelection, selection});
   },
 
   /**
@@ -344,22 +365,6 @@ const background = {
    */
   setIcon(icon = config.defaultIcon) {
     chrome.browserAction.setIcon({path: icon});
-  },
-
-  /**
-   * Send data to popup
-   * @param data
-   */
-  sendToPopup(data) {
-    popupConnection.postMessage(data);
-  },
-
-  /**
-   * Send data to injected content script
-   * @param data
-   */
-  sendToContent(data) {
-    contentConnection.postMessage(data);
   },
 };
 

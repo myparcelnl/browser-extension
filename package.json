@@ -4,6 +4,7 @@
   "scripts": {
     "build": "webpack -p --progress --config build/webpack.prod.conf.js",
     "dev": "webpack-dev-server --config build/webpack.dev.conf.js",
+    "dist": "webpack -p --silent --config build/webpack.prod.conf.js",
     "start": "npm run dev",
     "test": "jest"
   },

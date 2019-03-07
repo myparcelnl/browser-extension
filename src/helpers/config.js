@@ -4,6 +4,9 @@ const contextMenuItemId = 'myparcel-create-shipment';
 
 const selectionClass = 'myparcel__mapping-field';
 const tooltipClass = 'myparcel__mapping-tooltip';
+const wrappedItemClass = 'myparcel__wrapped-item';
+
+const mappingPrefix = 'myparcel-mapping-';
 
 // Files
 const configFile = './config/config.json';
@@ -26,6 +29,8 @@ export default {
   contextMenuItemId,
   selectionClass,
   tooltipClass,
+  wrappedItemClass,
+  mappingPrefix,
   configFile,
   distDir,
   cssDir,

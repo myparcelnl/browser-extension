@@ -1,8 +1,10 @@
 import actionNames from './helpers/actions';
 import actions from './inject/actions';
 import log from './helpers/log';
+import { selection } from './inject/selection';
 
 const listeners = {};
+const url = window.location.hostname;
 let backgroundConnection = null;
 
 const content = {
@@ -11,14 +13,14 @@ const content = {
     log.info('Setting up content script.');
 
     listeners.background = (...args) => this.backgroundListener(...args);
-    listeners.disconnect = () => Selection.stopMapping();
+    listeners.disconnect = () => selection.stopMapping();
 
     this.establishConnection().then((connection) => {
       backgroundConnection = connection;
 
       backgroundConnection.onMessage.addListener(listeners.background);
       backgroundConnection.onDisconnect.addListener(listeners.disconnect);
-      this.sendToBackground(actionNames.contentConnected, {url: window.location.hostname});
+      this.sendToBackground(actionNames.contentConnected, {url});
     });
   },
 
@@ -51,11 +53,11 @@ const content = {
 
     switch (request.action) {
       case actionNames.checkContentConnection:
-        this.sendToBackground(actionNames.contentConnected, {url: window.location.hostname});
+        this.sendToBackground(actionNames.contentConnected, {url});
         break;
 
       case actionNames.mapField:
-        return actions.mapField(request.field);
+        return actions.mapField({url, field: request.field});
 
       case actionNames.getSelectorContent:
         return actions.getElementsContent(request.selectors);

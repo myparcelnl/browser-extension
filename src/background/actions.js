@@ -1,21 +1,25 @@
-import background, {popup} from '../background';
+import { background, popup } from '../background.js';
 import MyParcelAPI from '../helpers/MyParcelAPI';
 import storage from './storage';
+import { sendToPopup } from '../background';
 
 export default {
+
+  async getStorage(request) {
+    const data = await storage.getSavedMappings();
+    sendToPopup(Object.assign(request, {data}));
+  },
 
   /**
    * Move focus to popup, save mapped field to local storage and send it to popup
    * @param request
    * @param url
    */
-  saveMappedField(request, url) {
+  saveMappedField(request) {
     console.log('saving mapped field');
     console.log(request);
-    console.log(url);
-    background.moveFocus(popup);
-    storage.saveMappedField(Object.assign(request, {url}));
-    background.sendToPopup(request);
+    storage.saveMappedField(request);
+    sendToPopup(request);
   },
 
   /**

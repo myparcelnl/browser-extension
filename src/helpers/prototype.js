@@ -1,7 +1,7 @@
 import config from './config';
 import getSelector from 'unique-selector';
 
-HTMLElement.prototype.getPath = () => {
+HTMLElement.prototype.getPath = function() {
   return getSelector(this, {excludeRegex: RegExp(`.${config.selectionClass}`)});
 };
 

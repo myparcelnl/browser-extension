@@ -22,7 +22,7 @@ export const elementsContent = (config) => {
   return configData;
 };
 
-const selection = {
+export const selection = {
   startMapping(resolve) {
     log.info('Start mapping');
 
@@ -43,7 +43,9 @@ const selection = {
     document.removeEventListener('mousemove', listeners.mouseMove);
 
     this.removeSelectionClass();
-    this.removeTooltip();
+    // this.removeTooltip();
+    this.hideToolbar();
+    this.unwrap();
   },
 
   handleKeyup(event, resolve) {
@@ -126,12 +128,34 @@ const selection = {
     }
   },
 
+  showToolbar(name, text) {
+    if (!document.getElementById(config.tooltipClass)) {
+      this.createToolbar();
+    }
+
+    const tooltip = document.getElementById(config.tooltipClass);
+
+    tooltip.style.display = 'block';
+    tooltip.querySelector('span').innerHTML = text;
+    tooltip.querySelector('em').innerHTML = name;
+  },
+
   createTooltip() {
-    if (!tooltip) {
-      tooltip = document.createElement('div', {});
-      tooltip.classList.add(config.tooltipClass);
-      tooltip.innerText = 'Selecting';
-      document.body.appendChild(tooltip);
+    let tooltip = document.getElementById(config.tooltipClass);
+    if (tooltip) {
+      tooltip.parentElement.removeChild(tooltip);
+    }
+
+    tooltip = document.createElement('div');
+    tooltip.setAttribute('id', config.tooltipClass);
+    tooltip.innerHTML = '<div class="arrow"></div><div class="text"><span></span><em></em>or<em class="esc">esc</em></div>';
+    document.body.appendChild(tooltip);
+  },
+
+  hideToolbar() {
+    const tooltip = document.getElementById(config.tooltipClass);
+    if (tooltip) {
+      tooltip.style.display = 'none';
     }
   },
 
@@ -149,7 +173,7 @@ const selection = {
       if (e.parentElement.childNodes.length > 1 && e.textContent.trim() !== '') {
         const span = document.createElement('span');
         span.innerHTML = e.textContent;
-        span.classList.add('createdSubItem');
+        span.classList.add(config.wrappedItemClass);
         e.parentNode.insertBefore(span, e);
         e.parentNode.removeChild(e);
       }
@@ -157,7 +181,7 @@ const selection = {
   },
 
   unwrap() {
-    const array = document.getElementsByClassName('createdSubItem');
+    const array = document.getElementsByClassName(config.wrappedItemClass);
     if (array) {
       for (let i = array.length - 1; i >= 0; i--) {
         const e = array[i];
@@ -194,39 +218,3 @@ const selection = {
     return value.trim();
   },
 };
-
-const Tooltip = {
-
-  showToolbar(name, text) {
-    if (!document.getElementById(config.tooltipClass)) {
-      this.createToolbar();
-    }
-
-    const tooltip = document.getElementById(config.tooltipClass);
-
-    tooltip.style.display = 'block';
-    tooltip.querySelector('span').innerHTML = text;
-    tooltip.querySelector('em').innerHTML = name;
-  },
-
-  createToolbar() {
-    let tooltip = document.getElementById(config.tooltipClass);
-    if (tooltip) {
-      tooltip.parentElement.removeChild(tooltip);
-    }
-
-    tooltip = document.createElement('div');
-    tooltip.setAttribute('id', config.tooltipClass);
-    tooltip.innerHTML = '<div class="arrow"></div><div class="text"><span></span><em></em>or<em class="esc">esc</em></div>';
-    document.body.appendChild(tooltip);
-  },
-
-  hideToolbar() {
-    const tooltip = document.getElementById(config.tooltipClass);
-    if (tooltip) {
-      tooltip.style.display = 'none';
-    }
-  },
-};
-
-export default clickedElement;

@@ -1,4 +1,5 @@
 import log from '../helpers/log';
+import config from '../helpers/config';
 
 export default {
   /**
@@ -7,8 +8,8 @@ export default {
    */
   getSavedMappings() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get(['MyParcelFieldMappings'], (result) => {
-        return resolve(result.MyParcelFieldMappings);
+      chrome.storage.sync.get(null, (result) => {
+        return resolve(result);
       });
     });
   },
@@ -19,17 +20,26 @@ export default {
    * @returns object
    */
   async getSavedMappingsForURL(url) {
-    if (!this.MyParcelFieldMappings) {
-      this.MyParcelFieldMappings = await this.getSavedMappings();
-    }
-    return this.MyParcelFieldMappings.find((entry) => entry.url === url) || {url, fields: {}};
+    this.fieldMappings = await this.getSavedMappings();
+    console.log(this.fieldMappings);
+
+    const urlMappings = {};
+    const filteredKeys = Object.keys(this.fieldMappings).filter((key) => {
+      return key.startsWith(config.mappingPrefix) && key.endsWith(url);
+    });
+
+    filteredKeys.forEach((key) => {
+      urlMappings[key] = this.fieldMappings[key];
+    });
+
+    return urlMappings;
   },
 
   /**
    * Empty MyParcelFieldMappings in local storage
    */
   clearSavedMappings() {
-    chrome.storage.sync.set({MyParcelFieldMappings: []});
+    chrome.storage.sync.set({});
   },
 
   /**
@@ -38,13 +48,13 @@ export default {
    * @returns {Promise<void>}
    */
   async saveMappedField(data) {
-    const settings = await this.getSavedMappingsForURL(data.url);
+    const {url, field, path} = data;
+    // let settings = await this.getSavedMappingsForURL(url);
+    const newData = {};
 
-    // Add mapped field to local settings object
-    settings.fields[data.field] = data.path;
+    newData[config.mappingPrefix + field + '_' + url] = path;
 
-    // Add updated settings and save to storage
-    this.saveToStorage({ MyParcelFieldMappings: Object.assign(this.MyParcelFieldMappings, settings) });
+    this.saveToStorage(newData);
   },
 
   /**
@@ -52,7 +62,7 @@ export default {
    * @param data
    */
   saveToStorage(data) {
-    chrome.storage.sync.set(data, () => {
+    chrome.storage.sync.set(data, async() => {
       log.success('Saved data to local storage.');
     });
   },

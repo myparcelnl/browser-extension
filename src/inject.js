@@ -59,13 +59,12 @@ const content = {
       case actionNames.mapField:
         return actions.mapField({url, field: request.field});
 
-      case actionNames.getSelectorContent:
+      case actionNames.getElementsContent:
         return actions.getElementsContent(request.selectors);
 
       case actionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);
         backgroundConnection.disconnect();
-        log.info('Popup closed. Content script deactivated.');
         break;
     }
   },

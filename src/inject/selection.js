@@ -4,7 +4,7 @@ import config from '../helpers/config';
 import log from '../helpers/log';
 
 const listeners = {};
-let tooltip = null;
+const tooltip = null;
 
 export const clickedElement = () => {
   return new Promise((resolve) => {
@@ -68,8 +68,9 @@ export const selection = {
     });
 
     const path = element.getPath();
+    const content = element.innerText;
     this.stopMapping();
-    resolve(path);
+    resolve({path, content});
   },
 
   handleMouseMove(event) {

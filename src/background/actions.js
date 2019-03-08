@@ -1,9 +1,17 @@
 import { background, popup } from '../background.js';
+import { sendToContent, sendToPopup } from '../background';
 import MyParcelAPI from '../helpers/MyParcelAPI';
+import log from '../helpers/log';
 import storage from './storage';
-import { sendToPopup } from '../background';
 
 export default {
+
+  async newShipment(url) {
+    log.success('got data for url:');
+    const data = await storage.getSavedMappingsForURL(url);
+    console.log(data);
+    // sendToContent(Object.assign(request, {data}));
+  },
 
   async getStorage(request) {
     const data = await storage.getSavedMappings();
@@ -11,15 +19,19 @@ export default {
   },
 
   /**
-   * Move focus to popup, save mapped field to local storage and send it to popup
+   * Save mapped field to local storage and send it to popup if not null
    * @param request
    * @param url
    */
   saveMappedField(request) {
-    console.log('saving mapped field');
-    console.log(request);
-    storage.saveMappedField(request);
-    sendToPopup(request);
+    if (request.path !== null) {
+      storage.saveMappedField(request);
+      sendToPopup(request);
+    }
+  },
+
+  deleteField(request) {
+    storage.deleteMappedField(request);
   },
 
   /**

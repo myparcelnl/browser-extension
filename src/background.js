@@ -98,9 +98,19 @@ const background = {
         sendToContent(request);
         break;
 
-      case actionNames.getStorage:
-        actions.getStorage(request);
+      case actionNames.deleteField:
+        return actions.deleteField(request);
         break;
+
+      case actionNames.getElementsContent:
+        sendToContent(request);
+        break;
+
+      case actionNames.getStorage:
+        return actions.getStorage(request);
+
+      case actionNames.newShipment:
+        return actions.newShipment(request);
     }
   },
 
@@ -123,8 +133,16 @@ const background = {
         this.moveFocus(popup);
         break;
 
+      case actionNames.deleteField:
+        actions.deleteField(request);
+        break;
+
       case actionNames.trackShipment:
         actions.trackShipment(request.barcode);
+        break;
+
+      case actionNames.createShipment:
+        actions.createShipment(request);
         break;
     }
   },
@@ -288,20 +306,10 @@ const background = {
       });
 
       this.createPopup(url);
-      // await new Promise((resolve) => {
-      //   popupConnection.onMessage.addListener((request) => {
-      //     if (request.action === Actions.popupConnected) {
-      //       console.log('resolving');
-      //       resolve();
-      //     }
-      //   });
-      // });
-      // console.log('activating tab');
-      // this.activateTab(this.activeTab);
     }
 
-    this.createShipment();
     this.setIcon(config.activeIcon);
+    actions.newShipment(url);
   },
 
   async createShipment() {

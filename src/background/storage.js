@@ -21,15 +21,19 @@ export default {
    */
   async getSavedMappingsForURL(url) {
     this.fieldMappings = await this.getSavedMappings();
-    console.log(this.fieldMappings);
-
     const urlMappings = {};
+
     const filteredKeys = Object.keys(this.fieldMappings).filter((key) => {
       return key.startsWith(config.mappingPrefix) && key.endsWith(url);
     });
 
+    const regex = RegExp(`${config.mappingPrefix}(.+)_${url}`);
+
     filteredKeys.forEach((key) => {
-      urlMappings[key] = this.fieldMappings[key];
+      urlMappings[key] = {
+        field: regex.exec(key)[1],
+        path: this.fieldMappings[key],
+      };
     });
 
     return urlMappings;
@@ -39,7 +43,7 @@ export default {
    * Empty MyParcelFieldMappings in local storage
    */
   clearSavedMappings() {
-    chrome.storage.sync.set({});
+    chrome.storage.sync.remove();
   },
 
   /**
@@ -47,14 +51,32 @@ export default {
    * @param data
    * @returns {Promise<void>}
    */
-  async saveMappedField(data) {
+  saveMappedField(data) {
     const {url, field, path} = data;
     // let settings = await this.getSavedMappingsForURL(url);
     const newData = {};
 
-    newData[config.mappingPrefix + field + '_' + url] = path;
+    newData[`${config.mappingPrefix + field}_${url}`] = path;
 
     this.saveToStorage(newData);
+  },
+
+  async deleteMappedField(data) {
+    const {url, field} = data;
+    let remove;
+
+    await this.getSavedMappingsForURL(url)
+      .then((mappings) => {
+        for (const item in mappings) {
+          if (mappings[item].field === field) {
+            remove = item;
+          }
+        }
+      });
+
+    if (remove) {
+      this.removeFromStorage(remove);
+    }
   },
 
   /**
@@ -62,8 +84,14 @@ export default {
    * @param data
    */
   saveToStorage(data) {
-    chrome.storage.sync.set(data, async() => {
-      log.success('Saved data to local storage.');
-    });
+    chrome.storage.sync.set(data);
+  },
+
+  /**
+   * Executes Chrome function to remove key from synced local storage
+   * @param data
+   */
+  removeFromStorage(data) {
+    chrome.storage.sync.remove(data);
   },
 };

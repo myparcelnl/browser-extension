@@ -1,6 +1,7 @@
 import { clickedElement, elementsContent } from './selection';
 import actionNames from '../helpers/actions';
 import content from '../inject';
+import log from '../helpers/log';
 
 export default {
 
@@ -11,7 +12,15 @@ export default {
    */
   async getElementsContent(selectors) {
     const values = await elementsContent(selectors);
-    content.sendToBackground(actionNames.foundElementContent, {values});
+
+    if (values === {}) {
+      log.error('no data found');
+    } else {
+      log.success('got data:');
+      console.log(values);
+    }
+
+    // content.sendToBackground(actionNames.foundElementContent, {values});
   },
 
   /**
@@ -20,7 +29,9 @@ export default {
    * @returns {Promise<void>}
    */
   async mapField(data) {
-    const path = await clickedElement();
-    content.sendToBackground(actionNames.mappedField, Object.assign(data, {path}));
+    const element = await clickedElement();
+    console.log(data);
+    console.log(element);
+    content.sendToBackground(actionNames.mappedField, Object.assign(data, element));
   },
 };

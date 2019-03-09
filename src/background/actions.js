@@ -18,6 +18,11 @@ export default {
     sendToPopup(Object.assign(request, {data}));
   },
 
+  async getFieldSettingsForURL(request) {
+    const fields = await storage.getSavedMappingsForURL(request.url);
+    sendToPopup(Object.assign(request, {fields}));
+  },
+
   /**
    * Save mapped field to local storage and send it to popup if not null
    * @param request

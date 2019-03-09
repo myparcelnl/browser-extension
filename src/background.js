@@ -85,13 +85,11 @@ const background = {
 
     switch (request.action) {
       case actionNames.popupConnected:
-        sendToPopup({action: actionNames.backgroundConnected});
+        return sendToPopup({action: actionNames.backgroundConnected});
         // sendToContent({action: Actions.checkContentConnection});
-        break;
 
       case actionNames.contentConnected:
-        sendToPopup(request);
-        break;
+        return sendToPopup(request);
 
       case actionNames.mapField:
         this.moveFocus();
@@ -100,14 +98,15 @@ const background = {
 
       case actionNames.deleteField:
         return actions.deleteField(request);
-        break;
 
       case actionNames.getElementsContent:
-        sendToContent(request);
-        break;
+        return sendToContent(request);
 
       case actionNames.getStorage:
         return actions.getStorage(request);
+
+      case actionNames.getFieldSettingsForURL:
+        return actions.getFieldSettingsForURL(request);
 
       case actionNames.newShipment:
         return actions.newShipment(request);
@@ -119,7 +118,7 @@ const background = {
    * @param request
    * @param connection
    */
-  contentScriptListener(request, connection) {
+  contentScriptListener(request) {
     console.log(request);
 
     switch (request.action) {

@@ -7,6 +7,7 @@ export default {
   foundElementContent: 'foundElementContent',
   getElementsContent: 'getElementsContent',
   getStorage: 'getStorage',
+  getFieldSettingsForURL: 'getFieldSettingsForURL',
   mapField: 'mapField',
   deleteField: 'deleteField',
   mappedField: 'mappedField',

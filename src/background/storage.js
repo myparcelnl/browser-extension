@@ -1,15 +1,38 @@
-import log from '../helpers/log';
 import config from '../helpers/config';
+import log from '../helpers/log';
 
 export default {
+
   /**
-   * Retrieve saved MyParcelFieldMappings from (synced) local storage. Returns empty array if not found.
+   * Get all keys from storage
+   * @returns {Promise<any>}
+   */
+  getStorageKeys() {
+    return new Promise((resolve) => {
+      chrome.storage.sync.get(null, (result) => {
+        resolve(result);
+      });
+    });
+  },
+
+  /**
+   * Retrieve saved field mappings from storage.
    * @returns {Promise<any>}
    */
   getSavedMappings() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get(null, (result) => {
-        return resolve(result);
+      this.getStorageKeys().then((keys) => {
+        const mappings = {};
+
+        for (const key in keys) {
+          if (!key.startsWith(config.mappingPrefix)) {
+            return;
+          }
+          const url = key.replace(config.mappingPrefix, '');
+          mappings[url] = JSON.parse(keys[key]);
+        }
+
+        return resolve(mappings);
       });
     });
   },
@@ -21,29 +44,7 @@ export default {
    */
   async getSavedMappingsForURL(url) {
     this.fieldMappings = await this.getSavedMappings();
-    const urlMappings = {};
-
-    const filteredKeys = Object.keys(this.fieldMappings).filter((key) => {
-      return key.startsWith(config.mappingPrefix) && key.endsWith(url);
-    });
-
-    const regex = RegExp(`${config.mappingPrefix}(.+)_${url}`);
-
-    filteredKeys.forEach((key) => {
-      urlMappings[key] = {
-        field: regex.exec(key)[1],
-        path: this.fieldMappings[key],
-      };
-    });
-
-    return urlMappings;
-  },
-
-  /**
-   * Empty MyParcelFieldMappings in local storage
-   */
-  clearSavedMappings() {
-    chrome.storage.sync.remove();
+    return this.fieldMappings[url];
   },
 
   /**
@@ -51,36 +52,37 @@ export default {
    * @param data
    * @returns {Promise<void>}
    */
-  saveMappedField(data) {
+  async saveMappedField(data) {
     const {url, field, path} = data;
-    // let settings = await this.getSavedMappingsForURL(url);
-    const newData = {};
+    const mappings = await this.getSavedMappingsForURL(url) || {};
+    const newMappings = Object.assign({[field]: path}, mappings);
 
-    newData[`${config.mappingPrefix + field}_${url}`] = path;
+    const key = {
+      [`${config.mappingPrefix}${url}`]: JSON.stringify(newMappings),
+    };
 
-    this.saveToStorage(newData);
-  },
-
-  async deleteMappedField(data) {
-    const {url, field} = data;
-    let remove;
-
-    await this.getSavedMappingsForURL(url)
-      .then((mappings) => {
-        for (const item in mappings) {
-          if (mappings[item].field === field) {
-            remove = item;
-          }
-        }
-      });
-
-    if (remove) {
-      this.removeFromStorage(remove);
-    }
+    this.saveToStorage(key);
   },
 
   /**
-   * Executes Chrome function to actually save to synced local storage
+   * Delete given field from storage by URL and field
+   * @param data
+   * @returns {Promise<void>}
+   */
+  async deleteMappedField(data) {
+    const {url, field} = data;
+    const mappings = await this.getSavedMappingsForURL(url);
+    delete mappings[field];
+
+    const newMappings = {
+      [`${config.mappingPrefix}${url}`]: JSON.stringify(mappings),
+    };
+
+    this.saveToStorage(newMappings);
+  },
+
+  /**
+   * Save data to storage
    * @param data
    */
   saveToStorage(data) {
@@ -88,10 +90,17 @@ export default {
   },
 
   /**
-   * Executes Chrome function to remove key from synced local storage
+   * Remove key from storage
    * @param data
    */
-  removeFromStorage(data) {
-    chrome.storage.sync.remove(data);
+  removeFromStorage(key) {
+    chrome.storage.sync.remove(key);
+  },
+
+  /**
+   * Clear all keys in storage
+   */
+  clearAll() {
+    chrome.storage.sync.clear();
   },
 };

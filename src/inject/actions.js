@@ -13,11 +13,11 @@ export default {
   async getElementsContent(selectors) {
     const values = await elementsContent(selectors);
 
-    if (values === {}) {
-      log.error('no data found');
-    } else {
+    if (values) {
       log.success('got data:');
       console.log(values);
+    } else {
+      log.error('no data found');
     }
 
     // content.sendToBackground(actionNames.foundElementContent, {values});

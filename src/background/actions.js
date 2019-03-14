@@ -1,16 +1,27 @@
 import { background, popup } from '../background.js';
 import { sendToContent, sendToPopup } from '../background';
 import MyParcelAPI from '../helpers/MyParcelAPI';
+import actionNames from '../helpers/actions';
 import log from '../helpers/log';
+import presets from '../helpers/presets';
 import storage from './storage';
 
 export default {
 
-  async newShipment(url) {
-    log.success('got data for url:');
-    const data = await storage.getSavedMappingsForURL(url);
-    console.log(data);
-    // sendToContent(Object.assign(request, {data}));
+  async getSelectorsAndContent(url) {
+    log.success(`getting selectors for url: ${url}`);
+    let selectors = await storage.getSavedMappingsForURL(url);
+    const presetName = presets.findPreset({url});
+
+    if (presetName) {
+      log.success(`found preset for ${presetName}`);
+      const presetData = presets.getPresetData(presetName);
+      selectors = {...selectors, ...presetData};
+      console.log(selectors);
+    }
+
+    log.success('requesting content for fields in url from content');
+    sendToContent({action: actionNames.getElementsContent, selectors});
   },
 
   async getStorage(request) {
@@ -18,10 +29,10 @@ export default {
     sendToPopup(Object.assign(request, {data}));
   },
 
-  async getFieldSettingsForURL(request) {
-    const fields = await storage.getSavedMappingsForURL(request.url);
-    sendToPopup(Object.assign(request, {fields}));
-  },
+  // async getFieldSettingsForURL(request) {
+  //   const fields = await storage.getSavedMappingsForURL(request.url);
+  //   sendToPopup({...request, fields});
+  // },
 
   /**
    * Save mapped field to local storage and send it to popup if not null

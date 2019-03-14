@@ -13,17 +13,29 @@ export const clickedElement = () => {
   });
 };
 
-export const elementsContent = (config) => {
-  const configData = {};
-  for (const key in config) {
-    configData[key] = this.getSelectorValues(config[key]);
+export const elementsContent = (selectors) => {
+  const values = {};
+
+  if (typeof selectors === 'string') {
+    return selection.getSelectorValue(selectors);
   }
 
-  return configData;
+  for (const key in selectors) {
+    values[key] = selection.getSelectorValue(selectors[key]);
+  }
+
+  return values;
 };
 
 export const selection = {
+
+  /**
+   * Add event listeners for mapping field
+   * @param resolve
+   */
   startMapping(resolve) {
+    // remove existing listeners (if any)
+    this.stopMapping();
     log.info('Start mapping');
 
     listeners.click = (event) => selection.handleClick(event, resolve);
@@ -35,6 +47,10 @@ export const selection = {
     document.addEventListener('mousemove', listeners.mouseMove);
   },
 
+  /**
+   * Remove event listeners for mapping field
+   * @param resolve
+   */
   stopMapping() {
     log.info('Stop mapping');
 
@@ -48,6 +64,11 @@ export const selection = {
     this.unwrap();
   },
 
+  /**
+   * Keyup event listener to check for escaoe button press
+   * @param event
+   * @param resolve
+   */
   handleKeyup(event, resolve) {
     // Check if escape is pressed
     if (event.keyCode === 27) {
@@ -56,21 +77,18 @@ export const selection = {
     }
   },
 
+  /**
+   * Click event listener that gets content and path of clicked element
+   * @param event
+   * @param resolve
+   */
   handleClick(event, resolve) {
     event.stopPropagation();
     event.preventDefault();
-    let element = event.target;
-
-    ['input', 'select'].forEach((tag) => {
-      if (element.getElementsByTagName(tag).length > 0) {
-        element = element.getElementsByTagName(tag)[0];
-      }
-    });
-
+    const element = event.target;
     const path = element.getPath();
-    const content = element.innerText;
     this.stopMapping();
-    resolve({path, content});
+    resolve(path);
   },
 
   handleMouseMove(event) {
@@ -102,9 +120,6 @@ export const selection = {
 
     let {pageY: y, pageX: x} = event;
     const {clientY, clientX, target} = event;
-
-    console.log(x);
-    console.log(y);
 
     if (x === null && clientX !== null) {
       const document = (target && target.ownerDocument) || document;
@@ -193,29 +208,38 @@ export const selection = {
     }
   },
 
-  getSelectorValues(selector) {
-    let value = '';
-    if (selector) {
-      selector = selector.split('@');
-      const selectorPath = selector[0];
-      const selectorIndex = selector[1];
-      const path = document.querySelectorAll(selectorPath);
-      if (path.length > 0) {
-        const e = path[0];
-        const tag = (e && e.tagName) ? e.tagName.toLowerCase() : '';
-
-        if (e && e.value && selectorIndex && tag === 'textarea') {
-          value = e.value.split(/\n/g)[selectorIndex.trim()];
-        } else if (selectorIndex) {
-          const element = e.getTextParts()[selectorIndex.trim()];
-          if (element) {
-            value = element.textContent;
-          }
-        } else if (e) {
-          value = (['input', 'select', 'textarea'].indexOf(tag) !== -1) ? e.value : e.textContent;
-        }
-      }
+  getSelectorValue(selector) {
+    // let value = '';
+    console.log('get selector value');
+    console.log(selector);
+    if (!selector) {
+      return;
     }
-    return value.trim();
+
+    // selector = selector.split('@');
+    // const selectorPath = selector[0];
+    // const selectorIndex = selector[1];
+    const path = document.querySelectorAll(selector);
+
+    console.log(path);
+    if (path.length) {
+      const e = path[0];
+      console.log(e);
+
+      return e.innerText.trim();
+      // const tag = (e && e.tagName) ? e.tagName.toLowerCase() : '';
+      //
+      // if (e && e.value && selectorIndex && tag === 'textarea') {
+      //   value = e.value.split(/\n/g)[selectorIndex.trim()];
+      // } else if (selectorIndex) {
+      //   const element = e.getTextParts()[selectorIndex.trim()];
+      //   if (element) {
+      //     value = element.textContent;
+      //   }
+      // } else if (e) {
+      //   value = (['input', 'select', 'textarea'].indexOf(tag) !== -1) ? e.value : e.textContent;
+      // }
+    }
   },
+  // return value.trim();
 };

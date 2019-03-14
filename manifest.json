@@ -2,7 +2,7 @@
   "update_url": "https://clients2.google.com/service/update2/crx",
   "manifest_version": 2,
   "name": "MyParcel/PostNL shipping label creator",
-  "version": "1.1.5",
+  "version": "2.0.0",
   "icons": {
     "16": "dist/images/icon-16px.png",
     "48": "dist/images/icon-48px.png",
@@ -13,9 +13,6 @@
     "matches": [
       "*://chrome.test/*"
     ]
-  },
-  "omnibox": {
-    "keyword": "3SMYPA"
   },
   "permissions": [
     "chrome-extension://*",

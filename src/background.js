@@ -30,15 +30,14 @@ const background = {
   /**
    * Loads config file then binds all events and scripts
    */
-  boot() {
-    this.loadConfig(chrome.extension.getURL(config.configFile))
-      .then(() => {
-        this.bindEvents();
-        this.createContextMenu();
+  async boot() {
+    await this.loadConfig(chrome.extension.getURL(config.configFile));
 
-        this.bindPopupScript();
-        this.bindContentScript();
-      });
+    this.bindEvents();
+    this.createContextMenu();
+
+    this.bindPopupScript();
+    this.bindContentScript();
   },
 
   /**
@@ -46,14 +45,15 @@ const background = {
    * @param url
    * @returns {Promise<any | never>}
    */
-  loadConfig(url) {
-    return fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        this.popupExternalUrl = json.app;
-        this.popupDimensions = json.popupDimensions;
-        this.development = json.development;
-      });
+  async loadConfig(url) {
+    const response = await fetch(url);
+    const json = await response.json();
+    // .then((response) => response.json())
+    // .then((json) => {
+    this.popupExternalUrl = json.app;
+    this.popupDimensions = json.popupDimensions;
+    this.development = json.development;
+    // });
   },
 
   /**
@@ -99,17 +99,17 @@ const background = {
       case actionNames.deleteField:
         return actions.deleteField(request);
 
-      case actionNames.getElementsContent:
-        return sendToContent(request);
+        // case actionNames.getElementsContent:
+        //   return sendToContent(request);
 
       case actionNames.getStorage:
         return actions.getStorage(request);
 
-      case actionNames.getFieldSettingsForURL:
-        return actions.getFieldSettingsForURL(request);
+        // case actionNames.getFieldSettingsForURL:
+        //   return actions.getFieldSettingsForURL(request);
 
-      case actionNames.newShipment:
-        return actions.newShipment(request);
+      case actionNames.getSelectorsAndContent:
+        return actions.getSelectorsAndContent(request.url);
     }
   },
 
@@ -128,9 +128,12 @@ const background = {
 
       case actionNames.mappedField:
         actions.saveMappedField(request);
-        sendToPopup(request);
         this.moveFocus(popup);
         break;
+
+        // case actionNames.foundElementContent:
+        //   sendToPopup(request);
+        //   break;
 
       case actionNames.deleteField:
         actions.deleteField(request);
@@ -140,9 +143,12 @@ const background = {
         actions.trackShipment(request.barcode);
         break;
 
-      case actionNames.createShipment:
-        actions.createShipment(request);
-        break;
+      case actionNames.foundContent:
+        return sendToPopup(request);
+
+      // case actionNames.createShipment:
+      //   actions.createShipment(request);
+      //   break;
     }
   },
 
@@ -195,6 +201,7 @@ const background = {
    * On switching tabs
    */
   async switchTab() {
+    log.info('switchTab');
     const tab = await this.getActiveTab();
 
     if (!tab || !popup || tab.id === popup.id || (this.activeTab && tab.id === this.activeTab.id)) {
@@ -204,6 +211,10 @@ const background = {
     this.activateTab(tab);
     if (popupConnection) {
       sendToPopup({action: actionNames.switchedTab});
+    }
+
+    if (contentConnection) {
+      sendToContent({action: actionNames.checkContentConnection});
     }
   },
 
@@ -220,9 +231,13 @@ const background = {
    * @param tab
    */
   updateTab(id, info, tab) {
+    log.info('updateTab');
     if (info.status === 'complete' && this.activeTab && this.activeTab.id === tab.id) {
       this.activateTab(tab);
       this.setIcon();
+      if (contentConnection) {
+        sendToContent({action: actionNames.checkContentConnection});
+      }
     }
   },
 
@@ -308,7 +323,7 @@ const background = {
     }
 
     this.setIcon(config.activeIcon);
-    actions.newShipment(url);
+    actions.getSelectorsAndContent(url);
   },
 
   async createShipment() {

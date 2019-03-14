@@ -2,7 +2,17 @@ import config from './config';
 import getSelector from 'unique-selector';
 
 HTMLElement.prototype.getPath = function() {
-  return getSelector(this, {excludeRegex: RegExp(`.${config.selectionClass}`)});
+  let selector = this;
+
+  if (selector.classList.contains(config.wrappedItemClass)) {
+    selector = this.parentElement;
+  }
+
+  const path = getSelector(selector, {
+    excludeRegex: RegExp(config.classPrefix),
+  });
+
+  return path;
 };
 
 Element.prototype.getTextParts = function() {

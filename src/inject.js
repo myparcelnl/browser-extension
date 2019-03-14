@@ -62,6 +62,9 @@ const content = {
       case actionNames.getElementsContent:
         return actions.getElementsContent(request.selectors);
 
+      case actionNames.getSelectorsAndContent:
+        return actions.getElementsContent(request.selectors);
+
       case actionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);
         backgroundConnection.disconnect();

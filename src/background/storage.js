@@ -43,8 +43,9 @@ export default {
    * @returns object
    */
   async getSavedMappingsForURL(url) {
-    this.fieldMappings = await this.getSavedMappings();
-    return this.fieldMappings[url];
+    const fieldMappings = await this.getSavedMappings();
+    console.log(fieldMappings);
+    return fieldMappings[url];
   },
 
   /**
@@ -55,7 +56,13 @@ export default {
   async saveMappedField(data) {
     const {url, field, path} = data;
     const mappings = await this.getSavedMappingsForURL(url) || {};
-    const newMappings = Object.assign({[field]: path}, mappings);
+    const newMappings = {
+      ...mappings,
+      [field]: path,
+    };
+    const aa = Object.assign({[field]: path}, mappings);
+    console.log(aa);
+    console.log(newMappings);
 
     const key = {
       [`${config.mappingPrefix}${url}`]: JSON.stringify(newMappings),

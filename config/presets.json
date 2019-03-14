@@ -1,0 +1,38 @@
+{
+  "magento1": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "magento2": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "shopify": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "woocommerce": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  }
+}

@@ -7,12 +7,13 @@ export default {
 
   /**
    * Get values using previously mapped fields (if any)
-   * @param selectors
+   * @param request
    * @returns {Promise<void>}
    */
-  async getElementsContent(selectors) {
+  async getElementsContent(request) {
+    const {selectors} = request;
     log.info('inject: getElementsContent');
-    console.log(selectors);
+    // console.log(selectors);
     // const newArr = {};
     const values = await elementsContent(selectors);
 
@@ -36,24 +37,24 @@ export default {
     //   }
     // }
 
-    // Object.keys(selectors);
+    // Object.keys(request);
     //
-    // for (const selector in selectors) {
+    // for (const selector in request) {
     //   newArr[selector] = {
-    //     selector: selectors[selector],
+    //     selector: request[selector],
     //     value: values[selector],
     //   };
     // }
     //
     // const arr = {
-    //   ...selectors,
+    //   ...request,
     //   ...values,
     // };
     // console.log(arr);
     // console.log(values);
 
-    content.sendToBackground(actionNames.foundContent, {values});
     // content.sendToBackground(actionNames.foundSelectorsAndContent, {values});
+    content.sendToBackground(actionNames.foundContent, { ...request, values});
   },
 
   /**

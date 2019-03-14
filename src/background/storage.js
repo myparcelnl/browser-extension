@@ -44,7 +44,6 @@ export default {
    */
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
-    console.log(fieldMappings);
     return fieldMappings[url];
   },
 
@@ -60,9 +59,6 @@ export default {
       ...mappings,
       [field]: path,
     };
-    const aa = Object.assign({[field]: path}, mappings);
-    console.log(aa);
-    console.log(newMappings);
 
     const key = {
       [`${config.mappingPrefix}${url}`]: JSON.stringify(newMappings),

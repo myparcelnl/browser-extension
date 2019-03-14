@@ -7,6 +7,7 @@ export default {
   deleteField: 'deleteField',
   foundContent: 'foundContent',
   foundElementContent: 'foundElementContent',
+  foundPreset: 'foundPreset',
   foundSelectorsAndContent: 'foundSelectorsAndContent',
   // getFieldSettingsForURL: 'getFieldSettingsForURL',
   getElementsContent: 'getElementsContent',

@@ -210,8 +210,8 @@ export const selection = {
 
   getSelectorValue(selector) {
     // let value = '';
-    console.log('get selector value');
-    console.log(selector);
+    // console.log('get selector value');
+    // console.log(selector);
     if (!selector) {
       return;
     }
@@ -221,10 +221,10 @@ export const selection = {
     // const selectorIndex = selector[1];
     const path = document.querySelectorAll(selector);
 
-    console.log(path);
+    // console.log(path);
     if (path.length) {
       const e = path[0];
-      console.log(e);
+      // console.log(e);
 
       return e.innerText.trim();
       // const tag = (e && e.tagName) ? e.tagName.toLowerCase() : '';

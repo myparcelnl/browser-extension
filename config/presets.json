@@ -1,4 +1,58 @@
 {
+  "bolcom": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "drupal": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "gratiswebshopbeginnen": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "joomla": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "lightspeed": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "luondo": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
   "magento1": {
     "name": "",
     "company": "",
@@ -17,7 +71,79 @@
     "postalCode": "",
     "city": ""
   },
+  "mijnwebwinkel": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "myshop": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "opencart": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "oscommerce": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "prestashop": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "seoshop": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
   "shopify": {
+    "name": "",
+    "company": "",
+    "street": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
+    "number": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
+    "numberSuffix": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
+    "postalCode": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
+    "city": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p"
+  },
+  "shoppagina": {
+    "name": "",
+    "company": "",
+    "street": "",
+    "number": "",
+    "numberSuffix": "",
+    "postalCode": "",
+    "city": ""
+  },
+  "virtuemart": {
     "name": "",
     "company": "",
     "street": "",

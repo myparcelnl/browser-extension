@@ -109,7 +109,7 @@ const background = {
         //   return actions.getFieldSettingsForURL(request);
 
       case actionNames.getSelectorsAndContent:
-        return actions.getSelectorsAndContent(request.url);
+        return actions.getSelectorsAndContent({...request, location: this.activeTab.url});
     }
   },
 
@@ -124,7 +124,7 @@ const background = {
     switch (request.action) {
       case actionNames.contentConnected:
         sendToPopup(request);
-        break;
+        return actions.getSelectorsAndContent({...request, location: this.activeTab.url});
 
       case actionNames.mappedField:
         actions.saveMappedField(request);

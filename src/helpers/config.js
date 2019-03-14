@@ -20,8 +20,8 @@ const activeIcon = `${imgDir}/icon-128px-alt.png`;
 const defaultIcon = `${imgDir}/icon-128px.png`;
 
 // Files
-const configFile = '${configDir}/config.json';
-const presetsFile = `${configDir}/inject.css`;
+const configFile = `${configDir}/config.json`;
+const presetsFile = `${configDir}/presets.json`;
 const injectJS = `${jsDir}/inject.js`;
 const injectCSS = `${cssDir}/inject.css`;
 

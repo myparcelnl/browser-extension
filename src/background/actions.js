@@ -8,20 +8,29 @@ import storage from './storage';
 
 export default {
 
-  async getSelectorsAndContent(url) {
+  async getSelectorsAndContent(request) {
+    console.log(request);
+    const {location, url} = request;
     log.success(`getting selectors for url: ${url}`);
     let selectors = await storage.getSavedMappingsForURL(url);
-    const presetName = presets.findPreset({url});
+    let preset = false;
+    const presetName = presets.findPreset(location);
 
     if (presetName) {
       log.success(`found preset for ${presetName}`);
-      const presetData = presets.getPresetData(presetName);
-      selectors = {...selectors, ...presetData};
-      console.log(selectors);
+      // sendToPopup({
+      //   action: actionNames.foundPreset,
+      //   overrides: Object.keys(selectors),
+      //   preset: presetName,
+      // });
+      const presetData = await presets.getPresetData(presetName);
+
+      preset = {name: presetName, overrides: Object.keys(selectors) || false};
+      selectors = {...presetData, ...selectors};
     }
 
     log.success('requesting content for fields in url from content');
-    sendToContent({action: actionNames.getElementsContent, selectors});
+    sendToContent({action: actionNames.getElementsContent, selectors, preset});
   },
 
   async getStorage(request) {

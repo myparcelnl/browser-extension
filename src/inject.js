@@ -40,7 +40,7 @@ const content = {
    * @param message
    */
   sendToBackground(action, message) {
-    backgroundConnection.postMessage(Object.assign({action}, message));
+    backgroundConnection.postMessage({...message, action});
   },
 
   /**
@@ -60,10 +60,10 @@ const content = {
         return actions.mapField({url, field: request.field});
 
       case actionNames.getElementsContent:
-        return actions.getElementsContent(request.selectors);
+        return actions.getElementsContent(request);
 
       case actionNames.getSelectorsAndContent:
-        return actions.getElementsContent(request.selectors);
+        return actions.getElementsContent(request);
 
       case actionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);

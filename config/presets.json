@@ -126,8 +126,8 @@
     "city": ""
   },
   "shopify": {
-    "name": "",
-    "company": "",
+    "name": ".ui-type-container > div > :nth-child(1) > a",
+    "company": ":nth-child(4) > :nth-child(1) > .ui-type-container > .ui-stack > .ui-stack-item--fill > p",
     "street": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
     "number": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
     "numberSuffix": ".ui-type-container > .ui-stack > .ui-stack-item--fill > p",
@@ -153,12 +153,12 @@
     "city": ""
   },
   "woocommerce": {
-    "name": "",
-    "company": "",
-    "street": "",
-    "number": "",
-    "numberSuffix": "",
-    "postalCode": "",
-    "city": ""
+    "city": ":nth-child(3) > .address > p",
+    "company": ":nth-child(3) > .address > p",
+    "name": ":nth-child(3) > .address > p",
+    "number": ":nth-child(3) > .address > p",
+    "numberSuffix": ":nth-child(3) > .address > p",
+    "postalCode": ":nth-child(3) > .address > p",
+    "street": ":nth-child(3) > .address > p"
   }
 }

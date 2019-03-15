@@ -40,6 +40,7 @@ const content = {
    * @param message
    */
   sendToBackground(action, message) {
+    log.background(action);
     backgroundConnection.postMessage({...message, action});
   },
 
@@ -49,12 +50,12 @@ const content = {
    * @returns {Promise<void>}
    */
   backgroundListener(request) {
+    log.background(request.action, true);
     console.log(request);
 
     switch (request.action) {
-      case actionNames.checkContentConnection:
-        this.sendToBackground(actionNames.contentConnected, {url});
-        break;
+      case actionNames.switchedTab:
+        return this.sendToBackground(actionNames.contentConnected, {url});
 
       case actionNames.mapField:
         return actions.mapField({url, field: request.field});
@@ -62,8 +63,8 @@ const content = {
       case actionNames.getElementsContent:
         return actions.getElementsContent(request);
 
-      case actionNames.getSelectorsAndContent:
-        return actions.getElementsContent(request);
+        // case actionNames.getSelectorsAndContent:
+        //   return actions.getElementsContent(request);
 
       case actionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);

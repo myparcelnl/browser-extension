@@ -14,6 +14,7 @@ export let contentConnection = null;
  * @param data
  */
 export const sendToPopup = (data) => {
+  log.popup(`${data.action}`, true);
   popupConnection.postMessage(data);
 };
 
@@ -22,6 +23,7 @@ export const sendToPopup = (data) => {
  * @param data
  */
 export const sendToContent = (data) => {
+  log.content(`${data.action}`, true);
   contentConnection.postMessage(data);
 };
 
@@ -80,7 +82,8 @@ const background = {
    * Listener for popup script actions
    * @param request
    */
-  popupListener(request) {
+  popupListener(request, sender) {
+    log.popup(request.action);
     console.log(request);
 
     switch (request.action) {
@@ -119,6 +122,7 @@ const background = {
    * @param connection
    */
   contentScriptListener(request) {
+    log.content(request.action);
     console.log(request);
 
     switch (request.action) {
@@ -201,7 +205,7 @@ const background = {
    * On switching tabs
    */
   async switchTab() {
-    log.info('switchTab');
+    log.event('switchTab');
     const tab = await this.getActiveTab();
 
     if (!tab || !popup || tab.id === popup.id || (this.activeTab && tab.id === this.activeTab.id)) {
@@ -209,12 +213,13 @@ const background = {
     }
 
     this.activateTab(tab);
+
     if (popupConnection) {
       sendToPopup({action: actionNames.switchedTab});
     }
 
     if (contentConnection) {
-      sendToContent({action: actionNames.checkContentConnection});
+      sendToContent({action: actionNames.switchedTab});
     }
   },
 
@@ -231,7 +236,7 @@ const background = {
    * @param tab
    */
   updateTab(id, info, tab) {
-    log.info('updateTab');
+    log.event('updateTab');
     if (info.status === 'complete' && this.activeTab && this.activeTab.id === tab.id) {
       this.activateTab(tab);
       this.setIcon();

@@ -13,8 +13,6 @@ export default {
   async getElementsContent(request) {
     const {selectors} = request;
     log.info('inject: getElementsContent');
-    // console.log(selectors);
-    // const newArr = {};
     const values = await elementsContent(selectors);
 
     // let a = {
@@ -36,7 +34,6 @@ export default {
     //     value: 'Siriusdreef 66-68, 2132 WT Hoofddorp'
     //   }
     // }
-
     // Object.keys(request);
     //
     // for (const selector in request) {
@@ -52,8 +49,8 @@ export default {
     // };
     // console.log(arr);
     // console.log(values);
-
     // content.sendToBackground(actionNames.foundSelectorsAndContent, {values});
+
     content.sendToBackground(actionNames.foundContent, { ...request, values});
   },
 

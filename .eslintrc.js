@@ -6,5 +6,5 @@ module.exports = {
     jquery: true,
     jest: true,
   },
-  extends: '../myparcel-core/dmp-standards/eslint/.eslintrc.es6.js',
+  extends: ['../myparcel-core/dmp-standards/eslint/eslint-es6.config.js'],
 };

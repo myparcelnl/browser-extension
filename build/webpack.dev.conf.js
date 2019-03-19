@@ -12,9 +12,6 @@ module.exports = merge(prodConfig, {
     ignored: ['dist', 'node_modules'],
   },
   devServer: {
-    https: {
-      ca: fs.readFileSync('./server.pem'),
-    },
     disableHostCheck: true,
     writeToDisk: true,
   },

@@ -45,13 +45,14 @@
     "city": ""
   },
   "luondo": {
-    "name": "",
+    "name": ":nth-child(3) > .general > tbody > :nth-child(1) > :nth-child(2)",
     "company": "",
-    "street": "",
-    "number": "",
-    "numberSuffix": "",
-    "postalCode": "",
-    "city": ""
+    "street": ":nth-child(3) > .general > tbody > :nth-child(2) > :nth-child(2)",
+    "number": ":nth-child(3) > .general > tbody > :nth-child(2) > :nth-child(2)",
+    "numberSuffix": ":nth-child(3) > .general > tbody > :nth-child(2) > :nth-child(2)",
+    "postalCode": ":nth-child(3) > .general > tbody > :nth-child(3) > :nth-child(2)",
+    "city": ":nth-child(3) > .general > tbody > :nth-child(4) > :nth-child(2)",
+    "country": ":nth-child(3) > .general > tbody > :nth-child(5) > :nth-child(2)"
   },
   "magento1": {
     "name": "",
@@ -146,19 +147,19 @@
   "virtuemart": {
     "name": "",
     "company": "",
-    "street": "",
     "number": "",
     "numberSuffix": "",
     "postalCode": "",
     "city": ""
   },
   "woocommerce": {
-    "city": ":nth-child(3) > .address > p",
-    "company": ":nth-child(3) > .address > p",
-    "name": ":nth-child(3) > .address > p",
-    "number": ":nth-child(3) > .address > p",
-    "numberSuffix": ":nth-child(3) > .address > p",
-    "postalCode": ":nth-child(3) > .address > p",
-    "street": ":nth-child(3) > .address > p"
+    "name": ":nth-child(3) > .address > p@1",
+    "company": ":nth-child(3) > .address > p@0",
+    "street": ":nth-child(3) > .address > p@2",
+    "number": ":nth-child(3) > .address > p@2",
+    "numberSuffix": ":nth-child(3) > .address > p@2",
+    "postalCode": ":nth-child(3) > .address > p@3",
+    "city": ":nth-child(3) > .address > p@3",
+    "country": ""
   }
 }

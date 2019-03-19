@@ -3,8 +3,24 @@ import getSelector from 'unique-selector';
 
 HTMLElement.prototype.getPath = function() {
   let selector = this;
+  let index = '';
 
   if (selector.classList.contains(config.wrappedItemClass)) {
+    index = 0;
+    let node = selector;
+
+    for (let i = 0; (node = node.previousSibling); i++) {
+      if (!node.classList.contains(config.wrappedItemClass)) {
+        index++;
+      }
+    }
+
+    // let node2 = selector;
+    // while ((node2 = node2.previousSibling) != null) {
+    //   console.log(node2);
+    //   index++;
+    // }
+    index = `@${index}`;
     selector = this.parentElement;
   }
 
@@ -12,7 +28,7 @@ HTMLElement.prototype.getPath = function() {
     excludeRegex: RegExp(config.classPrefix),
   });
 
-  return path;
+  return path + index;
 };
 
 Element.prototype.getTextParts = function() {

@@ -32,8 +32,13 @@ export default {
   },
 
   findPreset(url) {
-    // console.log(url)
-    return this.findPresetByURL(url) || false;
+    const preset = this.findPresetByURL(url);
+
+    // if (!preset) {
+    //   preset = this.findPresetByURL(url);
+    // }
+
+    return preset;
   },
 
   findPresetByURL(url) {
@@ -44,6 +49,8 @@ export default {
     if (url.includes('/wp-admin/')) {
       return WOOCOMMERCE;
     }
+
+    return false;
   },
 
   async getPresetData(preset) {

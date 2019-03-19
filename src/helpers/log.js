@@ -69,7 +69,7 @@ const log = {
   },
 
   receiving(bool) {
-    return bool ? '▲' : '▼'
+    return bool ? '▼' : '▲';
   },
 
   createMessage(message, style = '') {

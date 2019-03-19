@@ -14,7 +14,7 @@ export let contentConnection = null;
  * @param data
  */
 export const sendToPopup = (data) => {
-  log.popup(`${data.action}`, true);
+  log.popup(data.action);
   popupConnection.postMessage(data);
 };
 
@@ -23,7 +23,7 @@ export const sendToPopup = (data) => {
  * @param data
  */
 export const sendToContent = (data) => {
-  log.content(`${data.action}`, true);
+  log.content(data.action);
   contentConnection.postMessage(data);
 };
 
@@ -45,7 +45,7 @@ const background = {
   /**
    * Fetch config file and set variables
    * @param url
-   * @returns {Promise<any | never>}
+   * @returns {Promise<void>}
    */
   async loadConfig(url) {
     const response = await fetch(url);
@@ -82,7 +82,7 @@ const background = {
    * Listener for popup script actions
    * @param request
    */
-  popupListener(request, sender) {
+  popupListener(request) {
     log.popup(request.action);
     console.log(request);
 
@@ -119,10 +119,9 @@ const background = {
   /**
    * Listener for content script actions
    * @param request
-   * @param connection
    */
   contentScriptListener(request) {
-    log.content(request.action);
+    log.content(request.action, true);
     console.log(request);
 
     switch (request.action) {
@@ -215,7 +214,7 @@ const background = {
     this.activateTab(tab);
 
     if (popupConnection) {
-      sendToPopup({action: actionNames.switchedTab});
+      sendToPopup({action: actionNames.switchedTab, url: this.activeTab.url});
     }
 
     if (contentConnection) {

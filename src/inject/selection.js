@@ -14,6 +14,10 @@ export const clickedElement = () => {
 };
 
 export const elementsContent = (selectors) => {
+  if (!selectors) {
+    return;
+  }
+
   const values = {};
 
   if (typeof selectors === 'string') {
@@ -21,7 +25,9 @@ export const elementsContent = (selectors) => {
   }
 
   for (const key in selectors) {
-    values[key] = selection.getSelectorValue(selectors[key]);
+    if (selectors.hasOwnProperty(key)) {
+      values[key] = selection.getSelectorValue(selectors[key]);
+    }
   }
 
   return values;
@@ -49,7 +55,6 @@ export const selection = {
 
   /**
    * Remove event listeners for mapping field
-   * @param resolve
    */
   stopMapping() {
     log.info('Stop mapping');
@@ -209,37 +214,32 @@ export const selection = {
   },
 
   getSelectorValue(selector) {
-    // let value = '';
-    // console.log('get selector value');
-    // console.log(selector);
     if (!selector) {
       return;
     }
 
-    // selector = selector.split('@');
-    // const selectorPath = selector[0];
-    // const selectorIndex = selector[1];
-    const path = document.querySelectorAll(selector);
+    let value = '';
+    const parts = selector.split('@');
+    const selectorPath = parts[0];
+    const selectorIndex = parts[1];
+    const path = document.querySelectorAll(selectorPath);
 
-    // console.log(path);
     if (path.length) {
-      const e = path[0];
-      // console.log(e);
+      const el = path[0];
 
-      return e.innerText.trim();
-      // const tag = (e && e.tagName) ? e.tagName.toLowerCase() : '';
-      //
-      // if (e && e.value && selectorIndex && tag === 'textarea') {
-      //   value = e.value.split(/\n/g)[selectorIndex.trim()];
-      // } else if (selectorIndex) {
-      //   const element = e.getTextParts()[selectorIndex.trim()];
-      //   if (element) {
-      //     value = element.textContent;
-      //   }
-      // } else if (e) {
-      //   value = (['input', 'select', 'textarea'].indexOf(tag) !== -1) ? e.value : e.textContent;
-      // }
+      const tag = (el && el.tagName) ? el.tagName.toLowerCase() : '';
+
+      if (el && el.value && selectorIndex && tag === 'textarea') {
+        value = el.value.split(/\n/g)[selectorIndex.trim()];
+      } else if (selectorIndex) {
+        const element = el.getTextParts()[selectorIndex.trim()];
+        if (element) {
+          value = element.textContent;
+        }
+      } else if (el) {
+        value = (['input', 'select', 'textarea'].indexOf(tag) !== -1) ? el.value : el.textContent;
+      }
     }
+    return value.trim();
   },
-  // return value.trim();
 };

@@ -9,7 +9,6 @@ import storage from './storage';
 export default {
 
   async getSelectorsAndContent(request) {
-    console.log(request);
     const {location, url} = request;
     log.success(`getting selectors for url: ${url}`);
     let selectors = await storage.getSavedMappingsForURL(url);
@@ -24,8 +23,9 @@ export default {
       //   preset: presetName,
       // });
       const presetData = await presets.getPresetData(presetName);
+      const overrides = selectors ? Object.keys(selectors) : false;
 
-      preset = {name: presetName, overrides: Object.keys(selectors) || false};
+      preset = {name: presetName, overrides};
       selectors = {...presetData, ...selectors};
     }
 

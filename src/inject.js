@@ -1,4 +1,4 @@
-import actionNames from './helpers/actions';
+import actionNames from './helpers/actionNames';
 import actions from './inject/actions';
 import log from './helpers/log';
 import { selection } from './inject/selection';
@@ -60,11 +60,11 @@ const content = {
       case actionNames.mapField:
         return actions.mapField({url, field: request.field});
 
-      case actionNames.getElementsContent:
-        return actions.getElementsContent(request);
+      case actionNames.getContent:
+        return actions.getContent(request);
 
-        // case actionNames.getSelectorsAndContent:
-        //   return actions.getElementsContent(request);
+        // case actionNames.getContent:
+        //   return actions.getContent(request);
 
       case actionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);

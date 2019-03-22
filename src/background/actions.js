@@ -1,36 +1,39 @@
-import { background, popup } from '../background.js';
 import { sendToContent, sendToPopup } from '../background';
 import MyParcelAPI from '../helpers/MyParcelAPI';
-import actionNames from '../helpers/actions';
+import actionNames from '../helpers/actionNames';
 import log from '../helpers/log';
 import presets from '../helpers/presets';
 import storage from './storage';
 
 export default {
 
-  async getSelectorsAndContent(request) {
-    const {location, url} = request;
-    log.success(`getting selectors for url: ${url}`);
+  async getContent(request) {
+    console.log('getContent', request);
+    const {url, preset} = request;
+
     let selectors = await storage.getSavedMappingsForURL(url);
-    let preset = false;
-    const presetName = presets.findPreset(location);
+    let selectedPreset = null;
 
-    if (presetName) {
-      log.success(`found preset for ${presetName}`);
-      // sendToPopup({
-      //   action: actionNames.foundPreset,
-      //   overrides: Object.keys(selectors),
-      //   preset: presetName,
-      // });
-      const presetData = await presets.getPresetData(presetName);
-      const overrides = selectors ? Object.keys(selectors) : false;
+    if (selectors && selectors.preset) {
+      selectedPreset = selectors.preset;
+    } else if (preset) {
+      selectedPreset = preset;
+      storage.savePreset({url, preset});
+    }
 
-      preset = {name: presetName, overrides};
+    let presetFields = null;
+
+    if (selectedPreset) {
+      delete selectors.preset;
+      const presetData = await presets.getPresetData(selectedPreset);
+      const overrides = selectors ? Object.keys(selectors) : null;
+
+      presetFields = {name: selectedPreset, overrides};
       selectors = {...presetData, ...selectors};
     }
 
     log.success('requesting content for fields in url from content');
-    sendToContent({action: actionNames.getElementsContent, selectors, preset});
+    sendToContent({action: actionNames.getContent, selectors, preset: presetFields});
   },
 
   async getStorage(request) {
@@ -46,11 +49,11 @@ export default {
   /**
    * Save mapped field to local storage and send it to popup if not null
    * @param request
-   * @param url
    */
   saveMappedField(request) {
+    console.log(request);
     if (request.path !== null) {
-      storage.saveMappedField(request);
+      storage.savePreset(request);
       sendToPopup(request);
     }
   },

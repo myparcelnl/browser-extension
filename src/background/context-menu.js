@@ -1,4 +1,4 @@
-import actions from '../helpers/actions';
+import actions from '../helpers/actionNames';
 
 export default {
   activateContextMenu(info) {

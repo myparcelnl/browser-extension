@@ -1,21 +1,27 @@
 /* eslint-disable no-magic-numbers,no-console */
-import actionNames from './helpers/actions';
 import actions from './background/actions';
+import storage from './background/storage';
+import actionNames from './helpers/actionNames';
 import config from './helpers/config';
 import log from './helpers/log';
-import storage from './background/storage';
 
 export let popup = null;
 export let popupConnection = null;
 export let contentConnection = null;
+export let activeTab = null;
 
 /**
  * Send data to popup
  * @param data
  */
 export const sendToPopup = (data) => {
-  log.popup(data.action);
-  popupConnection.postMessage(data);
+  if (background.popupConnected) {
+    log.popup(data.action);
+    popupConnection.postMessage(data);
+  } else {
+    log.popup(data.action, 'queue');
+    background.popupQueue.push(data);
+  }
 };
 
 /**
@@ -24,7 +30,11 @@ export const sendToPopup = (data) => {
  */
 export const sendToContent = (data) => {
   log.content(data.action);
-  contentConnection.postMessage(data);
+  if (background.contentConnected) {
+    contentConnection.postMessage(data);
+  } else {
+    background.contentQueue.push(data);
+  }
 };
 
 const background = {
@@ -34,6 +44,12 @@ const background = {
    */
   async boot() {
     await this.loadConfig(chrome.extension.getURL(config.configFile));
+
+    this.popupQueue = [];
+    this.contentQueue = [];
+
+    this.popupConnected = false;
+    this.contentConnected = false;
 
     this.bindEvents();
     this.createContextMenu();
@@ -73,6 +89,7 @@ const background = {
    */
   bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
+      // console.log(port);
       contentConnection = port;
       port.onMessage.addListener((...args) => this.contentScriptListener(...args));
     });
@@ -83,16 +100,24 @@ const background = {
    * @param request
    */
   popupListener(request) {
-    log.popup(request.action);
-    console.log(request);
+    log.popup(request.action, true);
+    // console.log(request);
 
     switch (request.action) {
       case actionNames.popupConnected:
+        this.popupConnected = true;
+        log.info('sending popup queue');
+        this.popupQueue.forEach((message) => {
+          sendToPopup(message);
+        });
+        this.popupQueue = [];
+
         return sendToPopup({action: actionNames.backgroundConnected});
         // sendToContent({action: Actions.checkContentConnection});
 
-      case actionNames.contentConnected:
-        return sendToPopup(request);
+        // case actionNames.contentConnected:
+        //   sendToPopup(request);
+        //   break;
 
       case actionNames.mapField:
         this.moveFocus();
@@ -102,17 +127,20 @@ const background = {
       case actionNames.deleteField:
         return actions.deleteField(request);
 
-        // case actionNames.getElementsContent:
+      case actionNames.getPreset:
+        return actions.getPreset(request.preset);
+
+        // case actionNames.getContent:
         //   return sendToContent(request);
 
-      case actionNames.getStorage:
-        return actions.getStorage(request);
+        // case actionNames.getStorage:
+        //   return actions.getStorage(request);
 
         // case actionNames.getFieldSettingsForURL:
         //   return actions.getFieldSettingsForURL(request);
 
-      case actionNames.getSelectorsAndContent:
-        return actions.getSelectorsAndContent({...request, location: this.activeTab.url});
+      case actionNames.getContent:
+        return actions.getContent({...request, url: new URL(activeTab.url).hostname});
     }
   },
 
@@ -122,12 +150,18 @@ const background = {
    */
   contentScriptListener(request) {
     log.content(request.action, true);
-    console.log(request);
+    // console.log(request);
 
     switch (request.action) {
       case actionNames.contentConnected:
-        sendToPopup(request);
-        return actions.getSelectorsAndContent({...request, location: this.activeTab.url});
+        log.info('sending content queue');
+        this.contentConnected = activeTab.id;
+        this.contentQueue.forEach((message) => {
+          sendToPopup(message);
+        });
+        this.contentQueue = [];
+        return sendToPopup(request);
+        // return actions.getContent({...request, location: activeTab.url});
 
       case actionNames.mappedField:
         actions.saveMappedField(request);
@@ -160,18 +194,28 @@ const background = {
    */
   bindEvents() {
     // Extension button click
-    chrome.browserAction.onClicked.addListener(() => this.openPopup());
+    chrome.browserAction.onClicked.addListener((...args) => this.openPopup(...args));
 
     // On opening context menu (right click)
     chrome.contextMenus.onClicked.addListener((info) => this.checkContextMenu(info));
 
     // Tab listeners
-    chrome.tabs.onHighlighted.addListener(() => this.switchTab());
-    chrome.tabs.onReplaced.addListener(() => this.switchTab());
+    chrome.tabs.onHighlighted.addListener(() => {
+      // log.event('onHighlighted – not doing anything');
+      log.event('onHighlighted – switchTab()');
+      this.switchTab();
+    });
+    chrome.tabs.onReplaced.addListener(() => {
+      log.event('onReplaced – switchTab()');
+      this.switchTab();
+    });
     chrome.tabs.onUpdated.addListener((...args) => this.updateTab(...args));
 
     // Window listeners
-    chrome.windows.onFocusChanged.addListener(() => this.switchTab());
+    chrome.windows.onFocusChanged.addListener(() => {
+      log.event('onFocusChanged – switchTab()');
+      this.switchTab();
+    });
     chrome.windows.onRemoved.addListener((...args) => this.checkPopupClosed(...args));
   },
 
@@ -179,42 +223,69 @@ const background = {
    * Checks if script and css are present on current tab and injects them if not
    */
   injectScripts(tab) {
-    if (!popup || !this.isWebsite || !this.activeTab) {
-      return;
+    if (!activeTab) {
+      activeTab = tab;
     }
 
     const insertScripts = () => {
-      log.warning(`Script not found. Injecting css and js on ${new URL(tab.url).hostname}.`);
+      log.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
       chrome.tabs.insertCSS(tab.id, {file: config.injectCSS});
       chrome.tabs.executeScript(tab.id, {file: config.injectJS});
     };
 
-    if (contentConnection && contentConnection.sender.id !== tab.id) {
-      insertScripts();
-    } else {
-      try {
+    try {
+      if (tab.id === this.contentConnected) {
+        log.event('Script already present');
         sendToContent({action: actionNames.checkContentConnection});
-      } catch (e) {
-        insertScripts();
+      } else {
+        throw 'content not connected';
       }
+    } catch (e) {
+      insertScripts();
     }
+    // if (contentConnection && contentConnection.sender.tab.id !== tab.id) {
+    //   console.log(tab);
+    //   console.log(contentConnection.sender.tab);
+    //   console.log(tab.id);
+    //   console.log(contentConnection.sender.tab.id);
+    //   insertScripts();
+    // } else {
+    //
+    // }
   },
 
   /**
    * On switching tabs
    */
   async switchTab() {
-    log.event('switchTab');
+    log.separator();
     const tab = await this.getActiveTab();
 
-    if (!tab || !popup || tab.id === popup.id || (this.activeTab && tab.id === this.activeTab.id)) {
+    // if (tab) {
+    //   console.log(`${new URL(tab.url).hostname} – ${tab.id}`);
+    // } else {
+    //   console.log('no tab');
+    //   console.log(tab);
+    // }
+    // console.log(`popup – ${popup.id}`);
+    // if (activeTab) {
+    //   console.log(`active tab: ${new URL(activeTab.url).hostname} - ${activeTab.id}`);
+    // } else {
+    //   console.log('no active tab');
+    // }
+
+    // console.log('activeTab', activeTab);
+    // console.log('tab', tab);
+    // console.log('popup', popup);
+
+    if (!tab || !popup || tab.id === popup.id || (activeTab && tab.id === activeTab.id)) {
       return;
     }
 
     this.activateTab(tab);
 
     if (popupConnection) {
-      sendToPopup({action: actionNames.switchedTab, url: this.activeTab.url});
+      sendToPopup({action: actionNames.switchedTab, url: tab.url});
     }
 
     if (contentConnection) {
@@ -224,7 +295,12 @@ const background = {
 
   getActiveTab() {
     return new Promise((resolve) => {
-      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => resolve(tabs[0]));
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+        highlighted: true,
+      },
+      (tabs) => resolve(tabs[0]));
     });
   },
 
@@ -234,14 +310,13 @@ const background = {
    * @param info
    * @param tab
    */
-  updateTab(id, info, tab) {
+  async updateTab(id, info, tab) {
     log.event('updateTab');
-    if (info.status === 'complete' && this.activeTab && this.activeTab.id === tab.id) {
-      this.activateTab(tab);
+    if (info.status === 'complete' && activeTab && activeTab.id === tab.id) {
+      await this.activateTab(tab);
       this.setIcon();
-      if (contentConnection) {
-        sendToContent({action: actionNames.checkContentConnection});
-      }
+
+      sendToContent({action: actionNames.checkContentConnection});
     }
   },
 
@@ -261,7 +336,7 @@ const background = {
    */
   activateTab(tab) {
     this.checkIfWebsite(tab);
-    this.activeTab = tab;
+    activeTab = tab;
 
     if (this.isWebsite) {
       this.injectScripts(tab);
@@ -272,7 +347,7 @@ const background = {
    * On moving focus update current window and tab
    * @param tab
    */
-  moveFocus(tab = this.activeTab) {
+  moveFocus(tab = activeTab) {
     chrome.windows.update(tab.windowId, {focused: true});
     chrome.tabs.update(tab.id, {active: true});
   },
@@ -289,33 +364,32 @@ const background = {
   },
 
   createPopup(url) {
-    const {height, width} = this.popupDimensions;
-    chrome.windows.getCurrent((win) => {
-      chrome.windows.create({
-        url: url,
-        type: 'popup',
-        left: win.left + win.width,
-        top: win.top,
-        height,
-        width,
-      }, (win) => {
-        popup = win.tabs[0];
+    return new Promise((resolve) => {
+      const {height, width} = this.popupDimensions;
+      chrome.windows.getCurrent((win) => {
+        chrome.windows.create({
+          url: url,
+          type: 'popup',
+          left: win.left + win.width,
+          top: win.top,
+          height,
+          width,
+        }, (win) => {
+          resolve(win.tabs[0]);
+        });
       });
     });
   },
 
   /**
    * Show popup if it exists or create it
-   * @param url
+   * @param tab
    */
-  async openPopup(url = this.popupExternalUrl) {
-    if (popup) {
-      this.showPopup();
-    } else {
-      if (!this.activeTab) {
-        this.activeTab = await this.getActiveTab();
-      }
+  async openPopup(tab) {
 
+    if (popup) {
+      await this.showPopup();
+    } else {
       // todo remove this
       chrome.windows.getAll({windowTypes: ['popup']}, (windows) => {
         windows.forEach((window) => {
@@ -323,16 +397,17 @@ const background = {
         });
       });
 
-      this.createPopup(url);
+      popup = await this.createPopup(this.popupExternalUrl);
     }
 
+    this.injectScripts(tab);
     this.setIcon(config.activeIcon);
-    actions.getSelectorsAndContent(url);
+    // actions.getContent(url);
   },
 
   async createShipment() {
     log.info('creating shipment');
-    const settings = await storage.getSavedMappingsForURL(this.activeTab.url);
+    const settings = await storage.getSavedMappingsForURL(activeTab.url);
     console.log(settings);
   },
 
@@ -351,10 +426,12 @@ const background = {
   /**
    * Clean up on closing of popup. Resets variables and extension icon.
    */
-  closePopup() {
+  async closePopup() {
+    await sendToContent({action: 'stopListening'});
     popup = null;
-    sendToContent({action: 'stopListening'});
     popupConnection = null;
+    activeTab = null;
+    this.popupConnected = false;
     this.setIcon();
   },
 

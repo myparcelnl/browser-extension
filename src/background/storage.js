@@ -24,13 +24,14 @@ export default {
       this.getStorageKeys().then((keys) => {
         const mappings = {};
 
-        for (const key in keys) {
+        Object.keys(keys).forEach((key) => {
           if (!key.startsWith(config.mappingPrefix)) {
             return;
           }
+
           const url = key.replace(config.mappingPrefix, '');
           mappings[url] = JSON.parse(keys[key]);
-        }
+        });
 
         return resolve(mappings);
       });
@@ -52,14 +53,21 @@ export default {
    * @param data
    * @returns {Promise<void>}
    */
-  async saveMappedField(data) {
-    const {url, field, path} = data;
+  async savePreset(data) {
+    const {url, field, path, preset} = data;
+    log.event(`savePreset ${preset || field}`);
     const mappings = await this.getSavedMappingsForURL(url) || {};
+
     const newMappings = {
       ...mappings,
-      [field]: path,
+      preset,
     };
 
+    if (field && path) {
+      newMappings[field] = path;
+    }
+
+    console.log(JSON.stringify(newMappings));
     const key = {
       [`${config.mappingPrefix}${url}`]: JSON.stringify(newMappings),
     };

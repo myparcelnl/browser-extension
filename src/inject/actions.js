@@ -1,5 +1,5 @@
 import { clickedElement, elementsContent } from './selection';
-import actionNames from '../helpers/actions';
+import actionNames from '../helpers/actionNames';
 import content from '../inject';
 import log from '../helpers/log';
 
@@ -10,10 +10,10 @@ export default {
    * @param request
    * @returns {Promise<void>}
    */
-  async getElementsContent(request) {
+  async getContent(request) {
     const {selectors} = request;
-    log.info('inject: getElementsContent');
     const values = await elementsContent(selectors);
+    console.log('elements content:', { ...request, values});
     content.sendToBackground(actionNames.foundContent, { ...request, values});
   },
 

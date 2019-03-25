@@ -34,6 +34,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
+    "babel-preset-flow": "^6.23.0",
     "detect-browser": "^4.1.0"
   }
 }

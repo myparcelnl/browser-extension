@@ -19,7 +19,7 @@ const log = {
   separator() {
     if (process.env.NODE_ENV !== 'prod') {
       console.log(
-        `%c${new Date().toLocaleTimeString()}%c                                                                  `,
+        `%c${new Date().toLocaleTimeString()}%c                                              `,
         'background-color: red; color: #fff; padding: 0 .5rem;',
         'background: repeating-linear-gradient(45deg, yellow, yellow 10px, black 10px, black 20px);',
       );

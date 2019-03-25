@@ -5,7 +5,7 @@ export default {
 
   /**
    * Get all keys from storage
-   * @returns {Promise<any>}
+   * @returns Promise<string>
    */
   getStorageKeys() {
     return new Promise((resolve) => {
@@ -17,7 +17,7 @@ export default {
 
   /**
    * Retrieve saved field mappings from storage.
-   * @returns {Promise<any>}
+   * @returns Promise<object>
    */
   getSavedMappings() {
     return new Promise((resolve) => {
@@ -56,6 +56,7 @@ export default {
   async savePreset(data) {
     const {url, field, path, preset} = data;
     log.event(`savePreset ${preset || field}`);
+
     const mappings = await this.getSavedMappingsForURL(url) || {};
 
     const newMappings = {
@@ -67,7 +68,6 @@ export default {
       newMappings[field] = path;
     }
 
-    console.log(JSON.stringify(newMappings));
     const key = {
       [`${config.mappingPrefix}${url}`]: JSON.stringify(newMappings),
     };
@@ -102,7 +102,7 @@ export default {
 
   /**
    * Remove key from storage
-   * @param data
+   * @param key
    */
   removeFromStorage(key) {
     chrome.storage.sync.remove(key);

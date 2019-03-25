@@ -1,14 +1,12 @@
 import { sendToContent, sendToPopup } from '../background';
 import MyParcelAPI from '../helpers/MyParcelAPI';
 import actionNames from '../helpers/actionNames';
-import log from '../helpers/log';
 import presets from '../helpers/presets';
 import storage from './storage';
 
 export default {
 
   async getContent(request) {
-    console.log('getContent', request);
     const {url, preset} = request;
 
     let selectors = await storage.getSavedMappingsForURL(url);
@@ -16,15 +14,15 @@ export default {
 
     if (selectors && selectors.preset) {
       selectedPreset = selectors.preset;
-    } else if (preset) {
-      selectedPreset = preset;
+    } else if (request.hasOwnProperty('preset')) {
       storage.savePreset({url, preset});
+      selectedPreset = preset;
     }
 
+    delete selectors.preset;
     let presetFields = null;
 
     if (selectedPreset) {
-      delete selectors.preset;
       const presetData = await presets.getPresetData(selectedPreset);
       const overrides = selectors ? Object.keys(selectors) : null;
 
@@ -32,7 +30,6 @@ export default {
       selectors = {...presetData, ...selectors};
     }
 
-    log.success('requesting content for fields in url from content');
     sendToContent({action: actionNames.getContent, selectors, preset: presetFields});
   },
 
@@ -41,17 +38,11 @@ export default {
     sendToPopup(Object.assign(request, {data}));
   },
 
-  // async getFieldSettingsForURL(request) {
-  //   const fields = await storage.getSavedMappingsForURL(request.url);
-  //   sendToPopup({...request, fields});
-  // },
-
   /**
    * Save mapped field to local storage and send it to popup if not null
    * @param request
    */
   saveMappedField(request) {
-    console.log(request);
     if (request.path !== null) {
       storage.savePreset(request);
       sendToPopup(request);
@@ -69,12 +60,13 @@ export default {
    * @param countryCode
    */
   trackShipment(barcode, postalCode, countryCode) {
-    MyParcelAPI.get('tracktraces',
+    MyParcelAPI.get(
+      'tracktraces',
       null,
-      {barcode, postal_code: postalCode, country_code: countryCode})
+      {barcode, postal_code: postalCode, country_code: countryCode}
+    )
       .then((response) => {
         const trackingInfo = response.data.tracktraces[0];
-        console.log(trackingInfo);
         return trackingInfo;
       });
   },

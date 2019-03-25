@@ -223,6 +223,10 @@ const background = {
    * Checks if script and css are present on current tab and injects them if not
    */
   injectScripts(tab) {
+    if (!tab) {
+      return;
+    }
+
     if (!activeTab) {
       activeTab = tab;
     }
@@ -243,15 +247,6 @@ const background = {
     } catch (e) {
       insertScripts();
     }
-    // if (contentConnection && contentConnection.sender.tab.id !== tab.id) {
-    //   console.log(tab);
-    //   console.log(contentConnection.sender.tab);
-    //   console.log(tab.id);
-    //   console.log(contentConnection.sender.tab.id);
-    //   insertScripts();
-    // } else {
-    //
-    // }
   },
 
   /**
@@ -260,23 +255,6 @@ const background = {
   async switchTab() {
     log.separator();
     const tab = await this.getActiveTab();
-
-    // if (tab) {
-    //   console.log(`${new URL(tab.url).hostname} – ${tab.id}`);
-    // } else {
-    //   console.log('no tab');
-    //   console.log(tab);
-    // }
-    // console.log(`popup – ${popup.id}`);
-    // if (activeTab) {
-    //   console.log(`active tab: ${new URL(activeTab.url).hostname} - ${activeTab.id}`);
-    // } else {
-    //   console.log('no active tab');
-    // }
-
-    // console.log('activeTab', activeTab);
-    // console.log('tab', tab);
-    // console.log('popup', popup);
 
     if (!tab || !popup || tab.id === popup.id || (activeTab && tab.id === activeTab.id)) {
       return;
@@ -295,12 +273,14 @@ const background = {
 
   getActiveTab() {
     return new Promise((resolve) => {
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-        highlighted: true,
-      },
-      (tabs) => resolve(tabs[0]));
+      chrome.tabs.query(
+        {
+          active: true,
+          currentWindow: true,
+          highlighted: true,
+        },
+        (tabs) => resolve(tabs[0])
+      );
     });
   },
 

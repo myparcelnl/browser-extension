@@ -3,12 +3,14 @@ import actions from '../helpers/actionNames';
 export default {
   activateContextMenu(info) {
     if (info.menuItemId === 'myparcel-create-shipment') {
+      console.log(info);
       this.selectContentText(info.selectionText);
     }
   },
 
   selectContentText(selection) {
-    selection = selection.trim().replace(/,/, ' ');
+    console.log((/\n/).exec(selection));
+    selection = selection.trim().replace(/[\s]/, ' ');
     this.open();
     this.sendToPopup({action: actions.createShipmentFromSelection, selection: selection});
   },

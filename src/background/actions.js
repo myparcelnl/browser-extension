@@ -14,12 +14,12 @@ export default {
 
     if (selectors && selectors.preset) {
       selectedPreset = selectors.preset;
+      delete selectors.preset;
     } else if (request.hasOwnProperty('preset')) {
       storage.savePreset({url, preset});
       selectedPreset = preset;
     }
 
-    delete selectors.preset;
     let presetFields = null;
 
     if (selectedPreset) {

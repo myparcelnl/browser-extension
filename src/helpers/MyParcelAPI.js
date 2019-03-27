@@ -14,7 +14,9 @@ const addParameters = (url, parameters) => {
   if (parameters) {
     const arr = [];
     for (const parameter in parameters) {
-      arr.push(`${parameter}=${parameters[parameter]}`);
+      if (parameters.hasOwnProperty(parameter)) {
+        arr.push(`${parameter}=${parameters[parameter]}`);
+      }
     }
     url += `?${arr.join('&')}`;
   }
@@ -22,7 +24,6 @@ const addParameters = (url, parameters) => {
 };
 
 export default {
-
   endpoints: {
     tracktraces: 'tracktraces',
   },

@@ -4,8 +4,9 @@ import log from '../helpers/log';
 export default {
 
   /**
-   * Get all keys from storage
-   * @returns Promise<string>
+   * Get all keys from storage.
+   *
+   * @return {Promise<string>}
    */
   getStorageKeys() {
     return new Promise((resolve) => {
@@ -17,7 +18,8 @@ export default {
 
   /**
    * Retrieve saved field mappings from storage.
-   * @returns Promise<object>
+   *
+   * @return {Promise<Object>}
    */
   getSavedMappings() {
     return new Promise((resolve) => {
@@ -39,9 +41,11 @@ export default {
   },
 
   /**
-   * Find existing entry for given URL or create new settings object from URL
-   * @param url
-   * @returns object
+   * Find existing entry for given URL or create new settings object from URL.
+   *
+   * @param {string} url - URL to fetch mappings for.
+   *
+   * @return {Object}
    */
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
@@ -49,9 +53,11 @@ export default {
   },
 
   /**
-   * Save given data to local storage. Expects data to contain url, field and path keys.
-   * @param data
-   * @returns {Promise<void>}
+   * Save given data to local storage.
+   *
+   * @param {Object} data - Object which must always contain `url` and either `field` and `path` or `preset`.
+   *
+   * @return {Promise}
    */
   async savePreset(data) {
     const {url, field, path, preset} = data;
@@ -76,9 +82,11 @@ export default {
   },
 
   /**
-   * Delete given field from storage by URL and field
-   * @param data
-   * @returns {Promise<void>}
+   * Delete given field from storage by URL and field.
+   *
+   * @param {Object} data - Object containing URL and field of data to remove.
+   *.
+   * @return {Promise}
    */
   async deleteMappedField(data) {
     const {url, field} = data;
@@ -93,23 +101,25 @@ export default {
   },
 
   /**
-   * Save data to storage
-   * @param data
+   * Save data to storage.
+   *
+   * @param {Object} data - Object with all data keys to store.
    */
   saveToStorage(data) {
     chrome.storage.sync.set(data);
   },
 
   /**
-   * Remove key from storage
-   * @param key
+   * Remove key from storage.
+   *
+   * @param {string} key - Key of storage item to remove.
    */
   removeFromStorage(key) {
     chrome.storage.sync.remove(key);
   },
 
   /**
-   * Clear all keys in storage
+   * Clear all keys in storage.
    */
   clearAll() {
     chrome.storage.sync.clear();

@@ -66,7 +66,7 @@ const background = {
    *
    * @param {string} configFile - Path to config.json.
    *
-   * @returns {Promise}
+   * @return {Promise}
    */
   async loadConfig(configFile) {
     const response = await fetch(configFile);
@@ -108,15 +108,9 @@ const background = {
     // console.log(request);
 
     switch (request.action) {
-      case actionNames.popupConnected:
-        this.popupConnected = true;
-        log.info('sending popup queue');
-        this.popupQueue.forEach((message) => {
-          sendToPopup(message);
-        });
-        this.popupQueue = [];
 
-        sendToPopup({action: actionNames.backgroundConnected});
+      case actionNames.popupConnected:
+        this.onPopupConnect();
         break;
         // sendToContent({action: Actions.checkContentConnection});
 
@@ -155,7 +149,7 @@ const background = {
   /**
    * Listener for content script actions.
    *
-   * @param {Object} request
+   * @param {Object} request - Request object.
    */
   contentScriptListener(request) {
     log.content(request.action, true);
@@ -163,14 +157,8 @@ const background = {
 
     switch (request.action) {
       case actionNames.contentConnected:
-        log.info('sending content queue');
-        this.contentConnected = activeTab.id;
-        this.contentQueue.forEach((message) => {
-          sendToPopup(message);
-        });
-        this.contentQueue = [];
-        return sendToPopup(request);
-        // return actions.getContent({...request, location: activeTab.url});
+        this.onContentConnect(request);
+        break;
 
       case actionNames.mappedField:
         actions.saveMappedField(request);
@@ -190,7 +178,8 @@ const background = {
         break;
 
       case actionNames.foundContent:
-        return sendToPopup(request);
+        sendToPopup(request);
+        break;
 
       // case actionNames.createShipment:
       //   actions.createShipment(request);
@@ -199,7 +188,37 @@ const background = {
   },
 
   /**
-   * Binds all browser events.
+   * Set popupConnected, flush the popup queue and tell the popup the background is ready.
+   */
+  onPopupConnect() {
+    this.popupConnected = true;
+    log.info('sending popup queue');
+    this.popupQueue.forEach((message) => {
+      sendToPopup(message);
+    });
+    this.popupQueue = [];
+
+    sendToPopup({action: actionNames.backgroundConnected});
+  },
+
+  /**
+   * Set contentConnected, flush the content queue and tell the popup the content script is ready.
+   *
+   * @param {Object} request - Request object.
+   */
+  onContentConnect(request) {
+    console.log(request);
+    this.contentConnected = activeTab.id;
+    log.info('sending content queue');
+    this.contentQueue.forEach((message) => {
+      sendToContent(message);
+    });
+    this.contentQueue = [];
+    sendToPopup(request);
+  },
+
+  /**
+   * Binds all browser events to functions.
    */
   bindEvents() {
     // Extension button click
@@ -225,11 +244,14 @@ const background = {
       log.event('onFocusChanged – switchTab()');
       this.switchTab();
     });
+
     chrome.windows.onRemoved.addListener((...args) => this.checkPopupClosed(...args));
   },
 
   /**
    * Checks if script and css are present on current tab and injects them if not.
+   *
+   * @param {Object} tab - Chrome tab object.
    */
   injectScripts(tab) {
     if (!tab) {
@@ -259,7 +281,7 @@ const background = {
   },
 
   /**
-   * On switching tabs.
+   * Set active tab and send messages to popup and content to process the change.
    */
   async switchTab() {
     log.separator();
@@ -280,6 +302,11 @@ const background = {
     }
   },
 
+  /**
+   * Gets the active tab based on a query.
+   *
+   * @return {Promise<Object>}
+   */
   getActiveTab() {
     return new Promise((resolve) => {
       chrome.tabs.query(
@@ -296,9 +323,9 @@ const background = {
   /**
    * On updating tab set new tab as active tab and change app icon.
    *
-   * @param {int}    id
-   * @param {Object} data
-   * @param {Object} tab
+   * @param {number} id   - Chrome tab ID.
+   * @param {Object} data - Chrome event data.
+   * @param {Object} tab  - Chrome tab object.
    */
   async updateTab(id, data, tab) {
     log.event('updateTab');
@@ -313,7 +340,7 @@ const background = {
   /**
    * When a window is closed check if it's our popup and clean up if so.
    *
-   * @param {int} windowId
+   * @param {int} windowId - Chrome window ID.
    */
   checkPopupClosed(windowId) {
     if (popup && windowId === popup.windowId) {
@@ -324,7 +351,7 @@ const background = {
   /**
    * Set given tab to active and inject scripts on tab.
    *
-   * @param {Object} tab
+   * @param {Object} tab - Chrome tab object.
    */
   activateTab(tab) {
     this.checkIfWebsite(tab);
@@ -338,7 +365,7 @@ const background = {
   /**
    * On moving focus update current window and tab.
    *
-   * @param {Object} tab
+   * @param {Object} tab - Chrome tab object.
    */
   moveFocus(tab = activeTab) {
     chrome.windows.update(tab.windowId, {focused: true});
@@ -348,7 +375,7 @@ const background = {
   /**
    * Check if given tab is a website and not a Chrome page.
    *
-   * @param {Object} tab
+   * @param {Object} tab - Chrome tab object.
    * */
   checkIfWebsite(tab) {
     const {url, windowId} = tab;
@@ -360,18 +387,17 @@ const background = {
   /**
    * Create popup and load given URL in it.
    *
-   * @param {string} url
-   * @returns {Promise<Object>}
+   * @return {Promise<Object>}
    */
-  createPopup(url) {
+  createPopup() {
     return new Promise((resolve) => {
       const {height, width} = this.popupDimensions;
       chrome.windows.getCurrent((win) => {
         chrome.windows.create({
+          url: this.popupExternalUrl,
           type: 'popup',
           left: win.left + win.width,
           top: win.top,
-          url,
           height,
           width,
         }, (win) => {
@@ -384,7 +410,7 @@ const background = {
   /**
    * Show popup if it exists or create it.
    *
-   * @param {Object} tab
+   * @param {Object} tab - Chrome tab object.
    */
   async openPopup(tab) {
     if (popup) {
@@ -397,7 +423,7 @@ const background = {
         });
       });
 
-      popup = await this.createPopup(this.popupExternalUrl);
+      popup = await this.createPopup();
     }
 
     this.injectScripts(tab);
@@ -430,7 +456,7 @@ const background = {
    * Clean up on closing of popup. Resets variables and extension icon.
    */
   async closePopup() {
-    await sendToContent({action: 'stopListening'});
+    await sendToContent({action: actionNames.stopListening});
     popup = null;
     popupConnection = null;
     activeTab = null;

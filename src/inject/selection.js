@@ -36,7 +36,8 @@ export const elementsContent = (selectors) => {
 export const selection = {
 
   /**
-   * Add event listeners for mapping field
+   * Add event listeners for mapping field.
+   *
    * @param resolve
    */
   startMapping(resolve) {
@@ -54,7 +55,7 @@ export const selection = {
   },
 
   /**
-   * Remove event listeners for mapping field
+   * Remove event listeners for mapping field.
    */
   stopMapping() {
     log.info('Stop mapping');
@@ -70,7 +71,8 @@ export const selection = {
   },
 
   /**
-   * Keyup event listener to check for escaoe button press
+   * Keyup event listener to check for escaoe button press.
+   *
    * @param event
    * @param resolve
    */
@@ -83,7 +85,8 @@ export const selection = {
   },
 
   /**
-   * Click event listener that gets content and path of clicked element
+   * Click event listener that gets content and path of clicked element.
+   *
    * @param event
    * @param resolve
    */

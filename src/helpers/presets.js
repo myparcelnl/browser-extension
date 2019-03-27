@@ -20,27 +20,34 @@ const SHOPPAGINA = 'shoppagina';
 const VIRTUEMART = 'virtuemart';
 const WOOCOMMERCE = 'woocommerce';
 
-const getPresetFields = () => {
-  return fetch(chrome.extension.getURL(config.presetsFile)).then((data) => data.json());
+/**
+ * Fetch presets from presets json file.
+ *
+ * @return {Promise<Object>}
+ */
+const getPresetFields = async() => {
+  const data = await fetch(chrome.extension.getURL(config.presetsFile));
+  return data.json();
 };
 
 export default {
 
+  /**
+   * Get browser info.
+   *
+   * @return {string}
+   */
   detectBrowser() {
     const browserInfo = detect();
     return `${browserInfo.os.replace(/\s/, '-').toLowerCase()}_${browserInfo.name}/${browserInfo.version}`;
   },
 
-  findPreset(url) {
-    const preset = this.findPresetByURL(url);
-
-    // if (!preset) {
-    //   preset = this.findPresetByURL(url);
-    // }
-
-    return preset;
-  },
-
+  /**
+   * Find existing preset by given URL.
+   *
+   * @param {string} url - URL.
+   * @return {*|string|boolean}
+   */
   findPresetByURL(url) {
     if (url.includes('.myshopify.com')) {
       return SHOPIFY;
@@ -53,6 +60,12 @@ export default {
     return false;
   },
 
+  /**
+   * Get preset data by preset name.
+   *
+   * @param {string} preset - Preset name.
+   * @return {Promise<Object>}
+   */
   async getPresetData(preset) {
     const fields = await getPresetFields();
 

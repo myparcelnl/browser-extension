@@ -6,9 +6,10 @@ import log from '../helpers/log';
 export default {
 
   /**
-   * Get values using previously mapped fields (if any)
-   * @param request
-   * @returns {Promise<void>}
+   * Get values using previously mapped fields (if any).
+   *
+   * @param {Object} request - Request object.
+   * * @return {Promise}.
    */
   async getContent(request) {
     const {selectors} = request;
@@ -18,9 +19,10 @@ export default {
   },
 
   /**
-   * Start creating new field mapping
-   * @param request
-   * @returns {Promise<void>}
+   * Start creating new field mapping.
+   *
+   * @param {Object} request - Request object.
+   * @return {Promise}
    */
   async mapField(request) {
     const {url, field} = request;

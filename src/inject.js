@@ -9,24 +9,26 @@ let backgroundConnection = null;
 
 const content = {
 
-  boot() {
-    log.info('Setting up content script.');
-
+  /**
+   * Set up the event listeners for the background script.
+   *
+   * @return {Promise}
+   */
+  async boot() {
     listeners.background = (...args) => this.backgroundListener(...args);
     listeners.disconnect = () => selection.stopMapping();
 
-    this.establishConnection().then((connection) => {
-      backgroundConnection = connection;
+    backgroundConnection = await this.establishConnection();
 
-      backgroundConnection.onMessage.addListener(listeners.background);
-      backgroundConnection.onDisconnect.addListener(listeners.disconnect);
-      this.sendToBackground(actionNames.contentConnected, {url});
-    });
+    backgroundConnection.onMessage.addListener(listeners.background);
+    backgroundConnection.onDisconnect.addListener(listeners.disconnect);
+    this.sendToBackground(actionNames.contentConnected, {url});
   },
 
   /**
-   * Establish the connection with the background script
-   * @returns {Promise<any>}
+   * Establish the connection to the background script.
+   *
+   * @return {Promise<Object>}
    */
   establishConnection() {
     return new Promise((resolve) => {
@@ -35,19 +37,20 @@ const content = {
   },
 
   /**
-   * Send data to background script
-   * @param action
-   * @param message
+   * Send data to background script.
+   *
+   * @param {string} action - Action name.
+   * @param {Object} data - Request content.
    */
-  sendToBackground(action, message) {
+  sendToBackground(action, data) {
     log.background(action);
-    backgroundConnection.postMessage({...message, action});
+    backgroundConnection.postMessage({...data, action});
   },
 
   /**
-   * Listener for messages from background script
-   * @param request
-   * @returns {Promise<void>}
+   * Listener for messages from background script.
+   *
+   * @param {Object} request - Request object.
    */
   backgroundListener(request) {
     log.background(request.action, true);
@@ -55,13 +58,16 @@ const content = {
 
     switch (request.action) {
       case actionNames.switchedTab:
-        return this.sendToBackground(actionNames.contentConnected, {url});
+        this.sendToBackground(actionNames.contentConnected, {url});
+        break;
 
       case actionNames.mapField:
-        return actions.mapField({url, field: request.field});
+        actions.mapField({url, field: request.field});
+        break;
 
       case actionNames.getContent:
-        return actions.getContent(request);
+        actions.getContent(request);
+        break;
 
         // case actionNames.getContent:
         //   return actions.getContent(request);

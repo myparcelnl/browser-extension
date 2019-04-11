@@ -199,6 +199,7 @@ const background = {
     this.popupQueue = [];
 
     sendToPopup({action: actionNames.backgroundConnected});
+    sendToContent({action: actionNames.getContent, url: new URL(activeTab.url).hostname});
   },
 
   /**

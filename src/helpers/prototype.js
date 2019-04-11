@@ -1,6 +1,11 @@
 import config from './config';
 import getSelector from 'unique-selector';
 
+/**
+ * Get the unique query selector/path of the element.
+ *
+ * @return {string}
+ */
 HTMLElement.prototype.getPath = function() {
   let selector = this;
   let index = '';
@@ -31,6 +36,11 @@ HTMLElement.prototype.getPath = function() {
   return path + index;
 };
 
+/**
+ * Get text parts from element.
+ *
+ * @return {Array}
+ */
 Element.prototype.getTextParts = function() {
   const list = [];
   for (let i = 0; i < this.childNodes.length; i++) {
@@ -41,6 +51,13 @@ Element.prototype.getTextParts = function() {
   return list;
 };
 
+/**
+ * Check "depth" of DOM element.
+ *
+ * @param {number} i - Depth to check for.
+ *
+ * @return {boolean}
+ */
 Element.prototype.hasDepth = function(i) {
   if (i < 1) {
     return true;
@@ -53,6 +70,13 @@ Element.prototype.hasDepth = function(i) {
   return false;
 };
 
+/**
+ * Get index of element.
+ *
+ * @param {Object} e - Event.
+ *
+ * @return {number}
+ */
 HTMLCollection.prototype.index = function(e) {
   for (let i = 0; i < this.length; i++) {
     if (this[i] === e) {

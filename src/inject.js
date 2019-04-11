@@ -54,7 +54,6 @@ const content = {
    */
   backgroundListener(request) {
     log.background(request.action, true);
-    console.log(request);
 
     switch (request.action) {
       case actionNames.switchedTab:

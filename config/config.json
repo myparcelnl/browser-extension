@@ -1,5 +1,6 @@
 {
-  "app": "http://chrome.test:8001",
+  "app": "http://meteor.dev.myparcel.nl:3000/shipments/create",
+  "app2": "http://chrome.test:8001",
   "development": true,
   "popupDimensions": {
     "width": 500,

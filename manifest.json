@@ -11,18 +11,17 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "externally_connectable": {
     "matches": [
-      "*://chrome.test/*"
+      "*://chrome.test/*",
+      "*://meteor.dev.myparcel.nl/*"
     ]
   },
   "permissions": [
-    "chrome-extension://*",
     "storage",
     "webNavigation",
     "tabs",
     "notifications",
     "create",
     "*://*/*",
-    "http://localhost/*",
     "contextMenus",
     "tabs",
     "activeTab"

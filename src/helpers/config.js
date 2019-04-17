@@ -4,6 +4,7 @@ const contextMenuItemId = 'myparcel-create-shipment';
 
 const classPrefix = 'myparcel__';
 const mappingPrefix = 'myparcel-mapping-';
+const settingPrefix = 'myparcel-setting-';
 const selectionClass = `${classPrefix}mapping-field`;
 const tooltipClass = `${classPrefix}mapping-tooltip`;
 const wrappedItemClass = `${classPrefix}wrapped-item`;
@@ -42,6 +43,7 @@ export default {
   mappingPrefix,
   presetsFile,
   selectionClass,
+  settingPrefix,
   tooltipClass,
   wrappedItemClass,
 };

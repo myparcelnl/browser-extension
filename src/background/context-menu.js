@@ -22,7 +22,7 @@ export default {
    * @param {Object} data - Data received from click event.
    */
   activate(data) {
-    if (data.menuItemId === config.contextMenuTitle) {
+    if (data.menuItemId === config.contextMenuItemId) {
       console.log(data);
       this.selectContentText(data.selectionText);
     }

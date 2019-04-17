@@ -1,7 +1,6 @@
 import { clickedElement, elementsContent } from './selection';
 import actionNames from '../helpers/actionNames';
 import content from '../inject';
-import log from '../helpers/log';
 
 export default {
 
@@ -15,7 +14,7 @@ export default {
     const {selectors} = request;
     const values = await elementsContent(selectors);
     console.log('elements content:', { ...request, values});
-    content.sendToBackground(actionNames.foundContent, { ...request, values});
+    content.sendToBackground(actionNames.foundContent, {...request, values});
   },
 
   /**
@@ -25,11 +24,11 @@ export default {
    * @return {Promise}
    */
   async mapField(request) {
-    const {url, field} = request;
+    const {field} = request;
     const path = await clickedElement();
     const elementContent = await elementsContent(path);
 
-    const data = { field, url, path, content: elementContent };
+    const data = {field, path, content: elementContent};
     content.sendToBackground(actionNames.mappedField, data);
   },
 };

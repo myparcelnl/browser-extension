@@ -3,6 +3,7 @@ import actionNames from './helpers/actionNames';
 import actions from './background/actions';
 import config from './helpers/config';
 import contextMenu from './background/context-menu';
+import defaultSettings from './settings/defaultSettings';
 import log from './helpers/log';
 import storage from './background/storage';
 
@@ -48,17 +49,30 @@ const background = {
   async boot() {
     await this.loadConfig(chrome.extension.getURL(config.configFile));
 
+    this.settings = defaultSettings;
+
     this.popupQueue = [];
     this.contentQueue = [];
 
     this.popupConnected = false;
     this.contentConnected = false;
 
+    this.getSettings();
     this.bindEvents();
-    contextMenu.create();
+
+    if (this.settings.context_menu_enabled === true) {
+      contextMenu.create();
+    }
 
     this.bindPopupScript();
     this.bindContentScript();
+  },
+
+  /**
+   * Get saved settings and add save them to the settings object.
+   */
+  getSettings() {
+    this.settings = { ...storage.getSavedSettings() };
   },
 
   /**
@@ -131,6 +145,14 @@ const background = {
         actions.getPreset(request.preset);
         break;
 
+      case actionNames.saveSettings:
+        actions.saveSettings();
+        break;
+
+      case actionNames.changeSettings:
+        actions.changeSettings();
+        break;
+
         // case actionNames.getContent:
         //   return sendToContent(request);
 
@@ -141,7 +163,7 @@ const background = {
         //   return actions.getFieldSettingsForURL(request);
 
       case actionNames.getContent:
-        actions.getContent({...request, url: new URL(activeTab.url).hostname});
+        actions.getContent(request);
         break;
     }
   },
@@ -198,8 +220,9 @@ const background = {
     });
     this.popupQueue = [];
 
+    console.log(activeTab);
     sendToPopup({action: actionNames.backgroundConnected});
-    sendToContent({action: actionNames.getContent, url: new URL(activeTab.url).hostname});
+    sendToContent({action: actionNames.getContent});
   },
 
   /**
@@ -220,13 +243,17 @@ const background = {
 
   /**
    * Binds all browser events to functions.
+   *
+   * @return
    */
   bindEvents() {
     // Extension button click
     chrome.browserAction.onClicked.addListener((...args) => this.openPopup(...args));
 
     // On opening context menu (right click)
-    chrome.contextMenus.onClicked.addListener((data) => contextMenu.activate(data));
+    if (this.settings.context_menu_enabled === true) {
+      chrome.contextMenus.onClicked.addListener((data) => contextMenu.activate(data));
+    }
 
     // Tab listeners
     chrome.tabs.onHighlighted.addListener(() => {

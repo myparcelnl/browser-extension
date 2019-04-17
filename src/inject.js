@@ -4,7 +4,6 @@ import log from './helpers/log';
 import { selection } from './inject/selection';
 
 const listeners = {};
-const url = window.location.hostname;
 let backgroundConnection = null;
 
 const content = {
@@ -22,7 +21,7 @@ const content = {
 
     backgroundConnection.onMessage.addListener(listeners.background);
     backgroundConnection.onDisconnect.addListener(listeners.disconnect);
-    this.sendToBackground(actionNames.contentConnected, {url});
+    this.sendToBackground(actionNames.contentConnected);
   },
 
   /**
@@ -44,7 +43,7 @@ const content = {
    */
   sendToBackground(action, data) {
     log.background(action);
-    backgroundConnection.postMessage({...data, action});
+    backgroundConnection.postMessage({url: window.location.hostname, ...data, action});
   },
 
   /**
@@ -53,19 +52,21 @@ const content = {
    * @param {Object} request - Request object.
    */
   backgroundListener(request) {
-    log.background(request.action, true);
+    const {field, action, selectors, preset} = request;
+    log.background(action, true);
+    console.log(request);
 
-    switch (request.action) {
+    switch (action) {
       case actionNames.switchedTab:
-        this.sendToBackground(actionNames.contentConnected, {url});
+        this.sendToBackground(actionNames.contentConnected);
         break;
 
       case actionNames.mapField:
-        actions.mapField({url, field: request.field});
+        actions.mapField({field});
         break;
 
       case actionNames.getContent:
-        actions.getContent(request);
+        actions.getContent({preset, selectors});
         break;
 
         // case actionNames.getContent:

@@ -4,40 +4,33 @@ import log from '../helpers/log';
 export default {
 
   /**
-   * Get all keys from storage.
-   *
-   * @return {Promise<string>}
-   */
-  getStorageKeys() {
-    return new Promise((resolve) => {
-      chrome.storage.sync.get(null, (result) => {
-        resolve(result);
-      });
-    });
-  },
-
-  /**
    * Retrieve saved field mappings from storage.
    *
    * @return {Promise<Object>}
    */
-  getSavedMappings() {
-    return new Promise((resolve) => {
-      this.getStorageKeys().then((keys) => {
-        const mappings = {};
+  async getSavedMappings() {
+    const keys = await this.getStorageKeys(config.mappingPrefix);
+    const mappings = {};
 
-        Object.keys(keys).forEach((key) => {
-          if (!key.startsWith(config.mappingPrefix)) {
-            return;
-          }
+    Object.keys(keys).forEach((key) => {
+      if (!key.startsWith(config.mappingPrefix)) {
+        return;
+      }
 
-          const url = key.replace(config.mappingPrefix, '');
-          mappings[url] = JSON.parse(keys[key]);
-        });
-
-        return resolve(mappings);
-      });
+      const url = key.replace(config.mappingPrefix, '');
+      mappings[url] = JSON.parse(keys[key]);
     });
+
+    return mappings;
+  },
+
+  /**
+   * Retrieve saved settings from storage.
+   *
+   * @return {Promise<Object>}
+   */
+  getSavedSettings() {
+    return this.getStorageKeys(config.settingPrefix);
   },
 
   /**
@@ -50,6 +43,21 @@ export default {
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
     return fieldMappings[url];
+  },
+
+  /**
+   * Get settings from storage and set defaults for any settings that are not present.
+   *
+   * @param {Object} request - Request object.
+   */
+  getSettings(request) {
+    const keys = {};
+
+    for (const setting of request) {
+      keys[config.settingPrefix + setting] = request[setting];
+    }
+
+    this.saveToStorage(keys);
   },
 
   /**
@@ -82,6 +90,21 @@ export default {
   },
 
   /**
+   * Save new/updated settings to storage.
+   *
+   * @param {Object} request - Request object.
+   */
+  saveSettings(request) {
+    const keys = {};
+
+    for (const setting of request) {
+      keys[config.settingPrefix + setting] = request[setting];
+    }
+
+    this.saveToStorage(keys);
+  },
+
+  /**
    * Delete given field from storage by URL and field.
    *
    * @param {Object} data - Object containing URL and field of data to remove.
@@ -101,27 +124,65 @@ export default {
   },
 
   /**
+   * Get all keys from storage. Optionally filter by key prefix.
+   *
+   * @param {string} prefix - Prefix to filter by.
+   * @return {Promise<Object>}
+   */
+  getStorageKeys(prefix = null) {
+    return new Promise((resolve) => {
+      chrome.storage.sync.get(null, (result) => {
+        if (prefix) {
+          result = this.filterKeys(result, prefix);
+        }
+
+        resolve(result);
+      });
+    });
+  },
+
+  /**
+   * Filter object by key prefix.
+   *
+   * @param {Object} object - Object to filter.
+   * @param {string} prefix - Prefix string to filter object keys with.
+   */
+  filterKeys(object, prefix) {
+    const result = {};
+    const filtered = Object.keys(object).filter((key) => key.startsWith(prefix));
+
+    filtered.forEach((obj) => {
+      result[obj] = object[obj];
+    });
+
+    return result;
+  },
+  /**
    * Save data to storage.
    *
    * @param {Object} data - Object with all data keys to store.
+   * @param {Function} callback - Callback function.
    */
-  saveToStorage(data) {
-    chrome.storage.sync.set(data);
+  saveToStorage(data, callback = undefined) {
+    chrome.storage.sync.set(data, callback);
   },
 
   /**
    * Remove key from storage.
    *
    * @param {string} key - Key of storage item to remove.
+   * @param {Function} callback - Callback function.
    */
-  removeFromStorage(key) {
-    chrome.storage.sync.remove(key);
+  removeFromStorage(key, callback = undefined) {
+    chrome.storage.sync.remove(key, callback);
   },
 
   /**
    * Clear all keys in storage.
+   *
+  * @param {Function} callback - Callback function.
    */
-  clearAll() {
-    chrome.storage.sync.clear();
+  clearAll(callback = undefined) {
+    chrome.storage.sync.clear(callback);
   },
 };

@@ -69,6 +69,18 @@ export default {
   },
 
   /**
+   * Save settings to local storage.
+   *
+   * @param {Object} request - Request object.
+   */
+  saveSettings(request) {
+    if (request.path !== null) {
+      storage.saveSettings(request);
+      sendToPopup(request);
+    }
+  },
+
+  /**
    * Delete a given field from storage.
    *
    * @param {Object} request - Request object.

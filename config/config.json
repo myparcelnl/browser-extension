@@ -1,6 +1,9 @@
 {
-  "app": "http://meteor.dev.myparcel.nl:3000/browser-extension/create-shipment",
-  "app2": "http://chrome.test:8001",
+  "apps": {
+    "myparcel": "http://meteor.dev.myparcel.nl:3000/browser-extension/create-shipment",
+    "flespakket": "http://backoffice.dev.flespakket.nl:3000/browser-extension/create-shipment",
+    "sendmyparcel": "http://backoffice.dev.sendmyparcel.be:3000/browser-extension/create-shipment"
+  },
   "development": true,
   "popupDimensions": {
     "width": 500,

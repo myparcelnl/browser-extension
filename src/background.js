@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers,no-console */
 import ActionNames from './helpers/ActionNames';
-import actions, { BackgroundActions } from './background/actions';
+import BackgroundActions from './background/BackgroundActions';
 import config from './helpers/config';
 import contextMenu from './background/context-menu';
 import defaultSettings from './settings/defaultSettings';
@@ -97,8 +97,7 @@ const background = {
    */
   async boot() {
     await this.loadConfig('flespakket');
-
-    this.settings = defaultSettings;
+    this.getSettings();
 
     this.popupQueue = [];
     this.contentQueue = [];
@@ -106,7 +105,6 @@ const background = {
     this.popupConnected = false;
     this.contentConnected = false;
 
-    this.getSettings();
     this.bindEvents();
 
     if (this.settings.context_menu_enabled === true) {
@@ -121,7 +119,7 @@ const background = {
    * Get saved settings and add save them to the settings object.
    */
   getSettings() {
-    this.settings = {...storage.getSavedSettings()};
+    this.settings = {...defaultSettings, ...storage.getSavedSettings()};
   },
 
   /**
@@ -172,7 +170,7 @@ const background = {
    *
    * @return {undefined}
    */
-  popupListener(request) {
+  async popupListener(request) {
     log.request('popup', request, true);
 
     switch (request.action) {
@@ -203,7 +201,7 @@ const background = {
         BackgroundActions.saveSettings(request);
         break;
 
-      case BackgroundActions.getSettings:
+      case ActionNames.getSettings:
         BackgroundActions.getSettings(request);
         break;
 
@@ -217,7 +215,7 @@ const background = {
         //   return actions.getFieldSettingsForURL(request);
 
       case ActionNames.getContent:
-        actions.getContent({...request, url: new URL(activeTab.url) || window.location});
+        await BackgroundActions.getContent({...request, url: new URL(activeTab.url) || window.location});
         break;
     }
   },
@@ -236,7 +234,7 @@ const background = {
         break;
 
       case ActionNames.mappedField:
-        actions.saveMappedField(request);
+        BackgroundActions.saveMappedField(request);
         this.moveFocus(popup);
         break;
 
@@ -245,11 +243,11 @@ const background = {
         //   break;
 
       case ActionNames.deleteField:
-        actions.deleteField(request);
+        BackgroundActions.deleteField(request);
         break;
 
       case ActionNames.trackShipment:
-        actions.trackShipment(request.barcode);
+        BackgroundActions.trackShipment(request.barcode);
         break;
 
       case ActionNames.foundContent:
@@ -280,12 +278,12 @@ const background = {
    *
    * @param {Object} request - Request object.
    */
-  onContentConnect(request) {
+  async onContentConnect(request) {
     this.contentConnected = activeTab.id;
     log.info('sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
-    actions.getContent({...request, url: new URL(activeTab.url) || window.location});
+    await BackgroundActions.getContent({...request, url: new URL(activeTab.url) || window.location});
     sendToPopup({...request, action: ActionNames.backgroundConnected});
   },
 
@@ -348,8 +346,8 @@ const background = {
 
     const insertScripts = () => {
       log.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
-      chrome.tabs.insertCSS(tab.id, {file: config.injectCSS});
-      chrome.tabs.executeScript(tab.id, {file: config.injectJS});
+      chrome.tabs.insertCSS(tab.id, {file: config.contentCSS});
+      chrome.tabs.executeScript(tab.id, {file: config.contentJS});
     };
 
     try {
@@ -433,7 +431,7 @@ const background = {
   },
 
   /**
-   * Set given tab to active and inject scripts on tab.
+   * Set given tab to active and content scripts on tab.
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
@@ -513,7 +511,7 @@ const background = {
 
     this.injectScripts(tab);
     this.setIcon(config.activeIcon);
-    // actions.getContent(url);
+    // BackgroundActions.getContent(url);
   },
 
   /**

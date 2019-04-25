@@ -1,7 +1,7 @@
-import actionNames from './helpers/actionNames';
-import actions, { ContentActions } from './inject/actions';
+import ContentActions from './content/ContentActions';
+import ActionNames from './helpers/ActionNames';
 import log from './helpers/log';
-import { selection } from './inject/selection';
+import { selection } from './content/selection';
 
 const listeners = {};
 let backgroundConnection;
@@ -21,7 +21,7 @@ const content = {
 
     backgroundConnection.onMessage.addListener(listeners.background);
     backgroundConnection.onDisconnect.addListener(listeners.disconnect);
-    this.sendToBackground(actionNames.contentConnected);
+    this.sendToBackground(ActionNames.contentConnected);
   },
 
   /**
@@ -56,22 +56,22 @@ const content = {
     log.request('background', request, true);
 
     switch (action) {
-      case actionNames.switchedTab:
-        this.sendToBackground(actionNames.contentConnected);
+      case ActionNames.switchedTab:
+        this.sendToBackground(ActionNames.contentConnected);
         break;
 
-      case actionNames.mapField:
+      case ActionNames.mapField:
         await ContentActions.mapField({field});
         break;
 
-      case actionNames.getContent:
+      case ActionNames.getContent:
         await ContentActions.getContent({preset, selectors});
         break;
 
-        // case actionNames.getContent:
+        // case ActionNames.getContent:
         //   return ContentActions.getContent(request);
 
-      case actionNames.stopListening:
+      case ActionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);
         backgroundConnection.disconnect();
         break;

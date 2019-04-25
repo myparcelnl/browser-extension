@@ -23,8 +23,8 @@ const defaultIcon = `${imgDir}/icon-128px.png`;
 // Files
 const configFile = `${configDir}/config.json`;
 const presetsFile = `${configDir}/presets.json`;
-const injectJS = `${jsDir}/inject.js`;
-const injectCSS = `${cssDir}/inject.css`;
+const contentJS = `${jsDir}/content.js`;
+const contentCSS = `${cssDir}/content.css`;
 
 export default {
   activeIcon,
@@ -37,8 +37,8 @@ export default {
   defaultIcon,
   distDir,
   imgDir,
-  injectCSS,
-  injectJS,
+  contentCSS,
+  contentJS,
   jsDir,
   mappingPrefix,
   presetsFile,

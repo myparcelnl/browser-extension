@@ -1,6 +1,6 @@
 import { sendToContent, sendToPopup } from '../background';
+import ActionNames from '../helpers/ActionNames';
 import MyParcelAPI from '../helpers/MyParcelAPI';
-import actionNames from '../helpers/actionNames';
 import log from '../helpers/log';
 import presets from '../helpers/presets';
 import storage from './storage';
@@ -22,7 +22,6 @@ export default class BackgroundActions {
    * @return {Promise}
    */
   static async getContent(request) {
-    console.log(request);
     const {url, preset} = request;
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
     const {hostname, href} = url;
@@ -51,7 +50,7 @@ export default class BackgroundActions {
     }
 
     const data = {
-      action: actionNames.getContent,
+      action: ActionNames.getContent,
       selectors,
     };
 
@@ -72,7 +71,10 @@ export default class BackgroundActions {
    * @param {string} url - URL to fetch settings for.
    */
   static getSettings(url) {
-    storage.getSettingsForURL(url);
+    const settings = storage.getSettingsForURL(url);
+    console.log(settings);
+
+    return settings;
   }
 
   /**

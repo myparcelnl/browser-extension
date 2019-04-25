@@ -14,6 +14,7 @@ export default class ActionNames {
   static foundSelectorsAndContent = 'foundSelectorsAndContent';
   static getContent = 'getContent';
   static getPreset = 'getPreset';
+  static getSettings = 'getSettings';
   static getSettingsForURL = 'getSettingsForURL';
   static getStorage = 'getStorage';
   static mapField = 'mapField';

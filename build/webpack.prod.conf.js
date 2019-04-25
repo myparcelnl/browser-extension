@@ -4,9 +4,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   mode: 'production',
   entry: {
-    functions: ['./src/scss/popup.scss', './src/scss/extension.scss', './src/scss/inject.scss'],
+    functions: ['./src/scss/popup.scss', './src/scss/extension.scss', './src/scss/content.scss'],
     background: './src/background.js',
-    inject: './src/inject.js',
+    content: './src/content.js',
   },
   output: {
     filename: 'js/[name].js',

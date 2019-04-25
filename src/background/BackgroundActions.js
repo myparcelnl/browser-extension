@@ -22,31 +22,35 @@ export default class BackgroundActions {
    * @return {Promise}
    */
   static async getContent(request) {
-    const {url, preset} = request;
+    const {url} = request;
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
     const {hostname, href} = url;
 
     let selectors = await storage.getSavedMappingsForURL(hostname);
-    let selectedPreset;
+    let presetName;
     let presetFields;
 
     if (selectors && selectors.preset) {
-      selectedPreset = selectors.preset;
+      presetName = selectors.preset;
       delete selectors.preset;
     } else if (request.hasOwnProperty('preset')) {
-      selectedPreset = preset;
+      presetName = request.preset;
     } else {
-      selectedPreset = presets.findByURL(href);
+      presetName = presets.findByURL(href);
+      log.success(`Preset '${presetName}' applied.`);
     }
 
-    if (selectedPreset) {
-      const presetData = await presets.getData(selectedPreset);
+    if (presetName) {
+      const presetFields = await presets.getFields(presetName);
+
+      // Add overridden values to the object to be able to differentiate them from preset values (and allow the user to
+      // delete them)
       const overrides = selectors ? Object.keys(selectors) : null;
+      const presetData = {name: presetName, overrides};
 
-      presetFields = {name: selectedPreset, overrides};
-      selectors = {...presetData, ...selectors};
+      selectors = {...presetFields, ...selectors};
 
-      storage.savePreset({url: hostname, preset});
+      storage.savePreset({url: hostname, preset: presetData});
     }
 
     const data = {
@@ -118,8 +122,8 @@ export default class BackgroundActions {
    *
    * @param {Object} request - Request object.
    */
-  static deleteField(request) {
-    storage.deleteMappedField(request);
+  static deleteFields(request) {
+    storage.deleteMappedFields(request);
   }
 
   /**

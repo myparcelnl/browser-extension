@@ -92,14 +92,17 @@ export default {
   /**
    * Delete given field from storage by URL and field.
    *
-   * @param {Object} data - Object containing URL and field of data to remove.
-   *.
+   * @param {{url: string, fields: Array}} data - Object containing URL and field(s) to remove.
+   *
    * @return {Promise}
    */
-  async deleteMappedField(data) {
-    const {url, field} = data;
+  async deleteMappedFields(data) {
+    const {url, fields} = data;
     const mappings = await this.getSavedMappingsForURL(url);
-    delete mappings[field];
+
+    fields.forEach((field) => {
+      delete mappings[field];
+    });
 
     const newMappings = {
       [`${config.mappingPrefix}${url}`]: JSON.stringify(mappings),

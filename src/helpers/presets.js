@@ -1,5 +1,5 @@
-import { detect } from 'detect-browser';
 import { PresetData } from './PresetData';
+import { detect } from 'detect-browser';
 
 export default {
 
@@ -26,16 +26,14 @@ export default {
   },
 
   /**
-   * Get preset data by preset name.
+   * Get preset fields by preset name.
    *
-   * @param {string} preset - Preset name.
+   * @param {string} presetName - Preset name.
    *
-   * @return {Promise<Object>}
+   * @return {Promise<Object>}.
    */
-  getData(preset) {
-    const {fields} = PresetData;
-
-    return fields[preset];
+  getFields(presetName) {
+    return PresetData.fields[presetName];
   },
 };
 

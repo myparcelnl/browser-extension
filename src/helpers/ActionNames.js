@@ -33,7 +33,7 @@ export default class ActionNames {
    * From popup. Delete given field from local storage. Requires data { field: <string> }
    * @type {string}
    */
-  static deleteField = 'deleteField';
+  static deleteFields = 'deleteFields';
 
   /**
    * Received from content and passed to popup. When it has found content on the current page. Content is in

@@ -189,13 +189,13 @@ const background = {
         sendToContent(request);
         break;
 
-      case ActionNames.deleteField:
-        BackgroundActions.deleteField(request);
+      case ActionNames.deleteFields:
+        BackgroundActions.deleteFields(request);
         break;
 
-      // case ActionNames.getPreset:
-      //   BackgroundActions.getPreset(request.preset);
-      //   break;
+        // case ActionNames.getPreset:
+        //   BackgroundActions.getPreset(request.preset);
+        //   break;
 
       case ActionNames.saveSettings:
         BackgroundActions.saveSettings(request);
@@ -215,9 +215,18 @@ const background = {
         //   return actions.getFieldSettingsForURL(request);
 
       case ActionNames.getContent:
-        await BackgroundActions.getContent({...request, url: new URL(activeTab.url) || window.location});
+        await BackgroundActions.getContent({...request, url: this.getUrl()});
         break;
     }
+  },
+
+  /**
+   * Get the active tab URL if available, otherwise get window URL.
+   *
+   * @return {URL}
+   */
+  getUrl() {
+    return activeTab ? new URL(activeTab.url) : window.location;
   },
 
   /**
@@ -242,8 +251,8 @@ const background = {
         //   sendToPopup(request);
         //   break;
 
-      case ActionNames.deleteField:
-        BackgroundActions.deleteField(request);
+      case ActionNames.deleteFields:
+        BackgroundActions.deleteFields(request);
         break;
 
       case ActionNames.trackShipment:

@@ -193,9 +193,9 @@ const background = {
         BackgroundActions.deleteField(request);
         break;
 
-      case ActionNames.getPreset:
-        BackgroundActions.getPreset(request.preset);
-        break;
+      // case ActionNames.getPreset:
+      //   BackgroundActions.getPreset(request.preset);
+      //   break;
 
       case ActionNames.saveSettings:
         BackgroundActions.saveSettings(request);

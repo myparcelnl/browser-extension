@@ -37,36 +37,39 @@ const log = {
   },
 
   popup(message, receiving = false) {
-    if (process.env.NODE_ENV !== 'prod') {
-      // receiving = receiving ? '↓' : '↑';
-      console.log(
-        `%c${this.receiving(receiving)}%cPopup%c${message}`,
-        `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .5rem;`,
-        `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, red, #ff8c00); color: white; padding: 1px .5rem;`,
-        `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .5rem;`
-      );
-    }
+    console.log(
+      `%c${this.receiving(receiving)}%cPopup%c${message}`,
+      `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .5rem;`,
+      // eslint-disable-next-line max-len
+      `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, red, #ff8c00); color: white; padding: 1px .5rem;`,
+      `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .5rem;`
+    );
   },
 
   content(message, receiving = false) {
-    if (process.env.NODE_ENV !== 'prod') {
-      console.log(
-        `%c${this.receiving(receiving)}%cContent%c${message}`,
-        `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .5rem;`,
-        `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, blue, #1eb9c5); color: white; padding: 1px .5rem;`,
-        `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .5rem;`
-      );
-    }
+    console.log(
+      `%c${this.receiving(receiving)}%cContent%c${message}`,
+      `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .5rem;`,
+      // eslint-disable-next-line max-len
+      `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, blue, #1eb9c5); color: white; padding: 1px .5rem;`,
+      `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .5rem;`
+    );
   },
 
   background(message, receiving = false) {
+    console.log(
+      `%c${this.receiving(receiving)}%cBackground%c${message}`,
+      `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .5rem;`,
+      // eslint-disable-next-line max-len
+      `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, yellowgreen, #1eb436); color: white; padding: 1px .5rem;`,
+      `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .5rem;`
+    );
+  },
+
+  request(type, request, receiving = false) {
     if (process.env.NODE_ENV !== 'prod') {
-      console.log(
-        `%c${this.receiving(receiving)}%cBackground%c${message}`,
-        `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .5rem;`,
-        `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, yellowgreen, #1eb436); color: white; padding: 1px .5rem;`,
-        `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .5rem;`
-      );
+      this[type](request.action, receiving);
+      console.log(request);
     }
   },
 

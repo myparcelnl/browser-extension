@@ -8,20 +8,8 @@ export default {
    *
    * @return {Promise<Object>}
    */
-  async getSavedMappings() {
-    const keys = await this.getStorageKeys(config.mappingPrefix);
-    const mappings = {};
-
-    Object.keys(keys).forEach((key) => {
-      if (!key.startsWith(config.mappingPrefix)) {
-        return;
-      }
-
-      const url = key.replace(config.mappingPrefix, '');
-      mappings[url] = JSON.parse(keys[key]);
-    });
-
-    return mappings;
+  getSavedMappings() {
+    return this.getStorageKeys(config.mappingPrefix);
   },
 
   /**
@@ -40,8 +28,8 @@ export default {
    *
    * @return {Object}
    */
-  async getSavedMappingsForURL(url) {
-    const fieldMappings = await this.getSavedMappings();
+  getSavedMappingsForURL(url) {
+    const fieldMappings = this.getSavedMappings();
     return fieldMappings[url];
   },
 
@@ -51,13 +39,8 @@ export default {
    * @param {Object} request - Request object.
    */
   getSettings(request) {
-    const keys = {};
+    const settings = this.getSavedSettings();
 
-    for (const setting of request) {
-      keys[config.settingPrefix + setting] = request[setting];
-    }
-
-    this.saveToStorage(keys);
   },
 
   /**
@@ -155,7 +138,13 @@ export default {
       result[obj] = object[obj];
     });
 
-    return result;
+    const mappings = {};
+    Object.keys(result).forEach((key) => {
+      const url = key.replace(prefix, '');
+      mappings[url] = JSON.parse(result[key]);
+    });
+
+    return mappings;
   },
   /**
    * Save data to storage.

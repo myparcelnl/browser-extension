@@ -19,29 +19,46 @@ export default {
    */
   async getContent(request) {
     const {url, preset} = request;
+    // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
+    const {hostname, href} = url;
 
-    let selectors = await storage.getSavedMappingsForURL(url);
-    let selectedPreset = null;
+    let selectors = await storage.getSavedMappingsForURL(hostname);
+    let selectedPreset;
+    let presetFields;
 
     if (selectors && selectors.preset) {
       selectedPreset = selectors.preset;
       delete selectors.preset;
     } else if (request.hasOwnProperty('preset')) {
-      storage.savePreset({url, preset});
+      storage.savePreset({hostname, preset});
       selectedPreset = preset;
+    } else {
+      selectedPreset = presets.findByURL(href);
     }
 
-    let presetFields = null;
-
     if (selectedPreset) {
-      const presetData = await presets.getPresetData(selectedPreset);
+      const presetData = await presets.getData(selectedPreset);
       const overrides = selectors ? Object.keys(selectors) : null;
 
       presetFields = {name: selectedPreset, overrides};
       selectors = {...presetData, ...selectors};
     }
 
-    sendToContent({action: actionNames.getContent, selectors, preset: presetFields});
+    const data = {
+      action: actionNames.getContent,
+      selectors,
+    };
+
+    if (presetFields) {
+      data.preset = presetFields;
+    }
+
+    console.log(data);
+    sendToContent(data);
+  },
+
+  getSettings(request) {
+    storage.getSettings(request);
   },
 
   /**
@@ -51,8 +68,8 @@ export default {
    *
    * @return {Promise}
    */
-  async getStorage(request) {
-    const data = await storage.getSavedMappings();
+  getStorage(request) {
+    const data = storage.getSavedMappings();
     sendToPopup(Object.assign(request, {data}));
   },
 

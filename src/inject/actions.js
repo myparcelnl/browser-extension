@@ -1,8 +1,11 @@
 import { clickedElement, elementsContent } from './selection';
-import actionNames from '../helpers/actionNames';
-import content from '../inject';
+import ActionNames from '../helpers/ActionNames';
+import content from '../content';
 
-export default {
+/**
+ * Actions to run from the content script.
+ */
+export default class ContentActions {
 
   /**
    * Get values using previously mapped fields (if any).
@@ -11,12 +14,10 @@ export default {
    *
    * @return {Promise}
    */
-  async getContent(request) {
-    const {selectors} = request;
-    const values = await elementsContent(selectors);
-    console.log('elements content:', { ...request, values});
-    content.sendToBackground(actionNames.foundContent, {...request, values});
-  },
+  static async getContent(request) {
+    const values = await elementsContent(request.selectors);
+    content.sendToBackground(ActionNames.foundContent, {...request, values});
+  }
 
   /**
    * Start creating new field mapping.
@@ -24,12 +25,12 @@ export default {
    * @param {Object} request - Request object.
    * @return {Promise}
    */
-  async mapField(request) {
+  static async mapField(request) {
     const {field} = request;
     const path = await clickedElement();
     const elementContent = await elementsContent(path);
 
     const data = {field, path, content: elementContent};
-    content.sendToBackground(actionNames.mappedField, data);
-  },
-};
+    content.sendToBackground(ActionNames.mappedField, data);
+  }
+}

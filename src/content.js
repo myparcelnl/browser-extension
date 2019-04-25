@@ -1,5 +1,5 @@
 import actionNames from './helpers/actionNames';
-import actions from './inject/actions';
+import actions, { ContentActions } from './inject/actions';
 import log from './helpers/log';
 import { selection } from './inject/selection';
 
@@ -51,7 +51,7 @@ const content = {
    *
    * @param {Object} request - Request object.
    */
-  backgroundListener(request) {
+  async backgroundListener(request) {
     const {field, action, selectors, preset} = request;
     log.request('background', request, true);
 
@@ -61,15 +61,15 @@ const content = {
         break;
 
       case actionNames.mapField:
-        actions.mapField({field});
+        await ContentActions.mapField({field});
         break;
 
       case actionNames.getContent:
-        actions.getContent({preset, selectors});
+        await ContentActions.getContent({preset, selectors});
         break;
 
         // case actionNames.getContent:
-        //   return actions.getContent(request);
+        //   return ContentActions.getContent(request);
 
       case actionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);

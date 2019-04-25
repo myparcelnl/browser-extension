@@ -16,10 +16,12 @@ export default {
    * Find existing preset by given URL.
    *
    * @param {string} url - URL.
-   * @return {string|boolean}
+   *
+   * @return {string|undefined} - Preset name or undefined if no preset was found.
    */
   findByURL(url) {
-    return Presets.urlMapping.find((entry) => entry.url.includes(url));
+    const preset = Presets.urlMapping.find((entry) => url.includes(entry.url));
+    return preset.name || undefined;
   },
 
   /**
@@ -70,12 +72,16 @@ class Presets {
       url: '.myshopify.com',
       platform: this.SHOPIFY,
     },
+    {
+      url: 'app.luondo.nl',
+      platform: this.LUONDO,
+    },
   ];
 
   /**
    * Preset field selectors for every platform.
    *
-   * @type {{}[]}
+   * @type {Array}
    */
   static fields = [
     {

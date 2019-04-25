@@ -36,11 +36,13 @@ export default {
   /**
    * Get settings from storage and set defaults for any settings that are not present.
    *
-   * @param {Object} request - Request object.
+   * @param {string} url - URL to fetch settings for.
+   *
+   * @return {Object} - Settings.
    */
-  getSettings(request) {
+  getSettingsForURL(url) {
     const settings = this.getSavedSettings();
-
+    return settings[url];
   },
 
   /**

@@ -1,10 +1,14 @@
 import { sendToContent, sendToPopup } from '../background';
 import MyParcelAPI from '../helpers/MyParcelAPI';
 import actionNames from '../helpers/actionNames';
+import log from '../helpers/log';
 import presets from '../helpers/presets';
 import storage from './storage';
 
-export default {
+/**
+ * Actions to run from the background script.
+ */
+export default class BackgroundActions {
 
   /**
    * Start the process to get content by data in request object. Requires url to be present in request. Will search
@@ -17,7 +21,8 @@ export default {
    *
    * @return {Promise}
    */
-  async getContent(request) {
+  static async getContent(request) {
+    console.log(request);
     const {url, preset} = request;
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
     const {hostname, href} = url;
@@ -30,7 +35,6 @@ export default {
       selectedPreset = selectors.preset;
       delete selectors.preset;
     } else if (request.hasOwnProperty('preset')) {
-      storage.savePreset({hostname, preset});
       selectedPreset = preset;
     } else {
       selectedPreset = presets.findByURL(href);
@@ -42,6 +46,8 @@ export default {
 
       presetFields = {name: selectedPreset, overrides};
       selectors = {...presetData, ...selectors};
+
+      storage.savePreset({url: hostname, preset});
     }
 
     const data = {
@@ -53,13 +59,21 @@ export default {
       data.preset = presetFields;
     }
 
-    console.log(data);
-    sendToContent(data);
-  },
+    if (data.preset || data.selectors) {
+      sendToContent(data);
+    } else {
+      log.warning(`No preset or selectors present for ${hostname}.`);
+    }
+  }
 
-  getSettings(request) {
-    storage.getSettings(request);
-  },
+  /**
+   * Get settings for given URL.
+   *
+   * @param {string} url - URL to fetch settings for.
+   */
+  static getSettings(url) {
+    storage.getSettingsForURL(url);
+  }
 
   /**
    * Get saved mappings from Chrome synced storage.
@@ -68,43 +82,43 @@ export default {
    *
    * @return {Promise}
    */
-  getStorage(request) {
-    const data = storage.getSavedMappings();
-    sendToPopup(Object.assign(request, {data}));
-  },
+  // getStorage(request) {
+  //   const data = storage.getSavedMappings();
+  //   sendToPopup(Object.assign(request, {data}));
+  // },
 
   /**
    * Save mapped field to local storage and send it to popup if not null.
    *
    * @param {Object} request - Request object.
    */
-  saveMappedField(request) {
+  static saveMappedField(request) {
     if (request.path !== null) {
       storage.savePreset(request);
       sendToPopup(request);
     }
-  },
+  }
 
   /**
    * Save settings to local storage.
    *
    * @param {Object} request - Request object.
    */
-  saveSettings(request) {
+  static saveSettings(request) {
     if (request.path !== null) {
       storage.saveSettings(request);
       sendToPopup(request);
     }
-  },
+  }
 
   /**
    * Delete a given field from storage.
    *
    * @param {Object} request - Request object.
    */
-  deleteField(request) {
+  static deleteField(request) {
     storage.deleteMappedField(request);
-  },
+  }
 
   /**
    * Track a shipment using the MyParcel API.
@@ -113,7 +127,7 @@ export default {
    * @param {string} postalCode - Postal code.
    * @param {string} countryCode - 2-digit country code.
    */
-  trackShipment(barcode, postalCode, countryCode) {
+  static trackShipment(barcode, postalCode, countryCode) {
     MyParcelAPI.get(
       'tracktraces',
       null,
@@ -122,5 +136,5 @@ export default {
       .then((response) => {
         return response.data.tracktraces[0];
       });
-  },
-};
+  }
+}

@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers,no-console */
-import actionNames from './helpers/actionNames';
-import actions from './background/actions';
+import ActionNames from './helpers/ActionNames';
+import actions, { BackgroundActions } from './background/actions';
 import config from './helpers/config';
 import contextMenu from './background/context-menu';
 import defaultSettings from './settings/defaultSettings';
@@ -37,9 +37,14 @@ export let contentConnection;
  * @param {Object} data - Request object.
  */
 export const sendToPopup = (data) => {
+  log.popup(data.action);
   if (background.popupConnected) {
-    log.popup(data.action);
-    popupConnection.postMessage(data);
+    try {
+      popupConnection.postMessage(data);
+    } catch (e) {
+      log.error(e);
+      background.popupQueue.push(data);
+    }
   } else {
     log.popup(data.action, 'queue');
     background.popupQueue.push(data);
@@ -54,7 +59,12 @@ export const sendToPopup = (data) => {
 export const sendToContent = (data) => {
   log.content(data.action);
   if (background.contentConnected) {
-    contentConnection.postMessage(data);
+    try {
+      contentConnection.postMessage(data);
+    } catch (e) {
+      log.error(e);
+      background.contentQueue.push(data);
+    }
   } else {
     background.contentQueue.push(data);
   }
@@ -111,7 +121,7 @@ const background = {
    * Get saved settings and add save them to the settings object.
    */
   getSettings() {
-    this.settings = { ...storage.getSavedSettings() };
+    this.settings = {...storage.getSavedSettings()};
   },
 
   /**
@@ -122,7 +132,7 @@ const background = {
    * @return {Promise}
    */
   async loadConfig(app) {
-    const response = await fetch(chrome.extension.getURL(config.configFile),);
+    const response = await fetch(chrome.extension.getURL(config.configFile));
     const json = await response.json();
 
     this.popupExternalUrl = json.apps[app];
@@ -167,46 +177,46 @@ const background = {
 
     switch (request.action) {
 
-      case actionNames.popupConnected:
+      case ActionNames.popupConnected:
         this.onPopupConnect();
         break;
         // sendToContent({action: Actions.checkContentConnection});
 
-        // case actionNames.contentConnected:
+        // case ActionNames.contentConnected:
         //   sendToPopup(request);
         //   break;
 
-      case actionNames.mapField:
+      case ActionNames.mapField:
         this.moveFocus();
         sendToContent(request);
         break;
 
-      case actionNames.deleteField:
-        actions.deleteField(request);
+      case ActionNames.deleteField:
+        BackgroundActions.deleteField(request);
         break;
 
-      case actionNames.getPreset:
-        actions.getPreset(request.preset);
+      case ActionNames.getPreset:
+        BackgroundActions.getPreset(request.preset);
         break;
 
-      case actionNames.saveSettings:
-        actions.saveSettings(request);
+      case ActionNames.saveSettings:
+        BackgroundActions.saveSettings(request);
         break;
 
-      case actionNames.getSettings:
-        actions.getSettings(request);
+      case BackgroundActions.getSettings:
+        BackgroundActions.getSettings(request);
         break;
 
-        // case actionNames.getContent:
+        // case ActionNames.getContent:
         //   return sendToContent(request);
 
-        // case actionNames.getStorage:
-        //   return actions.getStorage(request);
+        // case ActionNames.getStorage:
+        //   return BackgroundActions.getStorage(request);
 
-        // case actionNames.getFieldSettingsForURL:
+        // case ActionNames.getFieldSettingsForURL:
         //   return actions.getFieldSettingsForURL(request);
 
-      case actionNames.getContent:
+      case ActionNames.getContent:
         actions.getContent({...request, url: new URL(activeTab.url) || window.location});
         break;
     }
@@ -221,32 +231,32 @@ const background = {
     log.request('content', request, true);
 
     switch (request.action) {
-      case actionNames.contentConnected:
+      case ActionNames.contentConnected:
         this.onContentConnect(request);
         break;
 
-      case actionNames.mappedField:
+      case ActionNames.mappedField:
         actions.saveMappedField(request);
         this.moveFocus(popup);
         break;
 
-        // case actionNames.foundElementContent:
+        // case ActionNames.foundElementContent:
         //   sendToPopup(request);
         //   break;
 
-      case actionNames.deleteField:
+      case ActionNames.deleteField:
         actions.deleteField(request);
         break;
 
-      case actionNames.trackShipment:
+      case ActionNames.trackShipment:
         actions.trackShipment(request.barcode);
         break;
 
-      case actionNames.foundContent:
+      case ActionNames.foundContent:
         sendToPopup(request);
         break;
 
-      // case actionNames.createShipment:
+      // case ActionNames.createShipment:
       //   actions.createShipment(request);
       //   break;
     }
@@ -271,12 +281,12 @@ const background = {
    * @param {Object} request - Request object.
    */
   onContentConnect(request) {
-    console.log(request);
     this.contentConnected = activeTab.id;
     log.info('sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
-    sendToPopup({...request, action: actionNames.backgroundConnected});
+    actions.getContent({...request, url: new URL(activeTab.url) || window.location});
+    sendToPopup({...request, action: ActionNames.backgroundConnected});
   },
 
   /**
@@ -345,7 +355,7 @@ const background = {
     try {
       if (tab.id === this.contentConnected) {
         log.event('Script already present');
-        sendToContent({action: actionNames.checkContentConnection});
+        sendToContent({action: ActionNames.checkContentConnection});
       } else {
         throw 'content not connected';
       }
@@ -368,11 +378,11 @@ const background = {
     this.activateTab(tab);
 
     if (popupConnection) {
-      sendToPopup({action: actionNames.switchedTab, url: tab.url});
+      sendToPopup({action: ActionNames.switchedTab, url: tab.url});
     }
 
     if (contentConnection) {
-      sendToContent({action: actionNames.switchedTab});
+      sendToContent({action: ActionNames.switchedTab});
     }
   },
 
@@ -407,7 +417,7 @@ const background = {
       await this.activateTab(tab);
       this.setIcon();
 
-      sendToContent({action: actionNames.checkContentConnection});
+      sendToContent({action: ActionNames.checkContentConnection});
     }
   },
 
@@ -531,7 +541,7 @@ const background = {
    * Clean up on closing of popup. Resets variables and extension icon.
    */
   async closePopup() {
-    await sendToContent({action: actionNames.stopListening});
+    await sendToContent({action: ActionNames.stopListening});
     popup = null;
     popupConnection = null;
     activeTab = null;

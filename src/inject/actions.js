@@ -8,7 +8,8 @@ export default {
    * Get values using previously mapped fields (if any).
    *
    * @param {Object} request - Request object.
-   * * @return {Promise}.
+   *
+   * @return {Promise}
    */
   async getContent(request) {
     const {selectors} = request;

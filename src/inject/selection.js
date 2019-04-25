@@ -4,7 +4,6 @@ import config from '../helpers/config';
 import log from '../helpers/log';
 
 const listeners = {};
-const tooltip = null;
 
 export const clickedElement = () => {
   return new Promise((resolve) => {
@@ -13,6 +12,13 @@ export const clickedElement = () => {
   });
 };
 
+/**
+ * Get elements content by selector key value pairs.
+ *
+ * @param {Object} selectors - Selectors.
+ *
+ * @return {Object|undefined}
+ */
 export const elementsContent = (selectors) => {
   if (!selectors) {
     return;
@@ -38,7 +44,9 @@ export const selection = {
   /**
    * Add event listeners for mapping field.
    *
-   * @param resolve
+   * @param {Function} resolve - Resolve function.
+   *
+   * @return {undefined}
    */
   startMapping(resolve) {
     // remove existing listeners (if any)
@@ -71,10 +79,10 @@ export const selection = {
   },
 
   /**
-   * Keyup event listener to check for escaoe button press.
+   * Keyup event listener to check for escape button press.
    *
-   * @param event
-   * @param resolve
+   * @param {event} event - Keyup event.
+   * @param {Function} resolve - Resolve function.
    */
   handleKeyup(event, resolve) {
     // Check if escape is pressed

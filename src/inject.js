@@ -4,7 +4,7 @@ import log from './helpers/log';
 import { selection } from './inject/selection';
 
 const listeners = {};
-let backgroundConnection = null;
+let backgroundConnection;
 
 const content = {
 
@@ -27,7 +27,7 @@ const content = {
   /**
    * Establish the connection to the background script.
    *
-   * @return {Promise<Object>}
+   * @return {MessagePort}
    */
   establishConnection() {
     return new Promise((resolve) => {
@@ -53,8 +53,7 @@ const content = {
    */
   backgroundListener(request) {
     const {field, action, selectors, preset} = request;
-    log.background(action, true);
-    console.log(request);
+    log.request('background', request, true);
 
     switch (action) {
       case actionNames.switchedTab:

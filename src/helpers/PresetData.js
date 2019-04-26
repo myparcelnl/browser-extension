@@ -22,7 +22,7 @@ export class PresetData {
   static WOOCOMMERCE = 'woocommerce';
 
   /**
-   * Mapping for detecting presets by URL. `presets.findPresetByURL` will check if `url` is present in the given href.
+   * Mapping for detecting presets by URL. `Presets.findPresetByURL` will check if `url` is present in the given href.
    *
    * @type {Array}
    */

@@ -1,4 +1,5 @@
-import config from './config';
+/* eslint-disable func-names */
+import Config from './Config';
 import getSelector from 'unique-selector';
 
 /**
@@ -10,12 +11,12 @@ HTMLElement.prototype.getPath = function() {
   let selector = this;
   let index = '';
 
-  if (selector.classList.contains(config.wrappedItemClass)) {
+  if (selector.classList.contains(Config.wrappedItemClass)) {
     index = 0;
     let node = selector;
 
     for (let i = 0; (node = node.previousSibling); i++) {
-      if (!node.classList.contains(config.wrappedItemClass)) {
+      if (!node.classList.contains(Config.wrappedItemClass)) {
         index++;
       }
     }
@@ -30,7 +31,7 @@ HTMLElement.prototype.getPath = function() {
   }
 
   const path = getSelector(selector, {
-    excludeRegex: RegExp(config.classPrefix),
+    excludeRegex: RegExp(Config.classPrefix),
   });
 
   return path + index;

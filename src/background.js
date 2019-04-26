@@ -108,7 +108,7 @@ const background = {
     this.bindEvents();
 
     if (this.settings.context_menu_enabled === true) {
-      contextMenu.create();
+      ContextMenu.create();
     }
 
     this.bindPopupScript();
@@ -139,7 +139,7 @@ const background = {
   },
 
   /**
-   * Bind the popup script connection and map external actions.
+   * Bind the popup script connection and map external ActionNames.
    */
   bindPopupScript() {
     chrome.runtime.onConnectExternal.addListener((port) => {
@@ -151,7 +151,7 @@ const background = {
   },
 
   /**
-   * Bind the injected content script connection and map actions.
+   * Bind the injected content script connection and map ActionNames.
    */
   bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
@@ -164,7 +164,7 @@ const background = {
   },
 
   /**
-   * Listener for popup script actions.
+   * Listener for popup script ActionNames.
    *
    * @param {Object} request - Request object.
    *
@@ -212,7 +212,7 @@ const background = {
         //   return BackgroundActions.getStorage(request);
 
         // case ActionNames.getFieldSettingsForURL:
-        //   return actions.getFieldSettingsForURL(request);
+        //   return ActionNames.getFieldSettingsForURL(request);
 
       case ActionNames.getContent:
         await BackgroundActions.getContent({...request, url: this.getUrl()});
@@ -230,7 +230,7 @@ const background = {
   },
 
   /**
-   * Listener for content script actions.
+   * Listener for content script ActionNames.
    *
    * @param {Object} request - Request object.
    */
@@ -264,7 +264,7 @@ const background = {
         break;
 
       // case ActionNames.createShipment:
-      //   actions.createShipment(request);
+      //   ActionNames.createShipment(request);
       //   break;
     }
   },
@@ -278,7 +278,7 @@ const background = {
     this.popupQueue = flushQueue(this.popupQueue, sendToPopup);
 
     // if (activeTab && activeTab.url) {
-    //   actions.getContent({url: activeTab.url});
+    //   ActionNames.getContent({url: activeTab.url});
     // }
   },
 
@@ -308,7 +308,7 @@ const background = {
     // On opening context menu (right click)
     if (this.settings.context_menu_enabled === true) {
       chrome.contextMenus.onClicked.addListener((data) => {
-        contextMenu.activate(data);
+        ContextMenu.activate(data);
       });
     }
 

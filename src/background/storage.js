@@ -1,4 +1,4 @@
-import config from '../helpers/config';
+import Config from '../helpers/Config';
 import log from '../helpers/log';
 
 export default {
@@ -9,7 +9,7 @@ export default {
    * @return {Promise<Object>}
    */
   getSavedMappings() {
-    return this.getStorageKeys(config.mappingPrefix);
+    return this.getStorageKeys(Config.mappingPrefix);
   },
 
   /**
@@ -18,7 +18,7 @@ export default {
    * @return {Promise<Object>}
    */
   getSavedSettings() {
-    return this.getStorageKeys(config.settingPrefix);
+    return this.getStorageKeys(Config.settingPrefix);
   },
 
   /**
@@ -68,7 +68,7 @@ export default {
     }
 
     const key = {
-      [`${config.mappingPrefix}${url}`]: JSON.stringify(newMappings),
+      [`${Config.mappingPrefix}${url}`]: JSON.stringify(newMappings),
     };
 
     this.saveToStorage(key);
@@ -83,7 +83,7 @@ export default {
     const keys = {};
 
     for (const setting of request) {
-      keys[config.settingPrefix + setting] = request[setting];
+      keys[Config.settingPrefix + setting] = request[setting];
     }
 
     this.saveToStorage(keys);
@@ -105,7 +105,7 @@ export default {
     });
 
     const newMappings = {
-      [`${config.mappingPrefix}${url}`]: JSON.stringify(mappings),
+      [`${Config.mappingPrefix}${url}`]: JSON.stringify(mappings),
     };
 
     this.saveToStorage(newMappings);

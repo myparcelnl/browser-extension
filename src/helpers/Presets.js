@@ -1,17 +1,17 @@
 import { PresetData } from './PresetData';
 import { detect } from 'detect-browser';
 
-export default {
+export default class Presets {
 
   /**
    * Get browser info.
    *
    * @return {string}
    */
-  detectBrowser() {
+  static detectBrowser() {
     const browserInfo = detect();
     return `${browserInfo.os.replace(/\s/, '-').toLowerCase()}_${browserInfo.name}/${browserInfo.version}`;
-  },
+  }
 
   /**
    * Find existing preset by given URL.
@@ -20,10 +20,10 @@ export default {
    *
    * @return {string|undefined} - Preset name or undefined if no preset was found.
    */
-  findByURL(url) {
+  static findByURL(url) {
     const preset = PresetData.urlMapping.find((entry) => url.includes(entry.url));
     return preset.name || undefined;
-  },
+  }
 
   /**
    * Get preset fields by preset name.
@@ -32,8 +32,8 @@ export default {
    *
    * @return {Promise<Object>}.
    */
-  getFields(presetName) {
+  static getFields(presetName) {
     return PresetData.fields[presetName];
-  },
+  }
 };
 

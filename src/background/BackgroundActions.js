@@ -1,8 +1,8 @@
 import { sendToContent, sendToPopup } from '../background';
 import ActionNames from '../helpers/ActionNames';
 import MyParcelAPI from '../helpers/MyParcelAPI';
+import Presets from '../helpers/Presets';
 import log from '../helpers/log';
-import presets from '../helpers/presets';
 import storage from './storage';
 
 /**
@@ -36,12 +36,12 @@ export default class BackgroundActions {
     } else if (request.hasOwnProperty('preset')) {
       presetName = request.preset;
     } else {
-      presetName = presets.findByURL(href);
+      presetName = Presets.findByURL(href);
       log.success(`Preset '${presetName}' applied.`);
     }
 
     if (presetName) {
-      const presetFields = await presets.getFields(presetName);
+      const presetFields = await Presets.getFields(presetName);
 
       // Add overridden values to the object to be able to differentiate them from preset values (and allow the user to
       // delete them)

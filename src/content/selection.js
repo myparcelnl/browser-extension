@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
 import '../helpers/prototype';
-import config from '../helpers/config';
+import Config from '../helpers/Config';
 import log from '../helpers/log';
 
 const listeners = {};
@@ -121,7 +121,7 @@ export const selection = {
 
     this.removeSelectionClass();
 
-    element.classList.add(config.selectionClass);
+    element.classList.add(Config.selectionClass);
 
     if (element.innerHTML !== element.nodeValue) {
       this.wrap(element.getTextParts());
@@ -129,7 +129,7 @@ export const selection = {
   },
 
   positionTooltip(event) {
-    const tooltip = document.getElementById(config.tooltipClass);
+    const tooltip = document.getElementById(Config.tooltipClass);
     if (!tooltip) {
       return;
     }
@@ -153,19 +153,19 @@ export const selection = {
   },
 
   removeTooltip() {
-    if (document.getElementsByClassName(config.tooltipClass).length) {
-      for (const element of document.getElementsByClassName(config.tooltipClass)) {
+    if (document.getElementsByClassName(Config.tooltipClass).length) {
+      for (const element of document.getElementsByClassName(Config.tooltipClass)) {
         element.remove();
       }
     }
   },
 
   showToolbar(name, text) {
-    if (!document.getElementById(config.tooltipClass)) {
+    if (!document.getElementById(Config.tooltipClass)) {
       this.createToolbar();
     }
 
-    const tooltip = document.getElementById(config.tooltipClass);
+    const tooltip = document.getElementById(Config.tooltipClass);
 
     tooltip.style.display = 'block';
     tooltip.querySelector('span').innerHTML = text;
@@ -173,28 +173,28 @@ export const selection = {
   },
 
   createTooltip() {
-    let tooltip = document.getElementById(config.tooltipClass);
+    let tooltip = document.getElementById(Config.tooltipClass);
     if (tooltip) {
       tooltip.parentElement.removeChild(tooltip);
     }
 
     tooltip = document.createElement('div');
-    tooltip.setAttribute('id', config.tooltipClass);
+    tooltip.setAttribute('id', Config.tooltipClass);
     tooltip.innerHTML = '<div class="arrow"></div><div class="text"><span></span><em></em>or<em class="esc">esc</em></div>';
     document.body.appendChild(tooltip);
   },
 
   hideToolbar() {
-    const tooltip = document.getElementById(config.tooltipClass);
+    const tooltip = document.getElementById(Config.tooltipClass);
     if (tooltip) {
       tooltip.style.display = 'none';
     }
   },
 
   removeSelectionClass() {
-    if (document.getElementsByClassName(config.selectionClass).length) {
-      for (const element of document.getElementsByClassName(config.selectionClass)) {
-        element.classList.remove(config.selectionClass);
+    if (document.getElementsByClassName(Config.selectionClass).length) {
+      for (const element of document.getElementsByClassName(Config.selectionClass)) {
+        element.classList.remove(Config.selectionClass);
       }
     }
   },
@@ -205,7 +205,7 @@ export const selection = {
       if (e.parentElement.childNodes.length > 1 && e.textContent.trim() !== '') {
         const span = document.createElement('span');
         span.innerHTML = e.textContent;
-        span.classList.add(config.wrappedItemClass);
+        span.classList.add(Config.wrappedItemClass);
         e.parentNode.insertBefore(span, e);
         e.parentNode.removeChild(e);
       }
@@ -213,7 +213,7 @@ export const selection = {
   },
 
   unwrap() {
-    const array = document.getElementsByClassName(config.wrappedItemClass);
+    const array = document.getElementsByClassName(Config.wrappedItemClass);
     if (array) {
       for (let i = array.length - 1; i >= 0; i--) {
         const e = array[i];

@@ -1,7 +1,7 @@
 {
   "update_url": "https://clients2.google.com/service/update2/crx",
   "manifest_version": 2,
-  "name": "MyParcel/PostNL shipping label creator",
+  "name": "MyParcel",
   "version": "2.0.0",
   "icons": {
     "16": "dist/images/icon-16px.png",
@@ -11,10 +11,9 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "externally_connectable": {
     "matches": [
-      "*://chrome.test/*",
-      "*://meteor.dev.myparcel.nl/*",
-      "*://backoffice.dev.flespakket.nl/*",
-      "*://backoffice.dev.sendmyparcel.be/*"
+      "*://*.myparcel.nl/*",
+      "*://*.flespakket.nl/*",
+      "*://*.sendmyparcel.be/*"
     ]
   },
   "permissions": [

@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "../../../myparcel-core/dmp-standards/eslint/eslint-vue.config.js"
+  ]
+}

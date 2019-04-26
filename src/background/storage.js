@@ -28,21 +28,9 @@ export default {
    *
    * @return {Object}
    */
-  getSavedMappingsForURL(url) {
-    const fieldMappings = this.getSavedMappings();
+  async getSavedMappingsForURL(url) {
+    const fieldMappings = await this.getSavedMappings();
     return fieldMappings[url];
-  },
-
-  /**
-   * Get settings from storage and set defaults for any settings that are not present.
-   *
-   * @param {string} url - URL to fetch settings for.
-   *
-   * @return {Object} - Settings.
-   */
-  getSettingsForURL(url) {
-    const settings = this.getSavedSettings();
-    return settings[url];
   },
 
   /**
@@ -52,7 +40,7 @@ export default {
    *
    * @return {Promise}
    */
-  async savePreset(data) {
+  async saveMappings(data) {
     const {url, field, path, preset} = data;
     log.event(`savePreset ${preset || field}`);
 
@@ -98,7 +86,14 @@ export default {
    */
   async deleteMappedFields(data) {
     const {url, fields} = data;
+    console.log(await this.getSavedMappingsForURL(url));
     const mappings = await this.getSavedMappingsForURL(url);
+    console.log(mappings);
+
+    // Delete entire key if no values are given.
+    if (!fields) {
+      return this.removeFromStorage(`${Config.mappingPrefix}${url}`);
+    }
 
     fields.forEach((field) => {
       delete mappings[field];

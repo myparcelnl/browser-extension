@@ -2,6 +2,7 @@ import { sendToContent, sendToPopup } from '../background';
 import ActionNames from '../helpers/ActionNames';
 import MyParcelAPI from '../helpers/MyParcelAPI';
 import Presets from '../helpers/Presets';
+import defaultSettings from '../settings/defaultSettings';
 import log from '../helpers/log';
 import storage from './storage';
 
@@ -50,7 +51,7 @@ export default class BackgroundActions {
 
       selectors = {...presetFields, ...selectors};
 
-      storage.savePreset({url: hostname, preset: presetData});
+      storage.saveMappings({url: hostname, preset: presetData});
     }
 
     const data = {
@@ -62,7 +63,8 @@ export default class BackgroundActions {
       data.preset = presetFields;
     }
 
-    if (data.preset || data.selectors) {
+    // Only send to content if either a preset or at least one selector is present.
+    if (data.preset || Object.keys(data.selectors).length) {
       sendToContent(data);
     } else {
       log.warning(`No preset or selectors present for ${hostname}.`);
@@ -70,28 +72,15 @@ export default class BackgroundActions {
   }
 
   /**
-   * Get settings for given URL.
-   *
-   * @param {string} url - URL to fetch settings for.
+   * Get settings and set defaults if there are none available. Send the settings to the popup and also return them to
+   * the background script.
    */
-  static getSettings(url) {
-    const settings = storage.getSettingsForURL(url);
-    console.log(settings);
-
+  static async getSettings() {
+    const savedSettings = await storage.getSavedSettings();
+    const settings = {...defaultSettings, savedSettings};
+    sendToPopup({action: ActionNames.foundSettings, settings});
     return settings;
   }
-
-  /**
-   * Get saved mappings from Chrome synced storage.
-   *
-   * @param {Object} request - Request object.
-   *
-   * @return {Promise}
-   */
-  // getStorage(request) {
-  //   const data = storage.getSavedMappings();
-  //   sendToPopup(Object.assign(request, {data}));
-  // },
 
   /**
    * Save mapped field to local storage and send it to popup if not null.
@@ -100,7 +89,7 @@ export default class BackgroundActions {
    */
   static saveMappedField(request) {
     if (request.path !== null) {
-      storage.savePreset(request);
+      storage.saveMappings(request);
       sendToPopup(request);
     }
   }
@@ -111,10 +100,8 @@ export default class BackgroundActions {
    * @param {Object} request - Request object.
    */
   static saveSettings(request) {
-    if (request.path !== null) {
-      storage.saveSettings(request);
-      sendToPopup(request);
-    }
+    storage.saveSettings(request);
+    sendToPopup({...request, action: ActionNames.savedSettings});
   }
 
   /**

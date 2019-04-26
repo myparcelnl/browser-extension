@@ -17,6 +17,11 @@ export default class ContextMenu {
       title: Config.contextMenuTitle,
       contexts: ['selection'],
     });
+    // window.chrome.contextMenus.create({
+    //   id: Config.contextMenuItemId + '_2',
+    //   title: 'Open backoffice',
+    //   contexts: ['browser_action'],
+    // });
   }
 
   /**

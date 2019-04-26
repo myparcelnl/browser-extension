@@ -1,9 +1,8 @@
 /* eslint-disable no-magic-numbers,no-console */
 import ActionNames from './helpers/ActionNames';
 import BackgroundActions from './background/BackgroundActions';
-import config from './helpers/config';
-import contextMenu from './background/context-menu';
-import defaultSettings from './settings/defaultSettings';
+import Config from './helpers/Config';
+import ContextMenu from './background/ContextMenu';
 import log from './helpers/log';
 import storage from './background/storage';
 
@@ -37,10 +36,10 @@ export let contentConnection;
  * @param {Object} data - Request object.
  */
 export const sendToPopup = (data) => {
-  log.popup(data.action);
   if (background.popupConnected) {
     try {
       popupConnection.postMessage(data);
+      log.popup(data.action);
     } catch (e) {
       log.error(e);
       background.popupQueue.push(data);
@@ -57,10 +56,10 @@ export const sendToPopup = (data) => {
  * @param {Object} data - Request object.
  */
 export const sendToContent = (data) => {
-  log.content(data.action);
   if (background.contentConnected) {
     try {
       contentConnection.postMessage(data);
+      log.content(data.action);
     } catch (e) {
       log.error(e);
       background.contentQueue.push(data);
@@ -94,10 +93,12 @@ const background = {
 
   /**
    * Loads config file then binds all events and scripts.
+   *
+   * @param {string} app - App name.
    */
-  async boot() {
-    await this.loadConfig('flespakket');
-    this.getSettings();
+  async boot(app) {
+    await this.loadConfig(app);
+    this.setSettings();
 
     this.popupQueue = [];
     this.contentQueue = [];
@@ -118,8 +119,8 @@ const background = {
   /**
    * Get saved settings and add save them to the settings object.
    */
-  getSettings() {
-    this.settings = {...defaultSettings, ...storage.getSavedSettings()};
+  setSettings() {
+    this.settings = BackgroundActions.getSettings();
   },
 
   /**
@@ -130,10 +131,10 @@ const background = {
    * @return {Promise}
    */
   async loadConfig(app) {
-    const response = await fetch(chrome.extension.getURL(config.configFile));
+    const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
-    this.popupExternalUrl = json.apps[app];
+    this.popupExternalURL = json.apps[app];
     this.popupDimensions = json.popupDimensions;
     this.development = json.development;
   },
@@ -202,7 +203,7 @@ const background = {
         break;
 
       case ActionNames.getSettings:
-        BackgroundActions.getSettings(request);
+        this.setSettings(request.url);
         break;
 
         // case ActionNames.getContent:
@@ -215,7 +216,7 @@ const background = {
         //   return ActionNames.getFieldSettingsForURL(request);
 
       case ActionNames.getContent:
-        await BackgroundActions.getContent({...request, url: this.getUrl()});
+        await BackgroundActions.getContent({...request, url: this.getURL()});
         break;
     }
   },
@@ -225,8 +226,12 @@ const background = {
    *
    * @return {URL}
    */
-  getUrl() {
-    return activeTab ? new URL(activeTab.url) : window.location;
+  async getURL() {
+    if (!activeTab) {
+      this.activateTab(await this.getActiveTab());
+    }
+
+    return new URL(activeTab.url);
   },
 
   /**
@@ -292,7 +297,7 @@ const background = {
     log.info('sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
-    await BackgroundActions.getContent({...request, url: new URL(activeTab.url) || window.location});
+    await BackgroundActions.getContent({...request, url: this.getURL()});
     sendToPopup({...request, action: ActionNames.backgroundConnected});
   },
 
@@ -349,14 +354,10 @@ const background = {
       return;
     }
 
-    if (!activeTab) {
-      activeTab = tab;
-    }
-
     const insertScripts = () => {
       log.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
-      chrome.tabs.insertCSS(tab.id, {file: config.contentCSS});
-      chrome.tabs.executeScript(tab.id, {file: config.contentJS});
+      chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS});
+      chrome.tabs.executeScript(tab.id, {file: Config.contentJS});
     };
 
     try {
@@ -420,7 +421,7 @@ const background = {
    */
   async updateTab(id, data, tab) {
     log.event('updateTab');
-    if (data.status === 'complete' && activeTab && activeTab.id === tab.id) {
+    if (data.status === 'complete' && (!activeTab || activeTab.id !== tab.id)) {
       await this.activateTab(tab);
       this.setIcon();
 
@@ -486,7 +487,7 @@ const background = {
       const {height, width} = this.popupDimensions;
       chrome.windows.getCurrent((win) => {
         chrome.windows.create({
-          url: this.popupExternalUrl,
+          url: this.popupExternalURL,
           type: 'popup',
           left: win.left + win.width,
           top: win.top,
@@ -502,9 +503,10 @@ const background = {
   /**
    * Show popup if it exists or create it.
    *
-   * @param {chrome.tabs.Tab} tab - Chrome tab object.
+   * @param {chrome.tabs.Tab} tab - The tab the extension button was clicked from..
    */
   async openPopup(tab) {
+    this.activateTab(tab);
     if (popup) {
       await this.showPopup();
     } else {
@@ -518,8 +520,7 @@ const background = {
       popup = await this.createPopup();
     }
 
-    this.injectScripts(tab);
-    this.setIcon(config.activeIcon);
+    this.setIcon(Config.activeIcon);
     // BackgroundActions.getContent(url);
   },
 
@@ -528,7 +529,7 @@ const background = {
    */
   createShipment() {
     log.info('creating shipment');
-    const settings = storage.getSavedMappingsForURL(activeTab.url);
+    const settings = storage.getSavedMappingsForURL(this.getURL().hostname);
     console.log(settings);
   },
 
@@ -561,11 +562,11 @@ const background = {
    *
    * @param {string} path - Path to icon file.
    */
-  setIcon(path = config.defaultIcon) {
+  setIcon(path = Config.defaultIcon) {
     chrome.browserAction.setIcon({path});
   },
 };
 
-background.boot();
+background.boot('flespakket');
 
 export default background;

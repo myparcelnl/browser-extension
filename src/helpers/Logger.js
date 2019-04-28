@@ -58,7 +58,7 @@ export default class Logger {
    * Message to or from popup.
    *
    * @param {string} message - Message to output.
-   * @param {boolean} receiving - Whether the message is inbound or outbound.
+   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
    */
   static popup(message, receiving = false) {
     console.log(
@@ -74,7 +74,7 @@ export default class Logger {
    * Message to or from content.
    *
    * @param {string} message - Message to output.
-   * @param {boolean} receiving - Whether the message is inbound or outbound.
+   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
    */
   static content(message, receiving = false) {
     console.log(
@@ -90,7 +90,7 @@ export default class Logger {
    * Message to or from background.
    *
    * @param {string} message - Message to output.
-   * @param {boolean} receiving - Whether the message is inbound or outbound.
+   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
    */
   static background(message, receiving = false) {
     console.log(
@@ -107,7 +107,7 @@ export default class Logger {
    *
    * @param {string} type - Corresponds to function name.
    * @param {Object} request - Request object.
-   * @param {boolean} receiving - Whether the message is inbound or outbound.
+   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
    *
    * @example Logger.request('background', data, true); // Creates a background-style inbound message.
    * @example Logger.request('popup', data); // Creates a popup-style outbound message.
@@ -120,7 +120,7 @@ export default class Logger {
   /**
    * Set inbound, outbound or queue message color.
    *
-   * @param {boolean|string} bool - Boolean or 'queue'.
+   * @param {boolean|string} bool - Boolean or `queue`.
    * @return {string} - CSS.
    */
   static color(bool) {

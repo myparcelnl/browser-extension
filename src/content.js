@@ -1,6 +1,6 @@
-import ContentActions from './content/ContentActions';
 import ActionNames from './helpers/ActionNames';
-import log from './helpers/log';
+import ContentActions from './content/ContentActions';
+import Logger from './helpers/Logger'; // strip-log
 import { selection } from './content/selection';
 
 const listeners = {};
@@ -41,8 +41,8 @@ const content = {
    * @param {string} action - Action name.
    * @param {Object} data - Request content.
    */
-  sendToBackground(action, data) {
-    log.background(action);
+  sendToBackground(action, data = {}) {
+    Logger.request('background', action);
     backgroundConnection.postMessage({url: window.location.hostname, ...data, action});
   },
 
@@ -53,7 +53,7 @@ const content = {
    */
   async backgroundListener(request) {
     const {field, action, selectors, preset} = request;
-    log.request('background', request, true);
+    Logger.request('background', request, true);
 
     switch (action) {
       case ActionNames.switchedTab:
@@ -67,9 +67,6 @@ const content = {
       case ActionNames.getContent:
         await ContentActions.getContent({preset, selectors});
         break;
-
-        // case ActionNames.getContent:
-        //   return ContentActions.getContent(request);
 
       case ActionNames.stopListening:
         backgroundConnection.onMessage.removeListener(listeners.background);

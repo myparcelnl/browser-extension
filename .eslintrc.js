@@ -10,5 +10,8 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  extends: ['../myparcel-core/dmp-standards/eslint/eslint-es6.config.js'],
+  extends: [
+    '../myparcel-core/dmp-standards/eslint/eslint-jest.config.js',
+    '../myparcel-core/dmp-standards/eslint/eslint-es6.config.js'
+  ],
 };

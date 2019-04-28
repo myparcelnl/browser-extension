@@ -1,3 +1,5 @@
+import background from '../src/background';
+
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const path = require('path');
@@ -34,4 +36,11 @@ describe('Build and install Chrome extension', () => {
     expect(browser).toBeTruthy();
     await browser.close();
   }, 5000);
+});
+
+describe('More things', () => {
+  it('should be able to communicate', async () => {
+    background.isWebsite()
+  });
+
 });

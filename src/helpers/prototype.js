@@ -59,7 +59,7 @@ Element.prototype.getTextParts = function() {
  *
  * @return {boolean}
  */
-Element.prototype.hasDepth = function(i) {
+EventTarget.prototype.hasDepth = function(i) {
   if (i < 1) {
     return true;
   }

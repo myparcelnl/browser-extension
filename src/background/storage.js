@@ -1,5 +1,5 @@
 import Config from '../helpers/Config';
-import log from '../helpers/log';
+import Logger from '../helpers/Logger'; // strip-log
 
 export default {
 
@@ -42,7 +42,6 @@ export default {
    */
   async saveMappings(data) {
     const {url, field, path, preset} = data;
-    log.event(`savePreset ${preset || field}`);
 
     const mappings = await this.getSavedMappingsForURL(url) || {};
 
@@ -112,7 +111,7 @@ export default {
    * @param {string} prefix - Prefix to filter by.
    * @return {Promise<Object>}
    */
-  getStorageKeys(prefix = null) {
+  getStorageKeys(prefix = undefined) {
     return new Promise((resolve) => {
       chrome.storage.sync.get(null, (result) => {
         if (prefix) {
@@ -169,7 +168,7 @@ export default {
   /**
    * Clear all keys in storage.
    *
-  * @param {Function} callback - Callback function.
+   * @param {Function} callback - Callback function.
    */
   clearAll(callback = undefined) {
     chrome.storage.sync.clear(callback);

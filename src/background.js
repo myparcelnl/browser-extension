@@ -3,8 +3,7 @@ import ActionNames from './helpers/ActionNames';
 import BackgroundActions from './background/BackgroundActions';
 import Config from './helpers/Config';
 import ContextMenu from './background/ContextMenu';
-import log from './helpers/log';
-import storage from './background/storage';
+import Logger from './helpers/Logger'; // strip-log
 
 /**
  * @type {chrome.tabs.Tab}
@@ -19,14 +18,14 @@ export let activeTab;
 /**
  * Connection with the popup script..
  *
- * @type {MessagePort}
+ * @type {chrome.runtime.Port}
  */
 export let popupConnection;
 
 /**
  * Connection with the injected content script.
  *
- * @type {MessagePort}
+ * @type {chrome.runtime.Port}
  */
 export let contentConnection;
 
@@ -36,17 +35,17 @@ export let contentConnection;
  * @param {Object} data - Request object.
  */
 export const sendToPopup = (data) => {
-  if (background.popupConnected) {
+  if (Background.popupConnected) {
     try {
       popupConnection.postMessage(data);
-      log.popup(data.action);
+      Logger.request('popup', data.action);
     } catch (e) {
-      log.error(e);
-      background.popupQueue.push(data);
+      Logger.error(e);
+      Background.popupQueue.push(data);
     }
   } else {
-    log.popup(data.action, 'queue');
-    background.popupQueue.push(data);
+    Logger.request('popup', data.action, 'queue');
+    Background.popupQueue.push(data);
   }
 };
 
@@ -56,16 +55,16 @@ export const sendToPopup = (data) => {
  * @param {Object} data - Request object.
  */
 export const sendToContent = (data) => {
-  if (background.contentConnected) {
+  if (Background.contentConnected) {
     try {
       contentConnection.postMessage(data);
-      log.content(data.action);
+      Logger.request('content', data.action);
     } catch (e) {
-      log.error(e);
-      background.contentQueue.push(data);
+      Logger.error(e);
+      Background.contentQueue.push(data);
     }
   } else {
-    background.contentQueue.push(data);
+    Background.contentQueue.push(data);
   }
 };
 
@@ -89,23 +88,36 @@ const flushQueue = (queue, sendFunction) => {
   return [];
 };
 
-const background = {
+class Background {
+
+  /**
+   * @type {Array}
+   */
+  static popupQueue = [];
+
+  /**
+   * @type {Array}
+   */
+  static contentQueue = [];
+
+  /**
+   * @type {boolean|number}
+   */
+  static popupConnected = false;
+
+  /**
+   * @type {boolean|number}
+   */
+  static contentConnected = false;
 
   /**
    * Loads config file then binds all events and scripts.
    *
    * @param {string} app - App name.
    */
-  async boot(app) {
+  static async boot(app) {
     await this.loadConfig(app);
     this.setSettings();
-
-    this.popupQueue = [];
-    this.contentQueue = [];
-
-    this.popupConnected = false;
-    this.contentConnected = false;
-
     this.bindEvents();
 
     if (this.settings.context_menu_enabled === true) {
@@ -114,14 +126,14 @@ const background = {
 
     this.bindPopupScript();
     this.bindContentScript();
-  },
+  }
 
   /**
    * Get saved settings and add save them to the settings object.
    */
-  setSettings() {
+  static setSettings() {
     this.settings = BackgroundActions.getSettings();
-  },
+  }
 
   /**
    * Fetch config file and set variables.
@@ -130,39 +142,38 @@ const background = {
    *
    * @return {Promise}
    */
-  async loadConfig(app) {
+  static async loadConfig(app) {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
     this.popupExternalURL = json.apps[app];
     this.popupDimensions = json.popupDimensions;
     this.development = json.development;
-  },
+  }
 
   /**
    * Bind the popup script connection and map external ActionNames.
    */
-  bindPopupScript() {
+  static bindPopupScript() {
     chrome.runtime.onConnectExternal.addListener((port) => {
       popupConnection = port;
       port.onMessage.addListener((...args) => {
         this.popupListener(...args);
       });
     });
-  },
+  }
 
   /**
    * Bind the injected content script connection and map ActionNames.
    */
-  bindContentScript() {
+  static bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
-      // console.log(port);
       contentConnection = port;
       port.onMessage.addListener((...args) => {
         this.contentScriptListener(...args);
       });
     });
-  },
+  }
 
   /**
    * Listener for popup script ActionNames.
@@ -171,8 +182,8 @@ const background = {
    *
    * @return {undefined}
    */
-  async popupListener(request) {
-    log.request('popup', request, true);
+  static async popupListener(request) {
+    Logger.request('popup', request, true);
 
     switch (request.action) {
 
@@ -219,32 +230,32 @@ const background = {
         await BackgroundActions.getContent({...request, url: this.getURL()});
         break;
     }
-  },
+  }
 
   /**
    * Get the active tab URL if available, otherwise get window URL.
    *
    * @return {URL}
    */
-  async getURL() {
+  static async getURL() {
     if (!activeTab) {
       this.activateTab(await this.getActiveTab());
     }
 
     return new URL(activeTab.url);
-  },
+  }
 
   /**
    * Listener for content script ActionNames.
    *
    * @param {Object} request - Request object.
    */
-  contentScriptListener(request) {
-    log.request('content', request, true);
+  static async contentScriptListener(request) {
+    Logger.request('content', request, true);
 
     switch (request.action) {
       case ActionNames.contentConnected:
-        this.onContentConnect(request);
+        await this.onContentConnect(request);
         break;
 
       case ActionNames.mappedField:
@@ -261,7 +272,7 @@ const background = {
         break;
 
       case ActionNames.trackShipment:
-        BackgroundActions.trackShipment(request.barcode);
+        BackgroundActions.trackShipment(request.barcode, request.postalCode, request.countryCode);
         break;
 
       case ActionNames.foundContent:
@@ -272,39 +283,39 @@ const background = {
       //   ActionNames.createShipment(request);
       //   break;
     }
-  },
+  }
 
   /**
    * Set popupConnected, flush the popup queue and tell the popup the background is ready.
    */
-  onPopupConnect() {
+  static onPopupConnect() {
     this.popupConnected = true;
-    log.info('sending popup queue');
+    Logger.info('sending popup queue');
     this.popupQueue = flushQueue(this.popupQueue, sendToPopup);
 
     // if (activeTab && activeTab.url) {
     //   ActionNames.getContent({url: activeTab.url});
     // }
-  },
+  }
 
   /**
    * Set contentConnected, flush the content queue and tell the popup the content script is ready.
    *
    * @param {Object} request - Request object.
    */
-  async onContentConnect(request) {
+  static async onContentConnect(request) {
     this.contentConnected = activeTab.id;
-    log.info('sending content queue');
+    Logger.info('sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
     await BackgroundActions.getContent({...request, url: this.getURL()});
     sendToPopup({...request, action: ActionNames.backgroundConnected});
-  },
+  }
 
   /**
    * Binds all browser events to functions.
    */
-  bindEvents() {
+  static bindEvents() {
     // Extension button click
     chrome.browserAction.onClicked.addListener((...args) => {
       this.openPopup(...args);
@@ -319,13 +330,12 @@ const background = {
 
     // Tab listeners
     chrome.tabs.onHighlighted.addListener(() => {
-      // log.event('onHighlighted – not doing anything');
-      log.event('onHighlighted – switchTab()');
+      Logger.event('onHighlighted – switchTab()');
       this.switchTab();
     });
 
     chrome.tabs.onReplaced.addListener(() => {
-      log.event('onReplaced – switchTab()');
+      Logger.event('onReplaced – switchTab()');
       this.switchTab();
     });
 
@@ -335,34 +345,34 @@ const background = {
 
     // Window listeners
     chrome.windows.onFocusChanged.addListener(() => {
-      log.event('onFocusChanged – switchTab()');
+      Logger.event('onFocusChanged – switchTab()');
       this.switchTab();
     });
 
     chrome.windows.onRemoved.addListener((...args) => {
       this.checkPopupClosed(...args);
     });
-  },
+  }
 
   /**
    * Checks if script and css are present on current tab and injects them if not.
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
-  injectScripts(tab) {
+  static injectScripts(tab) {
     if (!tab) {
       return;
     }
 
     const insertScripts = () => {
-      log.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
+      Logger.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
       chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS});
       chrome.tabs.executeScript(tab.id, {file: Config.contentJS});
     };
 
     try {
       if (tab.id === this.contentConnected) {
-        log.event('Script already present');
+        Logger.event('Script already present');
         sendToContent({action: ActionNames.checkContentConnection});
       } else {
         throw 'content not connected';
@@ -370,13 +380,12 @@ const background = {
     } catch (e) {
       insertScripts();
     }
-  },
+  }
 
   /**
    * Set active tab and send messages to popup and content to process the change.
    */
-  async switchTab() {
-    log.separator();
+  static async switchTab() {
     const tab = await this.getActiveTab();
 
     if (!tab || !popup || tab.id === popup.id || (activeTab && tab.id === activeTab.id)) {
@@ -392,14 +401,14 @@ const background = {
     if (contentConnection) {
       sendToContent({action: ActionNames.switchedTab});
     }
-  },
+  }
 
   /**
    * Gets the active tab based on a query.
    *
    * @return {Promise<chrome.tabs.Tab>}
    */
-  getActiveTab() {
+  static getActiveTab() {
     return new Promise((resolve) => {
       chrome.tabs.query(
         {
@@ -410,7 +419,7 @@ const background = {
         (tabs) => resolve(tabs[0]),
       );
     });
-  },
+  }
 
   /**
    * On updating tab set new tab as active tab and change app icon.
@@ -419,70 +428,71 @@ const background = {
    * @param {chrome.tabs.TabChangeInfo} data - Chrome event data.
    * @param {chrome.tabs.Tab} tab  - Chrome tab object.
    */
-  async updateTab(id, data, tab) {
-    log.event('updateTab');
+  static async updateTab(id, data, tab) {
+    Logger.event('updateTab');
     if (data.status === 'complete' && (!activeTab || activeTab.id !== tab.id)) {
       await this.activateTab(tab);
       this.setIcon();
 
       sendToContent({action: ActionNames.checkContentConnection});
     }
-  },
+  }
 
   /**
    * When a window is closed check if it's our popup and clean up if so.
    *
    * @param {number} windowId - Chrome window ID.
    */
-  checkPopupClosed(windowId) {
+  static checkPopupClosed(windowId) {
     if (popup && windowId === popup.windowId) {
       this.closePopup(windowId);
     }
-  },
+  }
 
   /**
    * Set given tab to active and content scripts on tab.
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
-  activateTab(tab) {
-    this.checkIfWebsite(tab);
+  static activateTab(tab) {
     activeTab = tab;
 
-    if (this.isWebsite) {
+    if (this.isWebsite(tab)) {
       this.injectScripts(tab);
     }
-  },
+  }
 
   /**
    * On moving focus update current window and tab.
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
-  moveFocus(tab = activeTab) {
+  static moveFocus(tab = activeTab) {
     console.log(tab);
     chrome.windows.update(tab.windowId, {focused: true});
     chrome.tabs.update(tab.id, {active: true});
-  },
+  }
 
   /**
    * Check if given tab is a website and not a Chrome page.
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
+   *
+   * @return {boolean}
    */
-  checkIfWebsite(tab) {
+  static isWebsite(tab) {
     const {url, windowId} = tab;
-    const notPopup = popup ? windowId !== popup.id : true;
+    const notPopup = popup ? windowId !== popup.windowId : true;
 
-    this.isWebsite = url && url.startsWith('http') && notPopup;
-  },
+    return url && url.startsWith('http') && notPopup;
+  }
 
   /**
    * Create popup and load given URL in it.
    *
-   * @return {Promise<Object>}
+   * @return {Promise<chrome.tabs.Tab>}
    */
-  createPopup() {
+  static createPopup() {
     return new Promise((resolve) => {
       const {height, width} = this.popupDimensions;
       chrome.windows.getCurrent((win) => {
@@ -498,14 +508,14 @@ const background = {
         });
       });
     });
-  },
+  }
 
   /**
    * Show popup if it exists or create it.
    *
    * @param {chrome.tabs.Tab} tab - The tab the extension button was clicked from..
    */
-  async openPopup(tab) {
+  static async openPopup(tab) {
     this.activateTab(tab);
     if (popup) {
       await this.showPopup();
@@ -522,51 +532,42 @@ const background = {
 
     this.setIcon(Config.activeIcon);
     // BackgroundActions.getContent(url);
-  },
-
-  /**
-   * Create a shipment.
-   */
-  createShipment() {
-    log.info('creating shipment');
-    const settings = storage.getSavedMappingsForURL(this.getURL().hostname);
-    console.log(settings);
-  },
+  }
 
   /**
    * Switch focus to our popup.
    */
-  showPopup() {
+  static showPopup() {
     chrome.windows.getCurrent(() => {
       chrome.windows.update(popup.windowId, {
         focused: true,
         drawAttention: true,
       });
     });
-  },
+  }
 
   /**
    * Clean up on closing of popup. Resets variables and extension icon.
    */
-  async closePopup() {
+  static async closePopup() {
     await sendToContent({action: ActionNames.stopListening});
     popup = null;
     popupConnection = null;
     activeTab = null;
     this.popupConnected = false;
     this.setIcon();
-  },
+  }
 
   /**
    * Changes the extension icon to given path.
    *
    * @param {string} path - Path to icon file.
    */
-  setIcon(path = Config.defaultIcon) {
+  static setIcon(path = Config.defaultIcon) {
     chrome.browserAction.setIcon({path});
-  },
-};
+  }
+}
 
-background.boot('flespakket');
+Background.boot('flespakket');
 
-export default background;
+export default Background;

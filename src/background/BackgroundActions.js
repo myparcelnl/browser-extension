@@ -1,9 +1,9 @@
 import { sendToContent, sendToPopup } from '../background';
 import ActionNames from '../helpers/ActionNames';
+import Logger from '../helpers/Logger'; // strip-log
 import MyParcelAPI from '../helpers/MyParcelAPI';
 import Presets from '../helpers/Presets';
 import defaultSettings from '../settings/defaultSettings';
-import log from '../helpers/log';
 import storage from './storage';
 
 /**
@@ -23,7 +23,7 @@ export default class BackgroundActions {
    * @return {Promise}
    */
   static async getContent(request) {
-    const {url} = request;
+    const {url} = await request;
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
     const {hostname, href} = url;
 
@@ -38,7 +38,9 @@ export default class BackgroundActions {
       presetName = request.preset;
     } else {
       presetName = Presets.findByURL(href);
-      log.success(`Preset '${presetName}' applied.`);
+      if (process.env.NODE_ENV === 'development') {
+        Logger.success(`Preset '${presetName}' applied.`);
+      }
     }
 
     if (presetName) {
@@ -67,7 +69,7 @@ export default class BackgroundActions {
     if (data.preset || Object.keys(data.selectors).length) {
       sendToContent(data);
     } else {
-      log.warning(`No preset or selectors present for ${hostname}.`);
+      Logger.warning(`No preset or selectors present for ${hostname}.`);
     }
   }
 

@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 import '../helpers/prototype';
 import Config from '../helpers/Config';
-import log from '../helpers/log';
+import Logger from '../helpers/Logger'; // strip-log
 
 const listeners = {};
 
@@ -51,7 +51,7 @@ export const selection = {
   startMapping(resolve) {
     // remove existing listeners (if any)
     this.stopMapping();
-    log.info('Start mapping');
+    Logger.info('Start mapping');
 
     listeners.click = (event) => selection.handleClick(event, resolve);
     listeners.keyup = (event) => selection.handleKeyup(event, resolve);
@@ -66,7 +66,7 @@ export const selection = {
    * Remove event listeners for mapping field.
    */
   stopMapping() {
-    log.info('Stop mapping');
+    Logger.info('Stop mapping');
 
     document.removeEventListener('click', listeners.click);
     document.removeEventListener('keyup', listeners.keyup);
@@ -81,12 +81,14 @@ export const selection = {
   /**
    * Keyup event listener to check for escape button press.
    *
-   * @param {event} event - Keyup event.
+   * @param {KeyboardEvent} event - Keyup event.
    * @param {Function} resolve - Resolve function.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
    */
   handleKeyup(event, resolve) {
     // Check if escape is pressed
-    if (event.keyCode === 27) {
+    if (event.key === 'Escape') {
       this.stopMapping();
       resolve(null);
     }
@@ -95,8 +97,8 @@ export const selection = {
   /**
    * Click event listener that gets content and path of clicked element.
    *
-   * @param event
-   * @param resolve
+   * @param {MouseEvent} event - Mouse event.
+   * @param {Function} resolve - Promise resolve function.
    */
   handleClick(event, resolve) {
     event.stopPropagation();
@@ -107,11 +109,22 @@ export const selection = {
     resolve(path);
   },
 
+  /**
+   * On mouse move.
+   *
+   * @param {MouseEvent} event - Mouse event.
+   */
   handleMouseMove(event) {
     this.addSelectionClass(event);
     this.positionTooltip(event);
   },
 
+  /**
+   *
+   * @param {MouseEvent} event - Mouse event.
+   *
+   * @returns {boolean}
+   */
   addSelectionClass(event) {
     if (event.target.hasDepth(3)) {
       return false;

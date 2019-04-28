@@ -1,4 +1,6 @@
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 
@@ -6,26 +8,38 @@ module.exports = (env, argv) => {
   const isProd = argv.mode === 'production';
   const prodPlugins = [];
   const babelProdPlugins = [];
+  const prodRules = [];
 
   if (isProd) {
     // Don't import Logger.js.
     prodPlugins.push(new webpack.IgnorePlugin({
       resourceRegExp: /helpers\/Logger$/,
     }));
+    prodRules.push({
+      test: /\.js?$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'webpack-strip-log-loader',
+        options: {
+          modules: ['Logger'],
+        },
+      },
+    },);
   }
 
   return {
     mode: 'production',
     entry: {
-      functions: ['./src/scss/content.scss'],
       background: './src/background.js',
-      content: './src/content.js',
+      content: ['./src/content.js', './src/scss/content.scss'],
+      popup: ['./src/app/popup.js', './src/scss/popup.scss'],
     },
     output: {
       filename: 'js/[name].js',
     },
     plugins: [
       ...prodPlugins,
+      new CleanWebpackPlugin(),
       new CopyWebpackPlugin([
         {
           from: 'src/images',
@@ -33,22 +47,18 @@ module.exports = (env, argv) => {
         },
       ]),
       new MiniCssExtractPlugin({
-        filename: '[name].css',
+        filename: 'css/[name].css',
         chunkFilename: '[id].css',
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'popup.html',
+        template: 'src/app/popup.html',
+        chunks: ['popup'],
       }),
     ],
     module: {
       rules: [
-        {
-          test: /\.js?$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'webpack-strip-log-loader',
-            options: {
-              modules: ['Logger'],
-            },
-          },
-        },
+        ...prodRules,
         {
           test: /\.m?js$/,
           exclude: /node_modules/,
@@ -68,14 +78,9 @@ module.exports = (env, argv) => {
         {
           test: /\.scss$/,
           use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'css/[name].css',
-              },
-            },
-            'extract-loader',
-            'css-loader?-url',
+            'file-loader',
+            { loader: MiniCssExtractPlugin.loader },
+            'css-loader',
             'sass-loader',
           ],
         },

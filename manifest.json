@@ -21,7 +21,6 @@
     "webNavigation",
     "tabs",
     "notifications",
-    "create",
     "*://*/*",
     "contextMenus",
     "tabs",
@@ -33,6 +32,7 @@
     ]
   },
   "browser_action": {
+    "default_popup": "dist/popup.html",
     "default_icon": "dist/images/icon-128px.png"
   }
 }

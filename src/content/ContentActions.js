@@ -1,6 +1,6 @@
 import { clickedElement, elementsContent } from './selection';
 import ActionNames from '../helpers/ActionNames';
-import content from '../content';
+import Content from '../content';
 
 /**
  * Actions to run from the content script.
@@ -16,7 +16,7 @@ export default class ContentActions {
    */
   static async getContent(request) {
     const values = await elementsContent(request.selectors);
-    content.sendToBackground(ActionNames.foundContent, {...request, values});
+    Content.sendToBackground(ActionNames.foundContent, {...request, values});
   }
 
   /**
@@ -31,6 +31,6 @@ export default class ContentActions {
     const elementContent = await elementsContent(path);
 
     const data = {field, path, content: elementContent};
-    content.sendToBackground(ActionNames.mappedField, data);
+    Content.sendToBackground(ActionNames.mappedField, data);
   }
 }

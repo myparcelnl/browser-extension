@@ -110,6 +110,16 @@ class Background {
    */
   static contentConnected = false;
 
+  static preBoot() {
+    Logger.event('Awaiting boot choice.');
+    const listener = async(appName) => {
+      Logger.event(`Attempting to load app "${appName}"`);
+      await this.boot(appName);
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+    chrome.runtime.onMessage.addListener(listener);
+  }
+
   /**
    * Loads config file then binds all events and scripts.
    *
@@ -117,6 +127,9 @@ class Background {
    */
   static async boot(app) {
     await this.loadConfig(app);
+    await this.createPopup();
+    chrome.browserAction.setPopup({popup: ''});
+
     this.setSettings();
     this.bindEvents();
 
@@ -568,6 +581,6 @@ class Background {
   }
 }
 
-Background.boot('flespakket');
+Background.preBoot();
 
 export default Background;

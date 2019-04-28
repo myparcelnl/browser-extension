@@ -6,14 +6,14 @@ import { selection } from './content/selection';
 const listeners = {};
 let backgroundConnection;
 
-const content = {
+export default class Content {
 
   /**
    * Set up the event listeners for the background script.
    *
    * @return {Promise}
    */
-  async boot() {
+  static async boot() {
     listeners.background = (...args) => this.backgroundListener(...args);
     listeners.disconnect = () => selection.stopMapping();
 
@@ -22,18 +22,18 @@ const content = {
     backgroundConnection.onMessage.addListener(listeners.background);
     backgroundConnection.onDisconnect.addListener(listeners.disconnect);
     this.sendToBackground(ActionNames.contentConnected);
-  },
+  }
 
   /**
    * Establish the connection to the background script.
    *
    * @return {MessagePort}
    */
-  establishConnection() {
+  static establishConnection() {
     return new Promise((resolve) => {
       resolve(chrome.runtime.connect({name: 'MyParcelContentScript'}));
     });
-  },
+  }
 
   /**
    * Send data to background script.
@@ -41,17 +41,17 @@ const content = {
    * @param {string} action - Action name.
    * @param {Object} data - Request content.
    */
-  sendToBackground(action, data = {}) {
+  static sendToBackground(action, data = {}) {
     Logger.request('background', action);
     backgroundConnection.postMessage({url: window.location.hostname, ...data, action});
-  },
+  }
 
   /**
    * Listener for messages from background script.
    *
    * @param {Object} request - Request object.
    */
-  async backgroundListener(request) {
+  static async backgroundListener(request) {
     const {field, action, selectors, preset} = request;
     Logger.request('background', request, true);
 
@@ -73,9 +73,7 @@ const content = {
         backgroundConnection.disconnect();
         break;
     }
-  },
+  }
 };
 
-content.boot();
-
-export default content;
+Content.boot();

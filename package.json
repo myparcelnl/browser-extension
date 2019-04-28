@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "webpack-dev-server --config build/webpack.dev.conf.js",
     "build": "webpack -p --config build/webpack.prod.conf.js",
+    "stage": "webpack -p --env.NODE_ENV=staging --config build/webpack.stage.conf.js",
     "watch": "webpack -p --watch --config build/webpack.prod.conf.js",
     "test": "jest"
   },

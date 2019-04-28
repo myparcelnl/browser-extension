@@ -159,7 +159,8 @@ class Background {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
-    this.popupExternalURL = json.apps[app];
+    // Get app by name and current environment.
+    this.popupExternalURL = json.apps[process.env.NODE_ENV][app];
     this.popupDimensions = json.popupDimensions;
     this.development = json.development;
   }

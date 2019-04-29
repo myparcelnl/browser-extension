@@ -2,6 +2,9 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ZipPlugin = require('zip-webpack-plugin');
+const packageData = require('../package.json');
+const path = require('path');
 const webpack = require('webpack');
 
 module.exports = (env, argv) => {
@@ -10,11 +13,28 @@ module.exports = (env, argv) => {
   const babelProdPlugins = [];
   const prodRules = [];
 
+  prodPlugins.push(
+    new ZipPlugin({
+      path: path.resolve(__dirname, '../zip'),
+      filename: `chrome-extension-${packageData.version}.zip`,
+      include: ['dist', 'manifest.json', 'config'],
+      exclude: [/\.zip$/],
+      fileOptions: {
+        compress: true,
+      },
+    })
+  );
+
   if (isProd) {
+
     // Don't import Logger.js.
     prodPlugins.push(new webpack.IgnorePlugin({
       resourceRegExp: /helpers\/Logger$/,
     }));
+
+    // Clean dist folder before building
+    prodPlugins.push(new CleanWebpackPlugin());
+
     prodRules.push({
       test: /\.js?$/,
       exclude: /node_modules/,
@@ -24,7 +44,7 @@ module.exports = (env, argv) => {
           modules: ['Logger'],
         },
       },
-    },);
+    });
   }
 
   return {
@@ -39,7 +59,6 @@ module.exports = (env, argv) => {
     },
     plugins: [
       ...prodPlugins,
-      new CleanWebpackPlugin(),
       new CopyWebpackPlugin([
         {
           from: 'src/images',
@@ -79,7 +98,7 @@ module.exports = (env, argv) => {
           test: /\.scss$/,
           use: [
             'file-loader',
-            { loader: MiniCssExtractPlugin.loader },
+            {loader: MiniCssExtractPlugin.loader},
             'css-loader',
             'sass-loader',
           ],

@@ -1,6 +1,7 @@
-import background, { sendToPopup } from '../background';
+import background, {sendToPopup} from '../background';
 import ActionNames from '../helpers/ActionNames';
 import Config from '../helpers/Config';
+import Logger from '../helpers/Logger'; // strip-log
 
 /**
  * Context menu class. Contains functions to create and handle the context menu items.
@@ -8,20 +9,41 @@ import Config from '../helpers/Config';
 export default class ContextMenu {
 
   /**
-   * Add our custom menu item to the context menu.
+   * Find context menu item by id.
+   *
+   * @param {string} id - Context menu ID.
+   * @return {chrome.contextMenus.CreateProperties}
    */
-  static create() {
-    window.chrome.contextMenus.removeAll();
-    window.chrome.contextMenus.create({
-      id: Config.contextMenuItemId,
-      title: Config.contextMenuTitle,
-      contexts: ['selection'],
+  static find(id) {
+    return Config.contextMenus.find((item) => {
+      console.log('cm find item', item);
+      console.log('cm find id', id);
+      return item.id === id;
     });
-    // window.chrome.contextMenus.create({
-    //   id: Config.contextMenuItemId + '_2',
-    //   title: 'Open backoffice',
-    //   contexts: ['browser_action'],
-    // });
+  }
+
+  /**
+   * Add our custom menu item to the context menu.
+   *
+   * @param {chrome.contextMenus.CreateProperties} item - Context menu item to add.
+   */
+  static create(item) {
+    window.chrome.contextMenus.create(item);
+  }
+
+  /**
+   * Remove a context menu item by id.
+   *
+   * @param {string} id - ID of the context menu item to remove.
+   */
+  static remove(id) {
+    window.chrome.contextMenus.remove(id, () => {
+      if (chrome.runtime.lastError) {
+        Logger.warning(
+          `Received error: "${chrome.runtime.lastError}" while trying to delete context menu item "${id}".`
+        );
+      }
+    });
   }
 
   /**
@@ -30,9 +52,14 @@ export default class ContextMenu {
    * @param {Object} data - Data received from click event.
    */
   static activate(data) {
-    if (data.menuItemId === Config.contextMenuItemId) {
-      console.log(data);
-      this.selectContentText(data.selectionText);
+    switch (data.menuItemId) {
+      case Config.contextMenuCreateShipment:
+        console.log('create shipment', data.selectionText);
+        this.selectContentText(data.selectionText);
+        break;
+      case Config.contextMenuSwitchApp:
+        console.log('switch app');
+        break;
     }
   }
 

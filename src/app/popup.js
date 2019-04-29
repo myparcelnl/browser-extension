@@ -1,4 +1,4 @@
-class Popup {
+export default class Popup {
 
   /**
    * @type {HTMLElement}
@@ -20,9 +20,28 @@ class Popup {
     const json = await response.json();
 
     // Get apps for current environment
-    this.apps = json.apps[process.env.NODE_ENV];
+    this.apps = this.getApps(json);
 
     this.createPage();
+  }
+
+  /**
+   * Get apps and add referral url parameter.
+   *
+   * @param {Object} json - Object containing <appName> - <url> pairs.
+   *
+   * @return {Object}
+   */
+  static getApps(json) {
+    const apps = json.apps[process.env.NODE_ENV];
+    for (const app in apps) {
+      if (apps.hasOwnProperty(app)) {
+        const url = new URL(apps[app]);
+        apps[app] = url.searchParams.set('referralurl', url.pathname);
+      }
+    }
+
+    return apps;
   }
 
   /**

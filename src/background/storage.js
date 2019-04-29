@@ -1,5 +1,4 @@
 import Config from '../helpers/Config';
-import Logger from '../helpers/Logger'; // strip-log
 
 export default {
 
@@ -68,9 +67,12 @@ export default {
    */
   saveSettings(request) {
     const keys = {};
+    const {settings} = request;
 
-    for (const setting of request) {
-      keys[Config.settingPrefix + setting] = request[setting];
+    for (const setting in settings) {
+      if (settings.hasOwnProperty(setting)) {
+        keys[Config.settingPrefix + setting] = settings[setting];
+      }
     }
 
     this.saveToStorage(keys);

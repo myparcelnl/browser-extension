@@ -2,9 +2,22 @@
  * Config class with all extension settings in it.
  */
 export default class Config {
-  // Strings
-  static contextMenuTitle = 'Label aanmaken van selectie';
-  static contextMenuItemId = 'myparcel-create-shipment';
+
+  static contextMenuCreateShipment = 'myparcel-create-shipment';
+  static contextMenuSwitchApp = 'myparcel-switch-app';
+
+  static contextMenus = [
+    {
+      title: 'Label aanmaken van selectie',
+      id: this.contextMenuCreateShipment,
+      contexts: ['selection'],
+    },
+    {
+      title: 'Switch app',
+      id: this.contextMenuSwitchApp,
+      contexts: ['browser_action'],
+    },
+  ];
 
   static classPrefix = 'myparcel__';
   static mappingPrefix = 'myparcel-mapping-';

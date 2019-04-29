@@ -1,8 +1,8 @@
 /**
  * Default extension settings.
  *
- * @type {{context_menu_enabled: boolean}}
+ * @type {{enable_context_menu: boolean}}
  */
 export default {
-  context_menu_enabled: true,
+  enable_context_menu: true,
 };

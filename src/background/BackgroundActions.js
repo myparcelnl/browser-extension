@@ -1,4 +1,4 @@
-import { sendToContent, sendToPopup } from '../background';
+import {sendToContent, sendToPopup} from '../background';
 import ActionNames from '../helpers/ActionNames';
 import Logger from '../helpers/Logger'; // strip-log
 import MyParcelAPI from '../helpers/MyParcelAPI';
@@ -23,13 +23,13 @@ export default class BackgroundActions {
    * @return {Promise}
    */
   static async getContent(request) {
-    const {url} = await request;
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
-    const {hostname, href} = url;
+    const {hostname, href} = await request.url;
+    console.log('hostname', hostname);
+    console.log('href', href);
 
     let selectors = await storage.getSavedMappingsForURL(hostname);
-    let presetName;
-    let presetFields;
+    let presetName, presetFields;
 
     if (selectors && selectors.preset) {
       presetName = selectors.preset;
@@ -38,8 +38,10 @@ export default class BackgroundActions {
       presetName = request.preset;
     } else {
       presetName = Presets.findByURL(href);
-      if (process.env.NODE_ENV === 'development') {
+      if (presetName) {
         Logger.success(`Preset '${presetName}' applied.`);
+      } else {
+        Logger.warning(`No preset found for "${href}".`);
       }
     }
 
@@ -58,18 +60,21 @@ export default class BackgroundActions {
 
     const data = {
       action: ActionNames.getContent,
-      selectors,
     };
 
     if (presetFields) {
       data.preset = presetFields;
     }
 
+    if (selectors) {
+      data.selectors = selectors;
+    }
+
     // Only send to content if either a preset or at least one selector is present.
-    if (data.preset || Object.keys(data.selectors).length) {
+    if (data.preset || data.selectors) {
       sendToContent(data);
     } else {
-      Logger.warning(`No preset or selectors present for ${hostname}.`);
+      Logger.warning(`No preset or selectors present for "${hostname}".`);
     }
   }
 
@@ -79,7 +84,7 @@ export default class BackgroundActions {
    */
   static async getSettings() {
     const savedSettings = await storage.getSavedSettings();
-    const settings = {...defaultSettings, savedSettings};
+    const settings = {...defaultSettings, ...savedSettings};
     sendToPopup({action: ActionNames.foundSettings, settings});
     return settings;
   }

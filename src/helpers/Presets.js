@@ -1,5 +1,5 @@
-import { PresetData } from './PresetData';
-import { detect } from 'detect-browser';
+import {PresetData} from './PresetData';
+import {detect} from 'detect-browser';
 
 export default class Presets {
 
@@ -22,7 +22,7 @@ export default class Presets {
    */
   static findByURL(url) {
     const preset = PresetData.urlMapping.find((entry) => url.includes(entry.url));
-    return preset.name || undefined;
+    return preset ? preset.name : undefined;
   }
 
   /**

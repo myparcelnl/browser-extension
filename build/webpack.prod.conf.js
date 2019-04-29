@@ -8,7 +8,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = (env, argv) => {
-  const isProd = argv.mode === 'production';
+  const isProd = argv.mode !== 'development';
   const prodPlugins = [];
   const prodRules = [];
 
@@ -26,8 +26,7 @@ module.exports = (env, argv) => {
       new ZipPlugin({
         path: path.resolve(__dirname, '../zip'),
         filename: `chrome-extension-${packageData.version}.zip`,
-        include: ['dist', 'manifest.json', 'config'],
-        exclude: [/\.zip$/],
+        // include: ['../dist', '../manifest.json', '../config'],
         fileOptions: {
           compress: true,
         },
@@ -63,6 +62,14 @@ module.exports = (env, argv) => {
         {
           from: 'src/images',
           to: 'images',
+        },
+        {
+          from: 'config',
+          to: 'config',
+        },
+        {
+          from: 'manifest.json',
+          to: 'manifest.json',
         },
       ]),
       new MiniCssExtractPlugin({

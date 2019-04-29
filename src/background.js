@@ -88,7 +88,7 @@ const flushQueue = (queue, sendFunction) => {
   return [];
 };
 
-class Background {
+export default class Background {
 
   /**
    * @type {Array}
@@ -110,6 +110,9 @@ class Background {
    */
   static contentConnected = false;
 
+  /**
+   * Pre boot function. This communicates with the `default_popup` allowing the user to choose a platform.
+   */
   static preBoot() {
     Logger.event('Awaiting boot choice.');
     const listener = async(appName) => {
@@ -127,15 +130,11 @@ class Background {
    */
   static async boot(app) {
     // Remove selection popup
-    // await chrome.browserAction.setPopup({popup: ''});
+    await chrome.browserAction.setPopup({popup: ''});
     await this.loadConfig(app);
 
     this.setSettings();
     this.bindEvents();
-
-    if (this.settings.context_menu_enabled === true) {
-      ContextMenu.create();
-    }
 
     this.bindPopupScript();
     this.bindContentScript();
@@ -144,10 +143,22 @@ class Background {
   }
 
   /**
-   * Get saved settings and add save them to the settings object.
+   * Get saved settings, merge new settings into them and update the settings object.
+   *
+   * @param {Object} settings - Settings object.
    */
-  static setSettings() {
+  static setSettings(settings = {}) {
+    if (Object.keys(settings).length) {
+      BackgroundActions.saveSettings(this.settings);
+    }
+
     this.settings = BackgroundActions.getSettings();
+
+    if (this.settings.enable_context_menu === true) {
+      ContextMenu.create(ContextMenu.find(Config.contextMenuCreateShipment));
+    } else {
+      ContextMenu.remove(Config.contextMenuCreateShipment);
+    }
   }
 
   /**
@@ -231,24 +242,18 @@ class Background {
         //   break;
 
       case ActionNames.saveSettings:
-        BackgroundActions.saveSettings(request);
+        this.setSettings(request.settings);
         break;
 
       case ActionNames.getSettings:
-        this.setSettings(request.url);
+        this.setSettings();
         break;
 
-        // case ActionNames.getContent:
-        //   return sendToContent(request);
-
-        // case ActionNames.getStorage:
-        //   return BackgroundActions.getStorage(request);
-
-        // case ActionNames.getFieldSettingsForURL:
-        //   return ActionNames.getFieldSettingsForURL(request);
-
       case ActionNames.getContent:
-        await BackgroundActions.getContent({...request, url: this.getURL()});
+        const url = this.getURL();
+        if (url) {
+          await BackgroundActions.getContent({...request, url});
+        }
         break;
     }
   }
@@ -326,12 +331,12 @@ class Background {
    *
    * @param {Object} request - Request object.
    */
-  static async onContentConnect(request) {
+  static onContentConnect(request) {
     this.contentConnected = activeTab.id;
     Logger.info('Sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
-    await BackgroundActions.getContent({...request, url: this.getURL()});
+    // await BackgroundActions.getContent({...request, url: this.getURL()});
     sendToPopup({...request, action: ActionNames.backgroundConnected});
   }
 
@@ -363,7 +368,7 @@ class Background {
     chrome.browserAction.onClicked.addListener(browserActionClickListener);
 
     // On opening context menu (right click)
-    if (this.settings.context_menu_enabled === true) {
+    if (this.settings.enable_context_menu === true) {
       chrome.contextMenus.onClicked.addListener(contextMenusClickListener);
     } else if (chrome.contextMenus.onClicked.hasListener(contextMenusClickListener)) {
       chrome.contextMenus.onClicked.removeListener(contextMenusClickListener);
@@ -420,7 +425,7 @@ class Background {
     this.activateTab(tab);
 
     if (popupConnection) {
-      sendToPopup({action: ActionNames.switchedTab, url: tab.url});
+      sendToPopup({action: ActionNames.switchedTab, url: this.getURL().hostname});
     }
 
     if (contentConnection) {
@@ -480,6 +485,7 @@ class Background {
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
   static activateTab(tab) {
+    console.log('activating: ', tab);
     activeTab = tab;
 
     if (this.isWebsite(tab)) {
@@ -506,10 +512,9 @@ class Background {
    * @return {boolean}
    */
   static isWebsite(tab) {
-    const {url, windowId} = tab;
-    const notPopup = popup ? windowId !== popup.windowId : true;
+    const notPopup = popup ? tab.windowId !== popup.windowId : true;
 
-    return url && url.startsWith('http') && notPopup;
+    return tab.url && tab.url.startsWith('http') && notPopup;
   }
 
   /**
@@ -546,16 +551,15 @@ class Background {
     if (popup) {
       await this.showPopup();
     } else {
-      // todo remove this
       chrome.windows.getAll(
         {windowTypes: ['popup']},
         (windows) => {
+          console.log(windows);
           windows.forEach((window) => {
             chrome.windows.remove(window.id);
           });
-        }
+        },
       );
-
       popup = await this.createPopup();
     }
 
@@ -601,5 +605,3 @@ class Background {
 }
 
 Background.preBoot();
-
-export default Background;

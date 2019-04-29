@@ -18,7 +18,9 @@ class Popup {
   static async boot() {
     const response = await fetch(chrome.extension.getURL('./config/config.json'));
     const json = await response.json();
-    this.apps = json.apps;
+
+    // Get apps for current environment
+    this.apps = json.apps[process.env.NODE_ENV];
 
     this.createPage();
   }
@@ -36,7 +38,10 @@ class Popup {
       if (this.apps.hasOwnProperty(appName)) {
         element = document.createElement('div');
         link = this.root.appendChild(element);
-        link.innerHTML = `<div class="app app--${appName}"><img src="images/logo_${appName}.png" alt="${appName}"/></div>`;
+        link.innerHTML = `<div class="app app--${appName}">
+                            <img src="images/logo_${appName}.png" alt="${appName}"/>
+                          </div>`;
+
         // Add onclick event to the created link.
         link.onclick = () => this.start(appName);
       }

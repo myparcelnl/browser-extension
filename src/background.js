@@ -38,13 +38,13 @@ export const sendToPopup = (data) => {
   if (Background.popupConnected) {
     try {
       popupConnection.postMessage(data);
-      Logger.request('popup', data.action);
+      Logger.request('popup', data);
     } catch (e) {
       Logger.error(e);
       Background.popupQueue.push(data);
     }
   } else {
-    Logger.request('popup', data.action, 'queue');
+    Logger.request('popup', data, 'queue');
     Background.popupQueue.push(data);
   }
 };
@@ -58,7 +58,7 @@ export const sendToContent = (data) => {
   if (Background.contentConnected) {
     try {
       contentConnection.postMessage(data);
-      Logger.request('content', data.action);
+      Logger.request('content', data);
     } catch (e) {
       Logger.error(e);
       Background.contentQueue.push(data);
@@ -126,9 +126,9 @@ class Background {
    * @param {string} app - App name.
    */
   static async boot(app) {
+    // Remove selection popup
+    // await chrome.browserAction.setPopup({popup: ''});
     await this.loadConfig(app);
-    await this.createPopup();
-    chrome.browserAction.setPopup({popup: ''});
 
     this.setSettings();
     this.bindEvents();
@@ -139,6 +139,8 @@ class Background {
 
     this.bindPopupScript();
     this.bindContentScript();
+
+    this.createPopup();
   }
 
   /**
@@ -160,7 +162,12 @@ class Background {
     const json = await response.json();
 
     // Get app by name and current environment.
+    console.log(json.apps);
+    console.log(process.env.NODE_ENV);
+    console.log(app);
+
     this.popupExternalURL = json.apps[process.env.NODE_ENV][app];
+    console.log(this.popupExternalURL);
     this.popupDimensions = json.popupDimensions;
     this.development = json.development;
   }
@@ -286,7 +293,9 @@ class Background {
         break;
 
       case ActionNames.trackShipment:
-        BackgroundActions.trackShipment(request.barcode, request.postalCode, request.countryCode);
+        BackgroundActions.trackShipment(request.barcode,
+          request.postalCode,
+          request.countryCode);
         break;
 
       case ActionNames.foundContent:
@@ -304,11 +313,11 @@ class Background {
    */
   static onPopupConnect() {
     this.popupConnected = true;
-    Logger.info('sending popup queue');
+    Logger.info('Sending popup queue');
     this.popupQueue = flushQueue(this.popupQueue, sendToPopup);
 
     // if (activeTab && activeTab.url) {
-    //   ActionNames.getContent({url: activeTab.url});
+    //   ActionNames.getContent({url: this.getURL()});
     // }
   }
 
@@ -319,7 +328,7 @@ class Background {
    */
   static async onContentConnect(request) {
     this.contentConnected = activeTab.id;
-    Logger.info('sending content queue');
+    Logger.info('Sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
     await BackgroundActions.getContent({...request, url: this.getURL()});
@@ -330,42 +339,44 @@ class Background {
    * Binds all browser events to functions.
    */
   static bindEvents() {
-    // Extension button click
-    chrome.browserAction.onClicked.addListener((...args) => {
+    const browserActionClickListener = (...args) => {
       this.openPopup(...args);
-    });
+    };
+
+    const windowRemoveListener = (...args) => {
+      this.checkPopupClosed(...args);
+
+    };
+    const contextMenusClickListener = (data) => {
+      ContextMenu.activate(data);
+    };
+
+    const tabReplaceListener = () => {
+      this.switchTab();
+    };
+
+    const tabUpdateListener = (...args) => {
+      this.updateTab(...args);
+    };
+
+    // Extension button click
+    chrome.browserAction.onClicked.addListener(browserActionClickListener);
 
     // On opening context menu (right click)
     if (this.settings.context_menu_enabled === true) {
-      chrome.contextMenus.onClicked.addListener((data) => {
-        ContextMenu.activate(data);
-      });
+      chrome.contextMenus.onClicked.addListener(contextMenusClickListener);
+    } else if (chrome.contextMenus.onClicked.hasListener(contextMenusClickListener)) {
+      chrome.contextMenus.onClicked.removeListener(contextMenusClickListener);
     }
 
     // Tab listeners
-    chrome.tabs.onHighlighted.addListener(() => {
-      Logger.event('onHighlighted – switchTab()');
-      this.switchTab();
-    });
-
-    chrome.tabs.onReplaced.addListener(() => {
-      Logger.event('onReplaced – switchTab()');
-      this.switchTab();
-    });
-
-    chrome.tabs.onUpdated.addListener((...args) => {
-      this.updateTab(...args);
-    });
+    chrome.tabs.onHighlighted.addListener(tabReplaceListener);
+    chrome.tabs.onReplaced.addListener(tabReplaceListener);
+    chrome.tabs.onUpdated.addListener(tabUpdateListener);
 
     // Window listeners
-    chrome.windows.onFocusChanged.addListener(() => {
-      Logger.event('onFocusChanged – switchTab()');
-      this.switchTab();
-    });
-
-    chrome.windows.onRemoved.addListener((...args) => {
-      this.checkPopupClosed(...args);
-    });
+    chrome.windows.onFocusChanged.addListener(tabReplaceListener);
+    chrome.windows.onRemoved.addListener(windowRemoveListener);
   }
 
   /**
@@ -517,7 +528,8 @@ class Background {
           top: win.top,
           height,
           width,
-        }, (win) => {
+        },
+        (win) => {
           resolve(win.tabs[0]);
         });
       });
@@ -535,11 +547,14 @@ class Background {
       await this.showPopup();
     } else {
       // todo remove this
-      chrome.windows.getAll({windowTypes: ['popup']}, (windows) => {
-        windows.forEach((window) => {
-          chrome.windows.remove(window.id);
-        });
-      });
+      chrome.windows.getAll(
+        {windowTypes: ['popup']},
+        (windows) => {
+          windows.forEach((window) => {
+            chrome.windows.remove(window.id);
+          });
+        }
+      );
 
       popup = await this.createPopup();
     }
@@ -553,10 +568,13 @@ class Background {
    */
   static showPopup() {
     chrome.windows.getCurrent(() => {
-      chrome.windows.update(popup.windowId, {
-        focused: true,
-        drawAttention: true,
-      });
+      chrome.windows.update(
+        popup.windowId,
+        {
+          focused: true,
+          drawAttention: true,
+        }
+      );
     });
   }
 

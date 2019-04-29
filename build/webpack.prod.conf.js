@@ -10,23 +10,9 @@ const webpack = require('webpack');
 module.exports = (env, argv) => {
   const isProd = argv.mode === 'production';
   const prodPlugins = [];
-  const babelProdPlugins = [];
   const prodRules = [];
 
-  prodPlugins.push(
-    new ZipPlugin({
-      path: path.resolve(__dirname, '../zip'),
-      filename: `chrome-extension-${packageData.version}.zip`,
-      include: ['dist', 'manifest.json', 'config'],
-      exclude: [/\.zip$/],
-      fileOptions: {
-        compress: true,
-      },
-    })
-  );
-
   if (isProd) {
-
     // Don't import Logger.js.
     prodPlugins.push(new webpack.IgnorePlugin({
       resourceRegExp: /helpers\/Logger$/,
@@ -35,6 +21,20 @@ module.exports = (env, argv) => {
     // Clean dist folder before building
     prodPlugins.push(new CleanWebpackPlugin());
 
+    // Create zip file for extension
+    prodPlugins.push(
+      new ZipPlugin({
+        path: path.resolve(__dirname, '../zip'),
+        filename: `chrome-extension-${packageData.version}.zip`,
+        include: ['dist', 'manifest.json', 'config'],
+        exclude: [/\.zip$/],
+        fileOptions: {
+          compress: true,
+        },
+      })
+    );
+
+    // Strip Logger
     prodRules.push({
       test: /\.js?$/,
       exclude: /node_modules/,
@@ -83,15 +83,6 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env'],
-              plugins: [
-                ...babelProdPlugins,
-                '@babel/plugin-proposal-class-properties',
-                '@babel/plugin-transform-runtime',
-                '@babel/plugin-transform-named-capturing-groups-regex',
-              ],
-            },
           },
         },
         {

@@ -4,7 +4,7 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 const puppeteer = require('puppeteer');
-const { scripts } = require('../package.json');
+const {scripts} = require('../package.json');
 
 const extensionPath = path.join(__dirname, '../');
 
@@ -14,7 +14,7 @@ describe('Build and install Chrome extension', () => {
    * Try to build the extension
    */
   test('Extension can build', async() => {
-    const { stderr } = await exec(scripts.dist);
+    const {stderr} = await exec(scripts.dist);
     expect(stderr).toBeFalsy();
   }, 15000);
 
@@ -39,8 +39,21 @@ describe('Build and install Chrome extension', () => {
 });
 
 describe('More things', () => {
-  it('should be able to communicate', async () => {
-    background.isWebsite()
+
+  it('detects websites correctly', () => {
+    // <url>, <isWebsite>
+    const websites = [
+      ['chrome://testurl', false],
+      ['about:blank', false],
+      ['http://url.com', true],
+      ['https://url.com', true],
+    ];
+
+    websites.forEach((website) => {
+      const [url, isWebsite] = website;
+
+      expect(background.isWebsite({url})).toBe(isWebsite);
+    });
   });
 
 });

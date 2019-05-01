@@ -201,7 +201,6 @@ export default class Background {
     // Get app by current environment and name.
     this.popupExternalURL = appURL.href;
     this.popupDimensions = json.popupDimensions;
-    this.development = json.development;
   }
 
   /**

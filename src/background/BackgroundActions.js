@@ -27,7 +27,7 @@ export default class BackgroundActions {
     const {hostname, href} = request.url;
 
     let selectors = await storage.getSavedMappingsForURL(hostname);
-    let presetName, presetFields;
+    let presetName, presetData;
 
     console.log(`getContent | selectors for ${hostname}`, selectors);
     console.log('getContent | request', request);
@@ -52,7 +52,7 @@ export default class BackgroundActions {
       // Add overridden values to the object to be able to differentiate them from preset values (and allow the user to
       // delete them)
       const overrides = selectors ? Object.keys(selectors) : null;
-      const presetData = {name: presetName, overrides};
+      presetData = {name: presetName, overrides};
 
       selectors = {...presetFields, ...selectors};
 
@@ -63,8 +63,8 @@ export default class BackgroundActions {
       action: ActionNames.getContent,
     };
 
-    if (presetFields) {
-      data.preset = presetFields;
+    if (presetData) {
+      data.preset = presetData;
     }
 
     if (selectors) {
@@ -76,7 +76,7 @@ export default class BackgroundActions {
       sendToContent(data);
     } else {
       Logger.warning(`No preset or selectors present for "${hostname}".`);
-      sendToPopup({action: ActionNames.backgroundConnected, url: hostname});
+      // sendToPopup({action: ActionNames.backgroundConnected, url: hostname});
     }
   }
 

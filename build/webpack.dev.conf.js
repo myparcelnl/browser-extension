@@ -7,10 +7,8 @@ module.exports = (env, argv) => merge(
   prodConfig(env, argv),
   {
     mode: 'development',
-    watch: true,
     watchOptions: {
-      poll: true,
-      ignored: ['dist', 'node_modules'],
+      ignored: ['dist', 'node_modules', 'zip'],
     },
     devServer: {
       disableHostCheck: true,
@@ -22,6 +20,8 @@ module.exports = (env, argv) => merge(
         port: 9099,
         entries: {
           background: 'background',
+          content: 'content',
+          popup: 'popup',
         },
       }),
     ],

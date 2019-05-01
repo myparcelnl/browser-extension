@@ -29,8 +29,8 @@ export default class BackgroundActions {
     let selectors = await storage.getSavedMappingsForURL(hostname);
     let presetName, presetFields;
 
-    console.log('getContent selectors', selectors);
-    console.log('getContent request', request);
+    console.log(`getContent | selectors for ${hostname}`, selectors);
+    console.log('getContent | request', request);
 
     if (selectors && selectors.preset) {
       presetName = selectors.preset;
@@ -97,10 +97,13 @@ export default class BackgroundActions {
    * @param {Object} request - Request object.
    */
   static saveMappedField(request) {
-    if (request.path) {
-      storage.saveMappings(request);
-      sendToPopup(request);
+    if (!request.path) {
+      return;
     }
+    console.log('saveMappedField', request);
+
+    storage.saveMappings(request);
+    sendToPopup(request);
   }
 
   /**

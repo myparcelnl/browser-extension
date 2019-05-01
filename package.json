@@ -1,6 +1,7 @@
 {
   "name": "myparcel-chrome-extension",
   "version": "2.0.0",
+  "types": "typings/index",
   "scripts": {
     "dev": "webpack-dev-server --config build/webpack.dev.conf.js",
     "build": "webpack -p --config build/webpack.prod.conf.js",

@@ -42,7 +42,7 @@ export default class Content {
    * @param {Object} data - Request content.
    */
   static sendToBackground(action, data = {}) {
-    const request = {...data, action};
+    const request = {url: window.location.hostname, ...data, action};
     Logger.request('background', request);
     backgroundConnection.postMessage(request);
   }

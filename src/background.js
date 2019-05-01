@@ -480,7 +480,7 @@ export default class Background {
    */
   static updateTab(id, data, tab) {
     Logger.event('updateTab');
-    if (data.status === 'complete' && (!activeTab || activeTab.id !== tab.id)) {
+    if (data.status === 'complete') {
       this.activateTab(tab);
       this.setIcon();
 

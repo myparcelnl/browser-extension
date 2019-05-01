@@ -3,8 +3,9 @@ const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 const merge = require('webpack-merge');
 const prodConfig = require('./webpack.prod.conf.js');
 
-module.exports = (env, argv) => {
-  return merge(prodConfig(env, argv), {
+module.exports = (env, argv) => merge(
+  prodConfig(env, argv),
+  {
     mode: 'development',
     watch: true,
     watchOptions: {
@@ -24,5 +25,5 @@ module.exports = (env, argv) => {
         },
       }),
     ],
-  });
-};
+  }
+);

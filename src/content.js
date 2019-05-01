@@ -1,7 +1,7 @@
 import ActionNames from './helpers/ActionNames';
 import ContentActions from './content/ContentActions';
 import Logger from './helpers/Logger'; // strip-log
-import { selection } from './content/selection';
+import {selection} from './content/selection';
 
 const listeners = {};
 let backgroundConnection;
@@ -42,8 +42,9 @@ export default class Content {
    * @param {Object} data - Request content.
    */
   static sendToBackground(action, data = {}) {
-    Logger.request('background', action);
-    backgroundConnection.postMessage({url: window.location.hostname, ...data, action});
+    const request = {...data, action};
+    Logger.request('background', request);
+    backgroundConnection.postMessage(request);
   }
 
   /**
@@ -52,20 +53,19 @@ export default class Content {
    * @param {Object} request - Request object.
    */
   static async backgroundListener(request) {
-    const {field, action, selectors, preset} = request;
     Logger.request('background', request, true);
 
-    switch (action) {
+    switch (request.action) {
       case ActionNames.switchedTab:
         this.sendToBackground(ActionNames.contentConnected);
         break;
 
       case ActionNames.mapField:
-        await ContentActions.mapField({field});
+        await ContentActions.mapField(request);
         break;
 
       case ActionNames.getContent:
-        await ContentActions.getContent({preset, selectors});
+        await ContentActions.getContent(request);
         break;
 
       case ActionNames.stopListening:

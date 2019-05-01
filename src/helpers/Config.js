@@ -38,7 +38,8 @@ export default class Config {
   static defaultIcon = `${this.imgDir}/icon-128px.png`;
 
   // Files
+  static bootPopup = `${this.distDir}/popup.html`;
   static configFile = `${this.configDir}/config.json`;
-  static contentJS = `${this.jsDir}/content.js`;
   static contentCSS = `${this.cssDir}/content.css`;
+  static contentJS = `${this.jsDir}/content.js`;
 };

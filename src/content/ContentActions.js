@@ -1,4 +1,4 @@
-import { clickedElement, elementsContent } from './selection';
+import {clickedElement, elementsContent} from './selection';
 import ActionNames from '../helpers/ActionNames';
 import Content from '../content';
 

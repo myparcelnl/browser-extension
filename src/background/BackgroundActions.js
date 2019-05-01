@@ -24,12 +24,13 @@ export default class BackgroundActions {
    */
   static async getContent(request) {
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
-    const {hostname, href} = await request.url;
-    console.log('hostname', hostname);
-    console.log('href', href);
+    const {hostname, href} = request.url;
 
     let selectors = await storage.getSavedMappingsForURL(hostname);
     let presetName, presetFields;
+
+    console.log('getContent selectors', selectors);
+    console.log('getContent request', request);
 
     if (selectors && selectors.preset) {
       presetName = selectors.preset;
@@ -75,18 +76,19 @@ export default class BackgroundActions {
       sendToContent(data);
     } else {
       Logger.warning(`No preset or selectors present for "${hostname}".`);
+      sendToPopup({action: ActionNames.backgroundConnected, url: hostname});
     }
   }
 
   /**
    * Get settings and set defaults if there are none available. Send the settings to the popup and also return them to
    * the background script.
+   *
+   * @return {Object} - Settings object.
    */
   static async getSettings() {
     const savedSettings = await storage.getSavedSettings();
-    const settings = {...defaultSettings, ...savedSettings};
-    sendToPopup({action: ActionNames.foundSettings, settings});
-    return settings;
+    return {...defaultSettings, ...savedSettings};
   }
 
   /**
@@ -95,7 +97,7 @@ export default class BackgroundActions {
    * @param {Object} request - Request object.
    */
   static saveMappedField(request) {
-    if (request.path !== null) {
+    if (request.path) {
       storage.saveMappings(request);
       sendToPopup(request);
     }
@@ -104,11 +106,15 @@ export default class BackgroundActions {
   /**
    * Save settings to local storage.
    *
-   * @param {Object} request - Request object.
+   * @param {Object} settings - Request object.
+   *
+   * @return {Object} - New settings.
    */
-  static saveSettings(request) {
-    storage.saveSettings(request);
-    sendToPopup({...request, action: ActionNames.savedSettings});
+  static saveSettings(settings) {
+    const newSettings = {...this.getSettings(), ...settings};
+    storage.saveSettings(newSettings);
+    sendToPopup({action: ActionNames.savedSettings});
+    return newSettings;
   }
 
   /**

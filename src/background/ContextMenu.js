@@ -1,7 +1,7 @@
 import background, {sendToPopup} from '../background';
 import ActionNames from '../helpers/ActionNames';
+import Chrome from '../helpers/Chrome';
 import Config from '../helpers/Config';
-import Logger from '../helpers/Logger'; // strip-log
 
 /**
  * Context menu class. Contains functions to create and handle the context menu items.
@@ -15,11 +15,7 @@ export default class ContextMenu {
    * @return {chrome.contextMenus.CreateProperties}
    */
   static find(id) {
-    return Config.contextMenus.find((item) => {
-      console.log('cm find item', item);
-      console.log('cm find id', id);
-      return item.id === id;
-    });
+    return Config.contextMenus.find((item) => item.id === id);
   }
 
   /**
@@ -28,7 +24,7 @@ export default class ContextMenu {
    * @param {chrome.contextMenus.CreateProperties} item - Context menu item to add.
    */
   static create(item) {
-    window.chrome.contextMenus.create(item);
+    window.chrome.contextMenus.create(item, Chrome.catchError);
   }
 
   /**
@@ -37,13 +33,7 @@ export default class ContextMenu {
    * @param {string} id - ID of the context menu item to remove.
    */
   static remove(id) {
-    window.chrome.contextMenus.remove(id, () => {
-      if (chrome.runtime.lastError) {
-        Logger.warning(
-          `Received error: "${chrome.runtime.lastError}" while trying to delete context menu item "${id}".`
-        );
-      }
-    });
+    window.chrome.contextMenus.remove(id, Chrome.catchError);
   }
 
   /**

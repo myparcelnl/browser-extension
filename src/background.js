@@ -1,6 +1,7 @@
 /* eslint-disable no-magic-numbers,no-console */
 import ActionNames from './helpers/ActionNames';
 import BackgroundActions from './background/BackgroundActions';
+import Chrome from './helpers/Chrome';
 import Config from './helpers/Config';
 import ContextMenu from './background/ContextMenu';
 import Logger from './helpers/Logger'; // strip-log
@@ -114,7 +115,10 @@ export default class Background {
    * Pre boot function. This communicates with the `default_popup` allowing the user to choose a platform.
    */
   static preBoot() {
+    // Set popup.html as popup
+    chrome.browserAction.setPopup({popup: chrome.extension.getURL(Config.bootPopup)});
     Logger.event('Awaiting boot choice.');
+
     const listener = async(appName) => {
       Logger.event(`Attempting to load app "${appName}"`);
       await this.boot(appName);
@@ -139,7 +143,7 @@ export default class Background {
     this.bindPopupScript();
     this.bindContentScript();
 
-    this.createPopup();
+    this.openPopup();
   }
 
   /**
@@ -147,17 +151,35 @@ export default class Background {
    *
    * @param {Object} settings - Settings object.
    */
-  static setSettings(settings = {}) {
+  static async setSettings(settings = {}) {
     if (Object.keys(settings).length) {
-      BackgroundActions.saveSettings(this.settings);
+      settings = await BackgroundActions.saveSettings(settings);
+    } else {
+      settings = await BackgroundActions.getSettings();
     }
 
-    this.settings = BackgroundActions.getSettings();
+    console.log('settings', settings);
+    this.updateSettings(settings);
+  }
 
-    if (this.settings.enable_context_menu === true) {
+  /**
+   * Update settings.
+   *
+   * @param {Object} settings - Settings object.
+   *
+   * @return {undefined}
+   */
+  static updateSettings(settings) {
+    this.settings = settings;
+
+    const contextMenusClickListener = (data) => ContextMenu.activate(data);
+    if (settings.enable_context_menu === true) {
       ContextMenu.create(ContextMenu.find(Config.contextMenuCreateShipment));
+      // On opening context menu (right click)
+      chrome.contextMenus.onClicked.addListener(contextMenusClickListener);
     } else {
       ContextMenu.remove(Config.contextMenuCreateShipment);
+      chrome.contextMenus.onClicked.removeListener(contextMenusClickListener);
     }
   }
 
@@ -172,13 +194,12 @@ export default class Background {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
-    // Get app by name and current environment.
-    console.log(json.apps);
-    console.log(process.env.NODE_ENV);
-    console.log(app);
+    let appURL = json.apps[process.env.NODE_ENV][app];
+    appURL = new URL(appURL);
+    appURL.searchParams.set('referralurl', appURL.pathname);
 
-    this.popupExternalURL = json.apps[process.env.NODE_ENV][app];
-    console.log(this.popupExternalURL);
+    // Get app by current environment and name.
+    this.popupExternalURL = appURL.href;
     this.popupDimensions = json.popupDimensions;
     this.development = json.development;
   }
@@ -246,12 +267,14 @@ export default class Background {
         break;
 
       case ActionNames.getSettings:
-        this.setSettings();
+        // this.setSettings();
+        console.log('current settings', this.settings);
+        sendToPopup({action: ActionNames.foundSettings, settings: this.settings});
         break;
 
       case ActionNames.getContent:
-        const url = this.getURL();
-        if (url) {
+        const url = await this.getURL();
+        if (!!url) {
           await BackgroundActions.getContent({...request, url});
         }
         break;
@@ -259,16 +282,20 @@ export default class Background {
   }
 
   /**
-   * Get the active tab URL if available, otherwise get window URL.
+   * Get the active tab URL if available.
    *
    * @return {URL}
    */
   static async getURL() {
+    // Try to find the active tab
     if (!activeTab) {
-      this.activateTab(await this.getActiveTab());
+      const tab = await this.getActiveTab();
+      this.activateTab(tab);
     }
 
-    return new URL(activeTab.url);
+    if (activeTab) {
+      return new URL(activeTab.url);
+    }
   }
 
   /**
@@ -289,27 +316,21 @@ export default class Background {
         this.moveFocus(popup);
         break;
 
-        // case ActionNames.foundElementContent:
-        //   sendToPopup(request);
-        //   break;
-
       case ActionNames.deleteFields:
         BackgroundActions.deleteFields(request);
         break;
 
       case ActionNames.trackShipment:
-        BackgroundActions.trackShipment(request.barcode,
+        BackgroundActions.trackShipment(
+          request.barcode,
           request.postalCode,
-          request.countryCode);
+          request.countryCode
+        );
         break;
 
       case ActionNames.foundContent:
         sendToPopup(request);
         break;
-
-      // case ActionNames.createShipment:
-      //   ActionNames.createShipment(request);
-      //   break;
     }
   }
 
@@ -332,6 +353,24 @@ export default class Background {
    * @param {Object} request - Request object.
    */
   static onContentConnect(request) {
+    console.log('onContentConnect', activeTab);
+    // console.log('onContentConnect', chrome.windows.getAll((windows) => windows.map(
+    //   (window) => {
+    //     console.log(window)
+    //     if (!window.tabs) {
+    //       Logger.error('no tabs');
+    //       return;
+    //     }
+    //
+    //     window.tabs.map(
+    //       (tab) => {
+    //         console.log(`${tab.title} tab.id: `, tab.id);
+    //         console.log(`${tab.title} tab.windowId: `, tab.windowId);
+    //       }
+    //     );
+    //   }
+    // )));
+
     this.contentConnected = activeTab.id;
     Logger.info('Sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
@@ -350,10 +389,6 @@ export default class Background {
 
     const windowRemoveListener = (...args) => {
       this.checkPopupClosed(...args);
-
-    };
-    const contextMenusClickListener = (data) => {
-      ContextMenu.activate(data);
     };
 
     const tabReplaceListener = () => {
@@ -366,13 +401,6 @@ export default class Background {
 
     // Extension button click
     chrome.browserAction.onClicked.addListener(browserActionClickListener);
-
-    // On opening context menu (right click)
-    if (this.settings.enable_context_menu === true) {
-      chrome.contextMenus.onClicked.addListener(contextMenusClickListener);
-    } else if (chrome.contextMenus.onClicked.hasListener(contextMenusClickListener)) {
-      chrome.contextMenus.onClicked.removeListener(contextMenusClickListener);
-    }
 
     // Tab listeners
     chrome.tabs.onHighlighted.addListener(tabReplaceListener);
@@ -396,8 +424,8 @@ export default class Background {
 
     const insertScripts = () => {
       Logger.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
-      chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS});
-      chrome.tabs.executeScript(tab.id, {file: Config.contentJS});
+      chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS}, Chrome.catchError);
+      chrome.tabs.executeScript(tab.id, {file: Config.contentJS}, Chrome.catchError);
     };
 
     try {
@@ -405,9 +433,10 @@ export default class Background {
         Logger.event('Script already present');
         sendToContent({action: ActionNames.checkContentConnection});
       } else {
-        throw 'content not connected';
+        throw 'Content not connected';
       }
     } catch (e) {
+      Logger.warning(e);
       insertScripts();
     }
   }
@@ -418,19 +447,10 @@ export default class Background {
   static async switchTab() {
     const tab = await this.getActiveTab();
 
-    if (!tab || !popup || tab.id === popup.id || (activeTab && tab.id === activeTab.id)) {
-      return;
-    }
-
-    this.activateTab(tab);
-
-    if (popupConnection) {
+    if (this.activateTab(tab)) {
       sendToPopup({action: ActionNames.switchedTab, url: this.getURL().hostname});
     }
-
-    if (contentConnection) {
-      sendToContent({action: ActionNames.switchedTab});
-    }
+    // sendToContent({action: ActionNames.switchedTab});
   }
 
   /**
@@ -458,10 +478,10 @@ export default class Background {
    * @param {chrome.tabs.TabChangeInfo} data - Chrome event data.
    * @param {chrome.tabs.Tab} tab  - Chrome tab object.
    */
-  static async updateTab(id, data, tab) {
+  static updateTab(id, data, tab) {
     Logger.event('updateTab');
     if (data.status === 'complete' && (!activeTab || activeTab.id !== tab.id)) {
-      await this.activateTab(tab);
+      this.activateTab(tab);
       this.setIcon();
 
       sendToContent({action: ActionNames.checkContentConnection});
@@ -483,10 +503,37 @@ export default class Background {
    * Set given tab to active and content scripts on tab.
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
+   *
+   * @return {boolean}
    */
   static activateTab(tab) {
-    console.log('activating: ', tab);
+    // try {
+    //   console.log(activeTab);
+    //   console.log('!tab', !tab);
+    //   console.log('!popup', !popup);
+    //   console.log('tab.windowId === popup.windowId', tab.windowId === popup.windowId);
+    //   console.log('!!activeTab && tab.windowId === activeTab.windowId', !!activeTab && tab.windowId === activeTab.windowId);
+    //   console.log('tab.url === this.popupExternalURL', tab.url === this.popupExternalURL);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    if (!tab || tab.url === this.popupExternalURL) {
+      return false;
+    }
+
+    if (
+      !tab
+      || !popup
+      || tab.windowId === popup.windowId
+      || (!!activeTab && tab.id === activeTab.id)
+    ) {
+      Logger.warning('No tab to activate.');
+      return false;
+    }
+
     activeTab = tab;
+    Logger.success(`Tab activated: ${tab.url}`);
 
     if (this.isWebsite(tab)) {
       this.injectScripts(tab);
@@ -499,9 +546,8 @@ export default class Background {
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
   static moveFocus(tab = activeTab) {
-    console.log(tab);
     chrome.windows.update(tab.windowId, {focused: true});
-    chrome.tabs.update(tab.id, {active: true});
+    chrome.tabs.update({active: true});
   }
 
   /**
@@ -512,6 +558,7 @@ export default class Background {
    * @return {boolean}
    */
   static isWebsite(tab) {
+    console.log('isWebsite? ', tab);
     const notPopup = popup ? tab.windowId !== popup.windowId : true;
 
     return tab.url && tab.url.startsWith('http') && notPopup;
@@ -546,17 +593,19 @@ export default class Background {
    *
    * @param {chrome.tabs.Tab} tab - The tab the extension button was clicked from..
    */
-  static async openPopup(tab) {
-    this.activateTab(tab);
+  static async openPopup(tab = null) {
+    if (tab) {
+      this.activateTab(tab);
+    }
+
     if (popup) {
       await this.showPopup();
     } else {
       chrome.windows.getAll(
         {windowTypes: ['popup']},
-        (windows) => {
-          console.log(windows);
-          windows.forEach((window) => {
-            chrome.windows.remove(window.id);
+        (popups) => {
+          popups.forEach((popup) => {
+            chrome.windows.remove(popup.id, Chrome.catchError);
           });
         },
       );
@@ -564,7 +613,6 @@ export default class Background {
     }
 
     this.setIcon(Config.activeIcon);
-    // BackgroundActions.getContent(url);
   }
 
   /**
@@ -577,7 +625,7 @@ export default class Background {
         {
           focused: true,
           drawAttention: true,
-        }
+        },
       );
     });
   }
@@ -587,9 +635,9 @@ export default class Background {
    */
   static async closePopup() {
     await sendToContent({action: ActionNames.stopListening});
-    popup = null;
-    popupConnection = null;
-    activeTab = null;
+    popup = undefined;
+    popupConnection = undefined;
+    activeTab = undefined;
     this.popupConnected = false;
     this.setIcon();
   }
@@ -600,7 +648,7 @@ export default class Background {
    * @param {string} path - Path to icon file.
    */
   static setIcon(path = Config.defaultIcon) {
-    chrome.browserAction.setIcon({path});
+    chrome.browserAction.setIcon({path}, Chrome.catchError);
   }
 }
 

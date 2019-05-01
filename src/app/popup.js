@@ -33,15 +33,7 @@ export default class Popup {
    * @return {Object}
    */
   static getApps(json) {
-    const apps = json.apps[process.env.NODE_ENV];
-    for (const app in apps) {
-      if (apps.hasOwnProperty(app)) {
-        const url = new URL(apps[app]);
-        apps[app] = url.searchParams.set('referralurl', url.pathname);
-      }
-    }
-
-    return apps;
+    return json.apps[process.env.NODE_ENV];
   }
 
   /**

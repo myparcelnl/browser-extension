@@ -24,6 +24,8 @@ $apps: (
 }
 
 body {
+  margin: 0;
+  padding: 0;
   font-size: 16px;
   font-family: -apple-system, sans-serif;
   min-width: 300px;
@@ -31,7 +33,7 @@ body {
 
 .app {
   display: flex;
-  padding: 2rem 0;
+  padding: 2.5em 5em;
 
   > img {
     margin: auto;

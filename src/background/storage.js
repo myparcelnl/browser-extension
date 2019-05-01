@@ -1,3 +1,4 @@
+import Chrome from '../helpers/Chrome';
 import Config from '../helpers/Config';
 
 export default {
@@ -8,7 +9,8 @@ export default {
    * @return {Promise<Object>}
    */
   getSavedMappings() {
-    return this.getStorageKeys(Config.mappingPrefix);
+    const object = this.getStorageKeys(Config.mappingPrefix);
+    return {...object.preset, ...object.selectors};
   },
 
   /**
@@ -29,6 +31,7 @@ export default {
    */
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
+    console.log(fieldMappings);
     return fieldMappings[url];
   },
 
@@ -40,13 +43,14 @@ export default {
    * @return {Promise}
    */
   async saveMappings(data) {
+    console.log('save: ', data);
     const {url, field, path, preset} = data;
 
     const mappings = await this.getSavedMappingsForURL(url) || {};
 
     const newMappings = {
       ...mappings,
-      preset,
+      ...preset,
     };
 
     if (field && path) {
@@ -87,9 +91,7 @@ export default {
    */
   async deleteMappedFields(data) {
     const {url, fields} = data;
-    console.log(await this.getSavedMappingsForURL(url));
     const mappings = await this.getSavedMappingsForURL(url);
-    console.log(mappings);
 
     // Delete entire key if no values are given.
     if (!fields) {
@@ -136,24 +138,20 @@ export default {
     const filtered = Object.keys(object).filter((key) => key.startsWith(prefix));
 
     filtered.forEach((obj) => {
-      result[obj] = object[obj];
+      const replacedObj = obj.replace(prefix, '');
+      result[replacedObj] = JSON.parse(object[obj]);
     });
 
-    const mappings = {};
-    Object.keys(result).forEach((key) => {
-      const url = key.replace(prefix, '');
-      mappings[url] = JSON.parse(result[key]);
-    });
-
-    return mappings;
+    return result;
   },
+
   /**
    * Save data to storage.
    *
    * @param {Object} data - Object with all data keys to store.
    * @param {Function} callback - Callback function.
    */
-  saveToStorage(data, callback = undefined) {
+  saveToStorage(data, callback = Chrome.catchError) {
     chrome.storage.sync.set(data, callback);
   },
 
@@ -163,7 +161,7 @@ export default {
    * @param {string} key - Key of storage item to remove.
    * @param {Function} callback - Callback function.
    */
-  removeFromStorage(key, callback = undefined) {
+  removeFromStorage(key, callback = Chrome.catchError) {
     chrome.storage.sync.remove(key, callback);
   },
 
@@ -172,7 +170,7 @@ export default {
    *
    * @param {Function} callback - Callback function.
    */
-  clearAll(callback = undefined) {
+  clearAll(callback = Chrome.catchError) {
     chrome.storage.sync.clear(callback);
   },
 };

@@ -1,7 +1,6 @@
-// /**
-//  * Contains platform preset names, URL mappings and fields.
-//  */
-
+/**
+ * Contains platform preset names, URL mappings and fields.
+ */
 export class PresetData {
   static BOL_COM = 'bol_com';
   static DRUPAL = 'drupal';

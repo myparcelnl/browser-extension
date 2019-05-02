@@ -5,7 +5,11 @@
       "flespakket": "http://backoffice.dev.flespakket.nl:3000/browser-extension/create-shipment",
       "sendmyparcel": "http://backoffice.dev.sendmyparcel.be:3000/browser-extension/create-shipment"
     },
-    "staging": {},
+    "staging": {
+      "myparcel": "http://mel.meteor.staging.myparcel.nl/browser-extension/create-shipment",
+      "flespakket": "http://mel.backoffice.staging.flespakket.nl/browser-extension/create-shipment",
+      "sendmyparcel": "http://mel.backoffice.staging.sendmyparcel.be/browser-extension/create-shipment"
+    },
     "production": {
       "flespakket": "https://backoffice.flespakket.nl/browser-extension/create-shipment",
       "sendmyparcel": "https://backoffice.sendmyparcel.be/browser-extension/create-shipment"

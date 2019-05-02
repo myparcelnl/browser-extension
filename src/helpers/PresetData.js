@@ -32,13 +32,21 @@ export class PresetData {
       name: this.WOOCOMMERCE,
     },
     {
-      url: '.myshopify.com',
+      url: '.myshopify.com/admin/orders',
       name: this.SHOPIFY,
     },
     {
       url: 'app.luondo.nl',
       name: this.LUONDO,
     },
+    {
+      url: 'shoppagina.nl\\/admin\\/Shop\\/order-view',
+      name: this.SHOPPAGINA,
+    },
+    // {
+    //   regex: '\\/sales_order\\/view\\/order_id\\/[0-9]{1,}\\/key',
+    //   name: this.MAGENTO1,
+    // },
   ];
 
   /**

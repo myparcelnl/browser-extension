@@ -1,4 +1,4 @@
-import background, {sendToPopup} from '../background';
+import background, {sendToPopup} from '../Background';
 import ActionNames from '../helpers/ActionNames';
 import Chrome from '../helpers/Chrome';
 import Config from '../helpers/Config';
@@ -12,7 +12,7 @@ export default class ContextMenu {
    * Find context menu item by id.
    *
    * @param {string} id - Context menu ID.
-   * @return {chrome.contextMenus.CreateProperties}
+   * @returns {chrome.contextMenus.CreateProperties}
    */
   static find(id) {
     return Config.contextMenus.find((item) => item.id === id);

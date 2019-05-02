@@ -5,7 +5,7 @@ import getSelector from 'unique-selector';
 /**
  * Get the unique query selector/path of the element.
  *
- * @return {string}
+ * @returns {string}
  */
 HTMLElement.prototype.getPath = function() {
   let selector = this;
@@ -40,7 +40,7 @@ HTMLElement.prototype.getPath = function() {
 /**
  * Get text parts from element.
  *
- * @return {Array}
+ * @returns {Array}
  */
 Element.prototype.getTextParts = function() {
   const list = [];
@@ -57,7 +57,7 @@ Element.prototype.getTextParts = function() {
  *
  * @param {number} i - Depth to check for.
  *
- * @return {boolean}
+ * @returns {boolean}
  */
 EventTarget.prototype.hasDepth = function(i) {
   if (i < 1) {
@@ -76,7 +76,7 @@ EventTarget.prototype.hasDepth = function(i) {
  *
  * @param {Object} e - Event.
  *
- * @return {number}
+ * @returns {number}
  */
 HTMLCollection.prototype.index = function(e) {
   for (let i = 0; i < this.length; i++) {

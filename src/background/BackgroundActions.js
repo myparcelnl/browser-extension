@@ -1,7 +1,6 @@
-import {sendToContent, sendToPopup} from '../background';
+import {sendToContent, sendToPopup} from '../Background';
 import ActionNames from '../helpers/ActionNames';
 import Logger from '../helpers/Logger'; // strip-log
-import MyParcelAPI from '../helpers/MyParcelAPI';
 import Presets from '../helpers/Presets';
 import defaultSettings from '../settings/defaultSettings';
 import storage from './storage';
@@ -20,7 +19,7 @@ export default class BackgroundActions {
    *
    * @param {Object} request - Request object.
    *
-   * @return {Promise}
+   * @returns {Promise}
    */
   static async getContent(request) {
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
@@ -84,7 +83,7 @@ export default class BackgroundActions {
    * Get settings and set defaults if there are none available. Send the settings to the popup and also return them to
    * the background script.
    *
-   * @return {Object} - Settings object.
+   * @returns {Object} - Settings object.
    */
   static async getSettings() {
     const savedSettings = await storage.getSavedSettings();
@@ -111,7 +110,7 @@ export default class BackgroundActions {
    *
    * @param {Object} settings - Request object.
    *
-   * @return {Object} - New settings.
+   * @returns {Object} - New settings.
    */
   static saveSettings(settings) {
     const newSettings = {...this.getSettings(), ...settings};
@@ -127,23 +126,5 @@ export default class BackgroundActions {
    */
   static deleteFields(request) {
     storage.deleteMappedFields(request);
-  }
-
-  /**
-   * Track a shipment using the MyParcel API.
-   *
-   * @param {string} barcode - Barcode.
-   * @param {string} postalCode - Postal code.
-   * @param {string} countryCode - 2-digit country code.
-   */
-  static trackShipment(barcode, postalCode, countryCode) {
-    MyParcelAPI.get(
-      'tracktraces',
-      null,
-      {barcode, postal_code: postalCode, country_code: countryCode},
-    )
-      .then((response) => {
-        return response.data.tracktraces[0];
-      });
   }
 }

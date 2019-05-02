@@ -17,7 +17,7 @@ export const clickedElement = () => {
  *
  * @param {Object} selectors - Selectors.
  *
- * @return {Object|undefined}
+ * @returns {Object|undefined}
  */
 export const elementsContent = (selectors) => {
   if (!selectors) {
@@ -46,7 +46,7 @@ export const selection = {
    *
    * @param {Function} resolve - Resolve function.
    *
-   * @return {undefined}
+   * @returns {undefined}
    */
   startMapping(resolve) {
     // remove existing listeners (if any)

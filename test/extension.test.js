@@ -1,5 +1,5 @@
-import Popup from '../src/app/popup';
-import Background from '../src/background';
+import Popup from '../src/app/Popup';
+import Background from '../src/Background';
 
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);

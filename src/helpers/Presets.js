@@ -6,7 +6,7 @@ export default class Presets {
   /**
    * Get browser info.
    *
-   * @return {string}
+   * @returns {string}
    */
   static detectBrowser() {
     const browserInfo = detect();
@@ -18,7 +18,7 @@ export default class Presets {
    *
    * @param {string} url - URL.
    *
-   * @return {string|undefined} - Preset name or undefined if no preset was found.
+   * @returns {string|undefined} - Preset name or undefined if no preset was found.
    */
   static findByURL(url) {
     const preset = PresetData.urlMapping.find((entry) => url.includes(entry.url));
@@ -30,7 +30,7 @@ export default class Presets {
    *
    * @param {string} presetName - Preset name.
    *
-   * @return {Promise<Object>}.
+   * @returns {Promise<Object>}.
    */
   static getFields(presetName) {
     return PresetData.fields[presetName];

@@ -114,6 +114,4 @@ export default class ActionNames {
   static stopListening = 'stopListening';
 
   static switchedTab = 'switchedTab';
-
-  static trackShipment = 'trackShipment';
 };

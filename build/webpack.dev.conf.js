@@ -20,7 +20,7 @@ module.exports = (env, argv) => merge(
         port: 9099,
         entries: {
           background: 'background',
-          content: 'content',
+          content: 'Content.js',
           popup: 'popup',
         },
       }),

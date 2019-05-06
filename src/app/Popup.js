@@ -30,7 +30,7 @@ export default class Popup {
    *
    * @param {Object} json - Object containing <appName> - <url> pairs.
    *
-   * @return {Object}
+   * @returns {Object}
    */
   static getApps(json) {
     return json.apps.staging;
@@ -39,7 +39,7 @@ export default class Popup {
   /**
    * Create the HTML page.
    *
-   * @return {undefined}
+   * @returns {undefined}
    */
   static createPage() {
     this.root = document.getElementById('popup');

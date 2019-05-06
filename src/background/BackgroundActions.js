@@ -1,7 +1,6 @@
-import {sendToContent, sendToPopup} from '../background';
+import {sendToContent, sendToPopup} from '../Background';
 import ActionNames from '../helpers/ActionNames';
 import Logger from '../helpers/Logger'; // strip-log
-import MyParcelAPI from '../helpers/MyParcelAPI';
 import Presets from '../helpers/Presets';
 import defaultSettings from '../settings/defaultSettings';
 import storage from './storage';
@@ -20,17 +19,17 @@ export default class BackgroundActions {
    *
    * @param {Object} request - Request object.
    *
-   * @return {Promise}
+   * @returns {Promise}
    */
   static async getContent(request) {
     // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
     const {hostname, href} = request.url;
 
     let selectors = await storage.getSavedMappingsForURL(hostname);
-    let presetName, presetFields;
+    let presetName, presetData;
 
-    console.log('getContent selectors', selectors);
-    console.log('getContent request', request);
+    console.log(`getContent | selectors for ${hostname}`, selectors);
+    console.log('getContent | request', request);
 
     if (selectors && selectors.preset) {
       presetName = selectors.preset;
@@ -52,7 +51,7 @@ export default class BackgroundActions {
       // Add overridden values to the object to be able to differentiate them from preset values (and allow the user to
       // delete them)
       const overrides = selectors ? Object.keys(selectors) : null;
-      const presetData = {name: presetName, overrides};
+      presetData = {name: presetName, overrides};
 
       selectors = {...presetFields, ...selectors};
 
@@ -63,8 +62,8 @@ export default class BackgroundActions {
       action: ActionNames.getContent,
     };
 
-    if (presetFields) {
-      data.preset = presetFields;
+    if (presetData) {
+      data.preset = presetData;
     }
 
     if (selectors) {
@@ -76,7 +75,7 @@ export default class BackgroundActions {
       sendToContent(data);
     } else {
       Logger.warning(`No preset or selectors present for "${hostname}".`);
-      sendToPopup({action: ActionNames.backgroundConnected, url: hostname});
+      // sendToPopup({action: ActionNames.backgroundConnected, url: hostname});
     }
   }
 
@@ -84,7 +83,7 @@ export default class BackgroundActions {
    * Get settings and set defaults if there are none available. Send the settings to the popup and also return them to
    * the background script.
    *
-   * @return {Object} - Settings object.
+   * @returns {Object} - Settings object.
    */
   static async getSettings() {
     const savedSettings = await storage.getSavedSettings();
@@ -97,10 +96,13 @@ export default class BackgroundActions {
    * @param {Object} request - Request object.
    */
   static saveMappedField(request) {
-    if (request.path) {
-      storage.saveMappings(request);
-      sendToPopup(request);
+    if (!request.path) {
+      return;
     }
+    console.log('saveMappedField', request);
+
+    storage.saveMappings(request);
+    sendToPopup(request);
   }
 
   /**
@@ -108,7 +110,7 @@ export default class BackgroundActions {
    *
    * @param {Object} settings - Request object.
    *
-   * @return {Object} - New settings.
+   * @returns {Object} - New settings.
    */
   static saveSettings(settings) {
     const newSettings = {...this.getSettings(), ...settings};
@@ -124,23 +126,5 @@ export default class BackgroundActions {
    */
   static deleteFields(request) {
     storage.deleteMappedFields(request);
-  }
-
-  /**
-   * Track a shipment using the MyParcel API.
-   *
-   * @param {string} barcode - Barcode.
-   * @param {string} postalCode - Postal code.
-   * @param {string} countryCode - 2-digit country code.
-   */
-  static trackShipment(barcode, postalCode, countryCode) {
-    MyParcelAPI.get(
-      'tracktraces',
-      null,
-      {barcode, postal_code: postalCode, country_code: countryCode},
-    )
-      .then((response) => {
-        return response.data.tracktraces[0];
-      });
   }
 }

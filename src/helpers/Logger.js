@@ -121,7 +121,7 @@ export default class Logger {
    * Set inbound, outbound or queue message color.
    *
    * @param {boolean|string} bool - Boolean or `queue`.
-   * @return {string} - CSS.
+   * @returns {string} - CSS.
    */
   static color(bool) {
     if (bool === 'queue') {
@@ -135,7 +135,7 @@ export default class Logger {
    *
    * @param {boolean|string} bool - Boolean or 'queue'.
    *
-   * @return {string}
+   * @returns {string}
    */
   static receiving(bool) {
     if (bool === 'queue') {

@@ -11,7 +11,7 @@ export default class Content {
   /**
    * Set up the event listeners for the background script.
    *
-   * @return {Promise}
+   * @returns {Promise}
    */
   static async boot() {
     listeners.background = (...args) => this.backgroundListener(...args);
@@ -27,7 +27,7 @@ export default class Content {
   /**
    * Establish the connection to the background script.
    *
-   * @return {MessagePort}
+   * @returns {MessagePort}
    */
   static establishConnection() {
     return new Promise((resolve) => {
@@ -42,7 +42,7 @@ export default class Content {
    * @param {Object} data - Request content.
    */
   static sendToBackground(action, data = {}) {
-    const request = {...data, action};
+    const request = {url: window.location.hostname, ...data, action};
     Logger.request('background', request);
     backgroundConnection.postMessage(request);
   }

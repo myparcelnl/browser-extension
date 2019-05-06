@@ -6,7 +6,7 @@ export default {
   /**
    * Retrieve saved field mappings from storage.
    *
-   * @return {Promise<Object>}
+   * @returns {Promise<Object>}
    */
   getSavedMappings() {
     const object = this.getStorageKeys(Config.mappingPrefix);
@@ -16,7 +16,7 @@ export default {
   /**
    * Retrieve saved settings from storage.
    *
-   * @return {Promise<Object>}
+   * @returns {Promise<Object>}
    */
   getSavedSettings() {
     return this.getStorageKeys(Config.settingPrefix);
@@ -27,11 +27,11 @@ export default {
    *
    * @param {string} url - URL to fetch mappings for.
    *
-   * @return {Object}
+   * @returns {Object}
    */
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
-    console.log(fieldMappings);
+    console.log('getSavedMappingsForURL', fieldMappings);
     return fieldMappings[url];
   },
 
@@ -40,7 +40,7 @@ export default {
    *
    * @param {Object} data - Object which must always contain `url` and either `field` and `path` or `preset`.
    *
-   * @return {Promise}
+   * @returns {Promise}
    */
   async saveMappings(data) {
     console.log('save: ', data);
@@ -50,8 +50,11 @@ export default {
 
     const newMappings = {
       ...mappings,
-      ...preset,
     };
+
+    if (preset) {
+      newMappings.preset = preset;
+    }
 
     if (field && path) {
       newMappings[field] = path;
@@ -87,7 +90,7 @@ export default {
    *
    * @param {{url: string, fields: Array}} data - Object containing URL and field(s) to remove.
    *
-   * @return {Promise}
+   * @returns {Promise}
    */
   async deleteMappedFields(data) {
     const {url, fields} = data;
@@ -113,7 +116,7 @@ export default {
    * Get all keys from storage. Optionally filter by key prefix.
    *
    * @param {string} prefix - Prefix to filter by.
-   * @return {Promise<Object>}
+   * @returns {Promise<Object>}
    */
   getStorageKeys(prefix = undefined) {
     return new Promise((resolve) => {

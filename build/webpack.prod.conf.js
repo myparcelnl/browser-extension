@@ -26,7 +26,6 @@ module.exports = (env, argv) => {
       new ZipPlugin({
         path: path.resolve(__dirname, '../zip'),
         filename: `chrome-extension-${packageData.version}.zip`,
-        // include: ['../dist', '../manifest.json', '../config'],
         fileOptions: {
           compress: true,
         },
@@ -49,9 +48,9 @@ module.exports = (env, argv) => {
   return {
     mode: 'production',
     entry: {
-      background: './src/background.js',
-      content: ['./src/content.js', './src/scss/content.scss'],
-      popup: ['./src/app/popup.js', './src/scss/popup.scss'],
+      background: './src/Background.js',
+      content: ['./src/Content.js', './src/scss/content.scss'],
+      popup: ['./src/app/Popup.js', './src/scss/popup.scss'],
     },
     output: {
       filename: 'js/[name].js',

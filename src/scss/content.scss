@@ -2,23 +2,25 @@
 @import "functions";
 @import "mixins";
 
-.myparcel__mapping-field {
-  background-color: transparentize($secondary, 0.75);
-  outline: 3px solid $primary;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25) !important;
-  cursor: pointer !important;
-}
+.myparcel {
+  &__mapping-field {
+    background-color: transparentize($secondary, 0.75);
+    outline: 3px solid $primary;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25) !important;
+    cursor: pointer !important;
+  }
 
-.myparcel__mapping-tooltip {
-  background-color: $secondary;
-  border-color: darken($secondary, 10);
-  border-radius: 3px;
-  color: #fff;
-  display: none;
-  height: 20px;
-  margin-left: 5px;
-  padding: .25em;
-  position: absolute;
-  width: 100px;
-  z-index: 99999;
+  &__mapping-tooltip {
+    background-color: $secondary;
+    border-color: darken($secondary, 10);
+    border-radius: 3px;
+    color: #fff;
+    display: none;
+    height: 20px;
+    margin-left: 5px;
+    padding: .25em;
+    position: absolute;
+    width: 100px;
+    z-index: 99999;
+  }
 }

@@ -15,7 +15,6 @@
       "sendmyparcel": "https://backoffice.sendmyparcel.be/browser-extension/create-shipment"
     }
   },
-  "development": true,
   "popupDimensions": {
     "width": 500,
     "height": 620

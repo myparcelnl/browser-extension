@@ -3,36 +3,41 @@ import ContentActions from './content/ContentActions';
 import Logger from './helpers/Logger'; // strip-log
 import {selection} from './content/selection';
 
-const listeners = {};
-let backgroundConnection;
-
 export default class Content {
 
   /**
-   * Set up the event listeners for the background script.
+   * The connection to the background script.
    *
-   * @returns {Promise}
+   * @type chrome.runtime.Port
    */
-  static async boot() {
-    listeners.background = (...args) => this.backgroundListener(...args);
-    listeners.disconnect = () => selection.stopMapping();
-
-    backgroundConnection = await this.establishConnection();
-
-    backgroundConnection.onMessage.addListener(listeners.background);
-    backgroundConnection.onDisconnect.addListener(listeners.disconnect);
-    this.sendToBackground(ActionNames.contentConnected);
-  }
+  static backgroundConnection;
 
   /**
-   * Establish the connection to the background script.
+   * Listener object.
    *
-   * @returns {MessagePort}
+   * @type {Object}
    */
-  static establishConnection() {
-    return new Promise((resolve) => {
-      resolve(chrome.runtime.connect({name: 'MyParcelContentScript'}));
-    });
+  static listeners = {};
+
+  /**
+   * Set up the event listeners for the background script.
+   */
+  static boot() {
+    this.listeners.background = (...args) => {
+      this.backgroundListener(...args);
+    };
+
+    this.listeners.disconnect = () => {
+      selection.stopMapping();
+    };
+
+    // Establish the connection to the background script
+    this.backgroundConnection = chrome.runtime.connect({name: 'MyParcelContentScript'});
+
+    this.backgroundConnection.onMessage.addListener(this.listeners.background);
+    this.backgroundConnection.onDisconnect.addListener(this.listeners.disconnect);
+
+    this.sendToBackground(ActionNames.contentConnected);
   }
 
   /**
@@ -44,7 +49,7 @@ export default class Content {
   static sendToBackground(action, data = {}) {
     const request = {url: window.location.hostname, ...data, action};
     Logger.request('background', request);
-    backgroundConnection.postMessage(request);
+    this.backgroundConnection.postMessage(request);
   }
 
   /**
@@ -52,25 +57,31 @@ export default class Content {
    *
    * @param {Object} request - Request object.
    */
-  static async backgroundListener(request) {
+  static backgroundListener(request) {
     Logger.request('background', request, true);
 
     switch (request.action) {
-      case ActionNames.switchedTab:
-        this.sendToBackground(ActionNames.contentConnected);
-        break;
 
+      /**
+       * Map an element to a field.
+       */
       case ActionNames.mapField:
-        await ContentActions.mapField(request);
+        ContentActions.mapField(request);
         break;
 
+      /**
+       * Find the content on the current page.
+       */
       case ActionNames.getContent:
-        await ContentActions.getContent(request);
+        ContentActions.getContent(request);
         break;
 
+      /**
+       * Remove listener and connection to extension.
+       */
       case ActionNames.stopListening:
-        backgroundConnection.onMessage.removeListener(listeners.background);
-        backgroundConnection.disconnect();
+        this.backgroundConnection.onMessage.removeListener(this.listeners.background);
+        this.backgroundConnection.disconnect();
         break;
     }
   }

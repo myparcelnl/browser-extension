@@ -31,7 +31,6 @@ export default {
    */
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
-    console.log('getSavedMappingsForURL', fieldMappings);
     return fieldMappings[url];
   },
 
@@ -43,7 +42,6 @@ export default {
    * @returns {Promise}
    */
   async saveMappings(data) {
-    console.log('save: ', data);
     const {url, field, path, preset} = data;
 
     const mappings = await this.getSavedMappingsForURL(url) || {};

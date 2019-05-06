@@ -56,24 +56,4 @@ describe('More things', () => {
       expect(Background.isWebsite({url})).toBe(isWebsite);
     });
   });
-
-  it('transforms URLs correctly', () => {
-    const originalApps = {
-      myparcel: 'https://backoffice.flespakket.nl/browser-extension/create-shipment',
-      flespakket: 'https://backoffice.flespakket.nl/browser-extension/create-shipment',
-      sendmyparcel: 'https://backoffice.sendmyparcel.be/browser-extension/create-shipment',
-    };
-
-    const apps = Popup.getApps({
-      apps: {
-        test: originalApps,
-      },
-    });
-
-    const uriComponent = encodeURIComponent('/browser-extension/create-shipment');
-
-    expect(apps.myparcel).toBe(`${originalApps.myparcel}?referralurl=${uriComponent}`);
-    expect(apps.flespakket).toBe(`${originalApps.flespakket}?referralurl=${uriComponent}`);
-    expect(apps.sendmyparcel).toBe(`${originalApps.sendmyparcel}?referralurl=${uriComponent}`);
-  });
 });

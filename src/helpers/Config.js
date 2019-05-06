@@ -23,7 +23,7 @@ export default class Config {
   static mappingPrefix = 'myparcel-mapping-';
   static settingPrefix = 'myparcel-setting-';
   static selectionClass = `${this.classPrefix}mapping-field`;
-  static tooltipClass = `${this.classPrefix}mapping-tooltip`;
+  static tooltipID = `${this.classPrefix}mapping-tooltip`;
   static wrappedItemClass = `${this.classPrefix}wrapped-item`;
 
   // Directories
@@ -41,5 +41,5 @@ export default class Config {
   static bootPopup = `${this.distDir}/popup.html`;
   static configFile = `${this.configDir}/config.json`;
   static contentCSS = `${this.cssDir}/content.css`;
-  static contentJS = `${this.jsDir}/content.js`;
+  static contentJS = `${this.jsDir}/Content.js`;
 };

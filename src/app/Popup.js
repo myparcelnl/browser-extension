@@ -1,3 +1,5 @@
+const env = process.env.NODE_ENV;
+
 export default class Popup {
 
   /**
@@ -20,20 +22,9 @@ export default class Popup {
     const json = await response.json();
 
     // Get apps for current environment
-    this.apps = this.getApps(json);
+    this.apps = json.apps[env];
 
     this.createPage();
-  }
-
-  /**
-   * Get apps and add referral url parameter.
-   *
-   * @param {Object} json - Object containing <appName> - <url> pairs.
-   *
-   * @returns {Object}
-   */
-  static getApps(json) {
-    return json.apps.staging;
   }
 
   /**

@@ -2,6 +2,7 @@
  * Contains platform preset names, URL mappings and fields.
  */
 export class PresetData {
+  static BIGCOMMERCE = 'bigcommerce';
   static BOL_COM = 'bol_com';
   static DRUPAL = 'drupal';
   static GRATISWEBSHOPBEGINNEN = 'gratiswebshopbeginnen';
@@ -28,25 +29,41 @@ export class PresetData {
    */
   static urlMapping = [
     {
-      url: '/wp-admin/',
       name: this.WOOCOMMERCE,
+      regex: /\/wp-admin\//,
     },
     {
-      url: '.myshopify.com/admin/orders',
       name: this.SHOPIFY,
+      regex: /\.myshopify\.com\/admin\/orders/,
     },
     {
-      url: 'app.luondo.nl',
       name: this.LUONDO,
+      regex: /app\.luondo\.nl\//,
     },
     {
-      url: 'shoppagina.nl\\/admin\\/Shop\\/order-view',
-      name: this.SHOPPAGINA,
+      name: this.BIGCOMMERCE,
+      regex: /mybigcommerce.com\/manage\/orders$|mybigcommerce.com\/manage\/orders\?/i,
     },
-    // {
-    //   regex: '\\/sales_order\\/view\\/order_id\\/[0-9]{1,}\\/key',
-    //   name: this.MAGENTO1,
-    // },
+    {
+      name: this.MAGENTO1,
+      regex: /\/sales_order\/view\/order_id\/[0-9]{1,}\/key\//i,
+    },
+    {
+      name: this.MAGENTO2,
+      regex: /\/sales\/order\/view\/order_id\/[0-9]{1,}\/key\//i,
+    },
+    {
+      name: this.OSCOMMERCE,
+      regex: /orders.php\?page=[0-9]*&oID=[0-9]*&action=edit/i,
+    },
+    {
+      name: this.SHOPIFY,
+      regex: /myshopify.com\/admin\/orders\/[0-9]{1,}/i,
+    },
+    {
+      name: this.SHOPPAGINA,
+      regex: /shoppagina.nl\/admin\/Shop\/order-view\//i,
+    },
   ];
 
   /**
@@ -55,6 +72,27 @@ export class PresetData {
    * @type {Object.<MyParcel.PresetFields>}
    */
   static fields = {
+    [this.BIGCOMMERCE]: {
+      additional_street: undefined,
+      address_field_1: undefined,
+      box: undefined,
+      cc: undefined,
+      city: undefined,
+      company: undefined,
+      description: undefined,
+      email: undefined,
+      number: undefined,
+      number_suffix: undefined,
+      package_type: undefined,
+      person: undefined,
+      phone: undefined,
+      pickup_number: undefined,
+      pickup_postal: undefined,
+      pickup_street: undefined,
+      postal_code: undefined,
+      street: undefined,
+      weight: undefined,
+    },
     [this.BOL_COM]: {
       additional_street: undefined,
       address_field_1: undefined,

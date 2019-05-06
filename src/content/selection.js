@@ -53,9 +53,11 @@ export const selection = {
     this.stopMapping();
     Logger.info('Start mapping');
 
+    this.showTooltip();
+
     listeners.click = (event) => selection.handleClick(event, resolve);
     listeners.keyup = (event) => selection.handleKeyup(event, resolve);
-    listeners.mouseMove = (event) => selection.handleMouseMove(event, resolve);
+    listeners.mouseMove = (event) => selection.handleMouseMove(event);
 
     document.addEventListener('click', listeners.click);
     document.addEventListener('keyup', listeners.keyup);
@@ -141,44 +143,42 @@ export const selection = {
     }
   },
 
+  /**
+   *
+   * @param {MouseEvent} event
+   */
   positionTooltip(event) {
-    const tooltip = document.getElementById(Config.tooltipClass);
+    const tooltip = document.getElementById(Config.tooltipID);
     if (!tooltip) {
       return;
     }
 
-    let {pageY: y, pageX: x} = event;
-    const {clientY, clientX, target} = event;
+    const x = event.clientX + 10;
+    const y = event.clientY;
 
-    if (x === null && clientX !== null) {
-      const document = (target && target.ownerDocument) || document;
-      const doc = document.documentElement;
-      const {body} = document;
-
-      x = clientX + ((doc && doc.scrollLeft) || (body && body.scrollLeft) || 0) - ((doc && doc.clientLeft) || (body && body.clientLeft) || 0);
-      y = clientY + ((doc && doc.scrollTop) || (body && body.scrollTop) || 0) - ((doc && doc.clientTop) || (body && body.clientTop) || 0);
-    }
-
-    x = x + 10;
-
-    tooltip.style.top = `${y}px`;
     tooltip.style.left = `${x}px`;
+    tooltip.style.top = `${y}px`;
   },
 
   removeTooltip() {
-    if (document.getElementsByClassName(Config.tooltipClass).length) {
-      for (const element of document.getElementsByClassName(Config.tooltipClass)) {
+    if (document.getElementsByClassName(Config.tooltipID).length) {
+      for (const element of document.getElementsByClassName(Config.tooltipID)) {
         element.remove();
       }
     }
   },
 
-  showToolbar(name, text) {
-    if (!document.getElementById(Config.tooltipClass)) {
-      this.createToolbar();
+  /**
+   *
+   * @param name
+   * @param text
+   */
+  showTooltip(name, text) {
+    if (!document.getElementById(Config.tooltipID)) {
+      this.createTooltip();
     }
 
-    const tooltip = document.getElementById(Config.tooltipClass);
+    const tooltip = document.getElementById(Config.tooltipID);
 
     tooltip.style.display = 'block';
     tooltip.querySelector('span').innerHTML = text;
@@ -186,19 +186,19 @@ export const selection = {
   },
 
   createTooltip() {
-    let tooltip = document.getElementById(Config.tooltipClass);
+    let tooltip = document.getElementById(Config.tooltipID);
     if (tooltip) {
       tooltip.parentElement.removeChild(tooltip);
     }
 
     tooltip = document.createElement('div');
-    tooltip.setAttribute('id', Config.tooltipClass);
+    tooltip.setAttribute('id', Config.tooltipID);
     tooltip.innerHTML = '<div class="arrow"></div><div class="text"><span></span><em></em>or<em class="esc">esc</em></div>';
     document.body.appendChild(tooltip);
   },
 
   hideToolbar() {
-    const tooltip = document.getElementById(Config.tooltipClass);
+    const tooltip = document.getElementById(Config.tooltipID);
     if (tooltip) {
       tooltip.style.display = 'none';
     }

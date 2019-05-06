@@ -75,7 +75,6 @@ export default class BackgroundActions {
       sendToContent(data);
     } else {
       Logger.warning(`No preset or selectors present for "${hostname}".`);
-      // sendToPopup({action: ActionNames.backgroundConnected, url: hostname});
     }
   }
 

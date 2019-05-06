@@ -17,10 +17,10 @@ module.exports = (env, argv) => merge(
     devtool: 'eval-source-map',
     plugins: [
       new ChromeExtensionReloader({
-        port: 9099,
+        port: 9091,
         entries: {
           background: 'background',
-          content: 'Content.js',
+          content: 'content',
           popup: 'popup',
         },
       }),

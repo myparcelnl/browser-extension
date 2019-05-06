@@ -21,7 +21,7 @@ export default class Presets {
    * @returns {string|undefined} - Preset name or undefined if no preset was found.
    */
   static findByURL(url) {
-    const preset = PresetData.urlMapping.find((entry) => url.includes(entry.url));
+    const preset = PresetData.urlMapping.find((entry) => url.match(entry.regex));
     return preset ? preset.name : undefined;
   }
 

@@ -33,7 +33,7 @@ export default class Popup {
    * @return {Object}
    */
   static getApps(json) {
-    return json.apps[process.env.NODE_ENV];
+    return json.apps.staging;
   }
 
   /**

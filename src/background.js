@@ -194,7 +194,7 @@ export default class Background {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
-    let appURL = json.apps[process.env.NODE_ENV][app];
+    let appURL = json.apps.staging[app];
     appURL = new URL(appURL);
     appURL.searchParams.set('referralurl', appURL.pathname);
 

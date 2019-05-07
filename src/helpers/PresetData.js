@@ -1,3 +1,4 @@
+/* eslint-disable key-spacing */
 /**
  * Contains platform preset names, URL mappings and fields.
  */
@@ -23,48 +24,60 @@ export class PresetData {
   static WOOCOMMERCE = 'woocommerce';
 
   /**
-   * Mapping for detecting presets by URL. `Presets.findPresetByURL` will check if `url` is present in the given href.
+   * Mapping for detecting presets by URL through regex.
    *
    * @type {Array}
    */
-  static urlMapping = [
-    {
-      name: this.WOOCOMMERCE,
-      regex: /\/wp-admin\//,
-    },
-    {
-      name: this.SHOPIFY,
-      regex: /\.myshopify\.com\/admin\/orders/,
-    },
-    {
-      name: this.LUONDO,
-      regex: /app\.luondo\.nl\//,
-    },
-    {
-      name: this.BIGCOMMERCE,
-      regex: /mybigcommerce.com\/manage\/orders$|mybigcommerce.com\/manage\/orders\?/i,
-    },
-    {
-      name: this.MAGENTO1,
-      regex: /\/sales_order\/view\/order_id\/[0-9]{1,}\/key\//i,
-    },
-    {
-      name: this.MAGENTO2,
-      regex: /\/sales\/order\/view\/order_id\/[0-9]{1,}\/key\//i,
-    },
-    {
-      name: this.OSCOMMERCE,
-      regex: /orders.php\?page=[0-9]*&oID=[0-9]*&action=edit/i,
-    },
-    {
-      name: this.SHOPIFY,
-      regex: /myshopify.com\/admin\/orders\/[0-9]{1,}/i,
-    },
-    {
-      name: this.SHOPPAGINA,
-      regex: /shoppagina.nl\/admin\/Shop\/order-view\//i,
-    },
-  ];
+  static urlMapping = {
+    [this.WOOCOMMERCE] : /\/wp-admin\//,
+    [this.SHOPIFY]     : /\.myshopify\.com\/admin\/orders/,
+    [this.LUONDO]      : /app\.luondo\.nl\//,
+    [this.BIGCOMMERCE] : /mybigcommerce.com\/manage\/orders$|mybigcommerce.com\/manage\/orders\?/i,
+    [this.MAGENTO1]    : /\/sales_order\/view\/order_id\/[0-9]+\/key\//i,
+    [this.MAGENTO2]    : /\/sales\/order\/view\/order_id\/[0-9]+\/key\//i,
+    [this.OSCOMMERCE]  : /orders.php\?page=[0-9]*&oID=[0-9]*&action=edit/i,
+    [this.SHOPIFY]     : /myshopify.com\/admin\/orders\/[0-9]+/i,
+    [this.SHOPPAGINA]  : /shoppagina.nl\/admin\/Shop\/order-view\//i,
+  };
+
+  // static urlMapping = [
+  //   {
+  //     name: this.WOOCOMMERCE,
+  //     regex: /\/wp-admin\//,
+  //   },
+  //   {
+  //     name: this.SHOPIFY,
+  //     regex: /\.myshopify\.com\/admin\/orders/,
+  //   },
+  //   {
+  //     name: this.LUONDO,
+  //     regex: /app\.luondo\.nl\//,
+  //   },
+  //   {
+  //     name: this.BIGCOMMERCE,
+  //     regex: /mybigcommerce.com\/manage\/orders$|mybigcommerce.com\/manage\/orders\?/i,
+  //   },
+  //   {
+  //     name: this.MAGENTO1,
+  //     regex: /\/sales_order\/view\/order_id\/[0-9]+\/key\//i,
+  //   },
+  //   {
+  //     name: this.MAGENTO2,
+  //     regex: /\/sales\/order\/view\/order_id\/[0-9]+\/key\//i,
+  //   },
+  //   {
+  //     name: this.OSCOMMERCE,
+  //     regex: /orders.php\?page=[0-9]*&oID=[0-9]*&action=edit/i,
+  //   },
+  //   {
+  //     name: this.SHOPIFY,
+  //     regex: /myshopify.com\/admin\/orders\/[0-9]{1,}/i,
+  //   },
+  //   {
+  //     name: this.SHOPPAGINA,
+  //     regex: /shoppagina.nl\/admin\/Shop\/order-view\//i,
+  //   },
+  // ];
 
   /**
    * Preset field selectors for every platform.

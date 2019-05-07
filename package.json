@@ -12,7 +12,6 @@
   "author": "Edie Lemoine",
   "license": "ISC",
   "dependencies": {
-    "detect-browser": "^4.5.0",
     "unique-selector": "^0.4.1"
   },
   "devDependencies": {

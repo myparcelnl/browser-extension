@@ -1,13 +1,22 @@
 /**
- * Action names.
+ * Action names. These are sent to or from the popup and content and are used as (arbitrary) handles to decide which
+ * actions to execute on either side.
+ *
+ * @example
+ * // Check connection to content script. Content will respond with `contentConnected`.
+ * sendToContent({
+ *   action: ActionNames.checkContentConnection,
+ * });
+ *
+ * @example
+ * // Send selector content to the popup.
+ * sendToPopup({
+ *   action: ActionNames.foundContent,
+ *   values: {...},
+ *   preset: {...},
+ * }
  */
 export default class ActionNames {
-
-  /**
-   * To popup. When the background is set up this is sent to the application to confirm the connection.
-   * @type {string}
-   */
-  static backgroundConnected = 'backgroundConnected';
 
   /**
    * To content. Check connection.
@@ -20,8 +29,6 @@ export default class ActionNames {
    * @type {string}
    */
   static contentConnected = 'contentConnected';
-
-  static createShipment = 'createShipment';
 
   /**
    * To popup. Contains selected text in `data.selection`.
@@ -42,12 +49,6 @@ export default class ActionNames {
    */
   static foundContent = 'foundContent';
 
-  static foundElementContent = 'foundElementContent';
-
-  static foundPreset = 'foundPreset';
-
-  static foundSelectorsAndContent = 'foundSelectorsAndContent';
-
   /**
    * To popup. Contains settings.
    * @type {string}
@@ -60,20 +61,10 @@ export default class ActionNames {
   static getContent = 'getContent';
 
   /**
-   * Request preset data. Requires { preset: <presetName> }
-   * @type {string}
-   */
-  static getPreset = 'getPreset';
-
-  /**
    * From popup. Request general settings. Extension should respond with `foundSettings`.
    * @type {string}
    */
   static getSettings = 'getSettings';
-
-  static getSettingsForURL = 'getSettingsForURL';
-
-  static getStorage = 'getStorage';
 
   /**
    * From popup. Request content. Extension should respond with `mappedField` with data: `{field, path, content}`.
@@ -85,15 +76,11 @@ export default class ActionNames {
    */
   static mappedField = 'mappedField';
 
-  static newShipment = 'newShipment';
-
   /**
    * From popup. The popup must send this on boot.
    * @type {string}
    */
   static popupConnected = 'popupConnected';
-
-  static saveMappedField = 'saveMappedField';
 
   /**
    * To popup. Tells the popup the settings it sent with `saveSettings` were saved correctly.
@@ -113,5 +100,9 @@ export default class ActionNames {
    */
   static stopListening = 'stopListening';
 
+  /**
+   * To popup. Fired on a tab switch and contains URL of new tab in `url`.
+   * @type {string}
+   */
   static switchedTab = 'switchedTab';
 };

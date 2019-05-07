@@ -15,47 +15,33 @@ export default class BackgroundActions {
    * stored mappings for the request.url and send any found mappings(/selectors) to the content script to get the
    * content of each selector.
    *
+   * Data is saved and retrieved by hostname but the full href is needed to try to detect a preset.
+   *
    * @example getContent({ url: 'url.com' });
    *
-   * @param {Object} request - Request object.
+   * @param {Object} request - Request object. Must contain url, hostname and href.
    *
    * @returns {Promise}
    */
   static async getContent(request) {
-    // Data is saved and retrieved by hostname but full href is needed to try to detect a preset.
-    const {hostname, href} = request.url;
+    const {url, href, preset} = request;
+    let selectors = await storage.getSavedMappingsForURL(url);
+    let presetData;
 
-    let selectors = await storage.getSavedMappingsForURL(hostname);
-    let presetName, presetData;
-
-    console.log(`getContent | selectors for ${hostname}`, selectors);
-    console.log('getContent | request', request);
-
-    if (selectors && selectors.preset) {
-      presetName = selectors.preset;
-      delete selectors.preset;
-    } else if (request.hasOwnProperty('preset')) {
-      presetName = request.preset;
-    } else {
-      presetName = Presets.findByURL(href);
-      if (presetName) {
-        Logger.success(`Preset '${presetName}' applied.`);
-      } else {
-        Logger.warning(`No preset found for "${href}".`);
-      }
-    }
+    // Use the preset from the request or if it's undefined try to map the url to one.
+    const presetName = preset || Presets.findByURL(href);
 
     if (presetName) {
-      const presetFields = await Presets.getFields(presetName);
-
       // Add overridden values to the object to be able to differentiate them from preset values (and allow the user to
       // delete them)
       const overrides = selectors ? Object.keys(selectors) : null;
       presetData = {name: presetName, overrides};
 
-      selectors = {...presetFields, ...selectors};
+      // Merge the preset selectors with existing selectors.
+      selectors = {...await Presets.getFields(presetName), ...selectors};
 
-      storage.saveMappings({url: hostname, preset: presetData});
+      // Add the new preset to the saved data for this url.
+      storage.saveMappings({url, preset: presetData});
     }
 
     const data = {
@@ -74,7 +60,7 @@ export default class BackgroundActions {
     if (data.preset || data.selectors) {
       sendToContent(data);
     } else {
-      Logger.warning(`No preset or selectors present for "${hostname}".`);
+      Logger.warning(`No preset or selectors present for "${url}".`);
     }
   }
 
@@ -98,7 +84,6 @@ export default class BackgroundActions {
     if (!request.path) {
       return;
     }
-    console.log('saveMappedField', request);
 
     storage.saveMappings(request);
     sendToPopup(request);

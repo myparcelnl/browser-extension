@@ -1,9 +1,9 @@
 /* eslint-disable no-magic-numbers,no-console */
-import ActionNames from './helpers/ActionNames';
 import BackgroundActions from './background/BackgroundActions';
+import ContextMenu from './background/ContextMenu';
+import ActionNames from './helpers/ActionNames';
 import Chrome from './helpers/Chrome';
 import Config from './helpers/Config';
-import ContextMenu from './background/ContextMenu';
 import Logger from './helpers/Logger'; // strip-log
 
 const env = process.env.NODE_ENV;
@@ -36,14 +36,19 @@ export let contentConnection;
  * Send data to popup.
  *
  * @param {Object} data - Request object.
+ * @param addURL
  */
-export const sendToPopup = (data) => {
+export const sendToPopup = (data, addURL = false) => {
   if (Background.popupConnected) {
     try {
+      if (addURL === true) {
+        data.url = Background.getURL().hostname;
+      }
+
       popupConnection.postMessage(data);
       Logger.request('popup', data);
     } catch (e) {
-      Logger.error(e);
+      Logger.error('sendToPopup', e);
       addToQueue('popup', data);
     }
   } else {
@@ -62,7 +67,7 @@ export const sendToContent = (data) => {
       contentConnection.postMessage(data);
       Logger.request('content', data);
     } catch (e) {
-      Logger.error(`sendToContent: ${e}`);
+      Logger.error('sendToContent', e);
       addToQueue('content', data);
     }
   } else {
@@ -103,6 +108,9 @@ const flushQueue = (queue, sendFunction) => {
 
 export default class Background {
 
+  static lastTabId = undefined;
+  static lastWindowId = undefined;
+
   /**
    * @type {Array}
    */
@@ -119,7 +127,9 @@ export default class Background {
   static popupConnected = false;
 
   /**
-   * @type {boolean|number}
+   * Tab id and url of content connection or false.
+   *
+   * @type {boolean|Object}
    */
   static contentConnected = false;
 
@@ -129,6 +139,7 @@ export default class Background {
   static preBoot() {
     // Set popup.html as popup
     chrome.browserAction.setPopup({popup: chrome.extension.getURL(Config.bootPopup)});
+
     Logger.event('Awaiting boot choice.');
 
     const listener = async(appName) => {
@@ -147,6 +158,7 @@ export default class Background {
   static async boot(app) {
     // Remove selection popup
     await chrome.browserAction.setPopup({popup: ''});
+
     await this.loadConfig(app);
     await this.setSettings();
 
@@ -169,7 +181,6 @@ export default class Background {
       settings = await BackgroundActions.getSettings();
     }
 
-    console.log('settings', settings);
     this.updateSettings(settings);
   }
 
@@ -209,8 +220,6 @@ export default class Background {
     appURL = new URL(appURL);
     appURL.searchParams.set('referralurl', encodeURIComponent(appURL.pathname));
     appURL.searchParams.set('origin', 'browser-extension');
-
-    console.log(appURL);
 
     // Get app by current environment and name.
     this.popupExternalURL = appURL.href;
@@ -275,8 +284,12 @@ export default class Background {
         break;
 
       case ActionNames.getContent:
-        const url = await this.getURL();
-        await BackgroundActions.getContent({...request, url});
+        try {
+          const {href, hostname} = await this.getURL();
+          await BackgroundActions.getContent({...request, url: hostname, href});
+        } catch (e) {
+          console.log(e);
+        }
         break;
     }
   }
@@ -286,13 +299,7 @@ export default class Background {
    *
    * @returns {URL}
    */
-  static async getURL() {
-    // Try to find the active tab
-    if (!activeTab) {
-      const tab = await this.getActiveTab();
-      this.activateTab(tab);
-    }
-
+  static getURL() {
     if (activeTab) {
       return new URL(activeTab.url);
     }
@@ -308,7 +315,7 @@ export default class Background {
 
     switch (request.action) {
       case ActionNames.contentConnected:
-        await this.onContentConnect(request);
+        this.onContentConnect(request);
         break;
 
       case ActionNames.mappedField:
@@ -341,11 +348,12 @@ export default class Background {
    * @param {Object} request - Request object.
    */
   static onContentConnect(request) {
-    this.contentConnected = activeTab.id;
+    this.contentConnected = request.url;
+
     Logger.info('Sending content queue');
     this.contentQueue = flushQueue(this.contentQueue, sendToContent);
 
-    sendToPopup({...request, action: ActionNames.backgroundConnected});
+    sendToPopup({...request, action: ActionNames.contentConnected});
   }
 
   /**
@@ -364,20 +372,28 @@ export default class Background {
       this.switchTab(...args);
     };
 
+    const tabHighlightListener = (...args) => {
+      this.highlightTab(...args);
+    };
+
     const tabUpdateListener = (...args) => {
       this.updateTab(...args);
+    };
+
+    const focusChangeListener = (...args) => {
+      this.changeFocus(...args);
     };
 
     // Extension button click
     chrome.browserAction.onClicked.addListener(browserActionClickListener);
 
     // Tab listeners
-    chrome.tabs.onHighlighted.addListener(tabReplaceListener);
+    chrome.tabs.onHighlighted.addListener(tabHighlightListener);
     chrome.tabs.onReplaced.addListener(tabReplaceListener);
     chrome.tabs.onUpdated.addListener(tabUpdateListener);
 
     // Window listeners
-    chrome.windows.onFocusChanged.addListener(tabReplaceListener);
+    chrome.windows.onFocusChanged.addListener(focusChangeListener);
     chrome.windows.onRemoved.addListener(windowRemoveListener);
   }
 
@@ -387,10 +403,6 @@ export default class Background {
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    */
   static injectScripts(tab) {
-    if (!tab) {
-      return;
-    }
-
     const insertScripts = () => {
       Logger.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
       chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS}, Chrome.catchError);
@@ -398,41 +410,52 @@ export default class Background {
     };
 
     try {
-      if (tab.id === this.contentConnected) {
-        Logger.event('Script already present');
-        sendToContent({action: ActionNames.checkContentConnection});
-      } else {
-        throw 'Content not connected';
-      }
+      contentConnection.postMessage({action: ActionNames.checkContentConnection});
     } catch (e) {
       Logger.warning(e);
       insertScripts();
-      sendToContent({action: ActionNames.checkContentConnection});
     }
   }
 
   /**
    * Set active tab and send messages to popup and content to process the change.
    *
-   * @param {number} id - Tab ID.
+   * @param {number} addedTabId - Tab ID.
+   * @param {number} removedTabId - Tab ID.
    *
    * @return {Promise<undefined>}
    */
-  static async switchTab(id) {
-    // Tab id for console windows and such
-    if (id === chrome.tabs.TAB_ID_NONE) {
+  static async switchTab(addedTabId, removedTabId) {
+    // Check if id equals id of console windows or popup id
+    if (addedTabId === chrome.tabs.TAB_ID_NONE || (popup && addedTabId === popup.id)) {
       return;
     }
 
-    const tab = await this.getActiveTab();
+    Logger.event('switchTab', `addedTabId: ${addedTabId}, removedTabId: ${removedTabId}`);
+    if (await this.activateTab()) {
+      sendToPopup({action: ActionNames.switchedTab}, true);
+    }
+  }
 
-    if (this.activateTab(tab)) {
-      sendToPopup({action: ActionNames.switchedTab, url: this.getURL().hostname});
+  /**
+   * Set active tab and send messages to popup and content to process the change.
+   *
+   * @param {chrome.tabs.TabHighlightInfo} info - Chrome highlight info/.
+   */
+  static async highlightTab(info) {
+    Logger.event('highlightTab', info);
+
+    const tab = chrome.tabs.get(info.tabIds[0], (tab) => tab);
+
+    if (await this.activateTab(tab)) {
+      sendToPopup({action: ActionNames.switchedTab}, true);
     }
   }
 
   /**
    * Gets the active tab based on a query.
+   *
+   * @see https://developer.chrome.com/extensions/tabs#method-query
    *
    * @returns {Promise<chrome.tabs.Tab>}
    */
@@ -443,6 +466,7 @@ export default class Background {
           active: true,
           currentWindow: true,
           highlighted: true,
+          windowType: 'normal',
         },
         (tabs) => resolve(tabs[0]),
       );
@@ -452,19 +476,46 @@ export default class Background {
   /**
    * On updating tab set new tab as active tab and change app icon.
    *
-   * @param {number} id   - Chrome tab ID.
+   * @param {number} id - Chrome tab ID.
    * @param {chrome.tabs.TabChangeInfo} data - Chrome event data.
    * @param {chrome.tabs.Tab} tab  - Chrome tab object.
    */
-  static async updateTab(id, data, tab) {
-    Logger.event('updateTab');
+  static updateTab(id, data, tab) {
+    if (popup && tab.id === popup.id) {
+      return;
+    }
+
+    Logger.event(`updateTab – ${data.status}`);
     if (data.status === 'complete') {
       activeTab = undefined;
       this.setIcon();
 
       this.activateTab(tab);
-      sendToPopup({action: ActionNames.switchedTab, url: await this.getURL().hostname});
+      sendToPopup({action: ActionNames.switchedTab}, true);
     }
+  }
+
+  /**
+   * Fired when the currently focused window changes. Try to find valid tab in the window, set it as active tab and
+   * change app icon. Ignores popups, invalid windows and ignores change if the window id is equal to the previous one.
+   *
+   * @param {number} windowId - ID of the newly-focused window.
+   */
+  static changeFocus(windowId) {
+    if (windowId === chrome.windows.WINDOW_ID_NONE
+      || windowId === this.lastWindowId
+      || (!!popup && windowId === popup.windowId)
+    ) {
+      return;
+    }
+
+    Logger.event('changeFocus', windowId);
+
+    this.lastWindowId = windowId;
+    activeTab = undefined;
+    this.setIcon();
+    this.activateTab();
+    sendToPopup({action: ActionNames.switchedTab}, true);
   }
 
   /**
@@ -485,25 +536,28 @@ export default class Background {
    *
    * @returns {boolean}
    */
-  static async activateTab(tab) {
+  static async activateTab(tab = undefined) {
     if (!tab) {
       tab = await this.getActiveTab();
     }
+    console.log('activateTab:', tab);
 
     if (!tab || tab.url === this.popupExternalURL) {
+      Logger.warning('activateTab: Can\'t activate popup.');
       return false;
     }
 
-    if (!tab || !popup || tab.windowId === popup.windowId || (!!activeTab && tab.id === activeTab.id)) {
-      Logger.warning('No tab to activate.');
+    if ((!!popup && tab.windowId === popup.windowId) || (!!activeTab && tab.id === activeTab.id)) {
+      Logger.warning('activateTab: Tab is popup or already active.');
       return false;
     }
-
-    activeTab = tab;
-    Logger.success(`Tab activated: ${tab.url}`);
 
     if (this.isWebsite(tab)) {
+      activeTab = tab;
       this.injectScripts(tab);
+      Logger.success(`activateTab: Tab activated: ${tab.url}`);
+    } else {
+      activeTab = undefined;
     }
   }
 
@@ -525,12 +579,10 @@ export default class Background {
    * @returns {boolean}
    */
   static isWebsite(tab) {
-    const notPopup = popup ? tab.windowId !== popup.windowId : true;
+    const notPopup = popup ? tab.id !== popup.id : true;
     const isTab = tab.id !== chrome.tabs.TAB_ID_NONE;
 
-    const bool = tab.url && tab.url.startsWith('http') && notPopup && isTab;
-    Logger.info(`${tab.url} is ${bool ? '' : 'not'} a website`);
-    return bool;
+    return tab.url && tab.url.startsWith('http') && notPopup && isTab;
   }
 
   /**
@@ -560,13 +612,9 @@ export default class Background {
 
   /**
    * Show popup if it exists or create it.
-   *
-   * @param {chrome.tabs.Tab} tab - The tab the extension button was clicked from..
    */
-  static async openPopup(tab = null) {
-    if (tab) {
-      this.activateTab(tab);
-    }
+  static async openPopup() {
+    await this.activateTab();
 
     if (popup) {
       await this.showPopup();

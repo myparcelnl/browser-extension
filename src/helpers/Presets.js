@@ -1,27 +1,16 @@
 import {PresetData} from './PresetData';
-import {detect} from 'detect-browser';
 
 export default class Presets {
 
   /**
-   * Get browser info.
+   * Find existing preset by given href.
    *
-   * @returns {string}
-   */
-  static detectBrowser() {
-    const browserInfo = detect();
-    return `${browserInfo.os.replace(/\s/, '-').toLowerCase()}_${browserInfo.name}/${browserInfo.version}`;
-  }
-
-  /**
-   * Find existing preset by given URL.
-   *
-   * @param {string} url - URL.
+   * @param {string} href - Full href.
    *
    * @returns {string|undefined} - Preset name or undefined if no preset was found.
    */
-  static findByURL(url) {
-    const preset = PresetData.urlMapping.find((entry) => url.match(entry.regex));
+  static findByURL(href) {
+    const preset = PresetData.urlMapping.find((entry) => href.match(entry.regex));
     return preset ? preset.name : undefined;
   }
 
@@ -30,10 +19,14 @@ export default class Presets {
    *
    * @param {string} presetName - Preset name.
    *
-   * @returns {Promise<Object>}.
+   * @returns {Object} - Fields for given preset.
    */
   static getFields(presetName) {
-    return PresetData.fields[presetName];
+    if (PresetData.fields.hasOwnProperty(presetName)) {
+      return PresetData.fields[presetName];
+    } else {
+      throw `Preset '${presetName}' doesn't exist.`;
+    }
   }
 };
 

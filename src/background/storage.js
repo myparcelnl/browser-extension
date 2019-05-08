@@ -22,7 +22,7 @@ export default {
   },
 
   /**
-   * Find existing entry for given URL or create new settings object from URL.
+   * Get field mappings for given URL. Returns empty object if entry doesn't exist.
    *
    * @param {string} url - URL to fetch mappings for.
    *
@@ -30,7 +30,12 @@ export default {
    */
   async getSavedMappingsForURL(url) {
     const fieldMappings = await this.getSavedMappings();
-    return fieldMappings[url];
+
+    if (fieldMappings.hasOwnProperty(url)) {
+      return fieldMappings[url];
+    }
+
+    return {};
   },
 
   /**
@@ -45,7 +50,7 @@ export default {
 
     // Data is saved and retrieved by hostname, not full href
     const url = new URL(data.url).hostname;
-    const mappings = await this.getSavedMappingsForURL(url) || {};
+    const mappings = await this.getSavedMappingsForURL(url);
 
     // Append mapped field to existing mappings
     if (field && path) {
@@ -141,7 +146,7 @@ export default {
   },
 
   /**
-   * Save data to storage.
+   * Save key/value pairs to storage.
    *
    * @param {Object} data - Object with all data keys to store.
    * @param {Function} callback - Callback function.

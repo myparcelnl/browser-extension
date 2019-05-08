@@ -10,11 +10,11 @@ import storage from './storage';
 export default class BackgroundActions {
 
   /**
-   * Start the process to get content by data in request object. Requires url to be present in request. Will search
-   * stored mappings for the request.url and send any found mappings(/selectors) to the content script to get the
-   * content of each selector.
+   * Get the content for given preset selectors and any selectors in storage. Requires `url` to be present in `request`.
+   * Will search stored mappings for `request.url` and send any found selectors to the content script to get the content
+   * of each selector.
    *
-   * Data is saved and retrieved by hostname but the full href is needed to try to detect a preset.
+   * Data is saved and retrieved by hostname.
    *
    * @example getContent({ url: 'url.com' });
    *
@@ -23,7 +23,8 @@ export default class BackgroundActions {
    * @returns {Promise}
    */
   static async getContent(request) {
-    const {url, preset} = request;
+    const {preset} = request;
+    const url = new URL(request.url).hostname;
     const selectors = await storage.getSavedMappingsForURL(url);
 
     const data = {
@@ -45,8 +46,8 @@ export default class BackgroundActions {
   }
 
   /**
-   * Get settings and set defaults if there are none available. Send the settings to the popup and also return them to
-   * the background script.
+   * Get settings (if any) and append them to the defaults. Send the settings to the popup and also return them to the
+   * background script.
    *
    * @returns {Object} - Settings object.
    */

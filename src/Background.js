@@ -36,13 +36,13 @@ export let contentConnection;
  * Send data to popup.
  *
  * @param {Object} data - Request object.
- * @param addURL
+ * @param {boolean} addURL - Whether to add url to request or not.
  */
 export const sendToPopup = (data, addURL = false) => {
   if (Background.popupConnected) {
     try {
       if (addURL === true) {
-        data.url = Background.getURL().hostname;
+        data.url = Background.getURL();
       }
 
       popupConnection.postMessage(data);
@@ -266,6 +266,10 @@ export default class Background {
         this.onPopupConnect();
         break;
 
+      case ActionNames.checkContentConnection:
+        sendToPopup({action: ActionNames.contentConnected}, true);
+        break;
+
       case ActionNames.mapField:
         this.moveFocus();
         sendToContent(request);
@@ -285,8 +289,7 @@ export default class Background {
 
       case ActionNames.getContent:
         try {
-          const {href, hostname} = await this.getURL();
-          await BackgroundActions.getContent({...request, url: hostname, href});
+          await BackgroundActions.getContent(request);
         } catch (e) {
           console.log(e);
         }
@@ -295,22 +298,11 @@ export default class Background {
   }
 
   /**
-   * Get the active tab URL if available.
-   *
-   * @returns {URL}
-   */
-  static getURL() {
-    if (activeTab) {
-      return new URL(activeTab.url);
-    }
-  }
-
-  /**
    * Listener for content script ActionNames.
    *
    * @param {Object} request - Request object.
    */
-  static async contentScriptListener(request) {
+  static contentScriptListener(request) {
     Logger.request('content', request, true);
 
     switch (request.action) {
@@ -330,6 +322,17 @@ export default class Background {
       case ActionNames.foundContent:
         sendToPopup(request);
         break;
+    }
+  }
+
+  /**
+   * Get the active tab URL if available.
+   *
+   * @returns {string}
+   */
+  static getURL() {
+    if (activeTab) {
+      return activeTab.url;
     }
   }
 
@@ -404,7 +407,7 @@ export default class Background {
    */
   static injectScripts(tab) {
     const insertScripts = () => {
-      Logger.event(`Injecting css and js on ${new URL(tab.url).hostname}.`);
+      Logger.info(`Injecting css and js on ${new URL(tab.url).hostname}.`);
       chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS}, Chrome.catchError);
       chrome.tabs.executeScript(tab.id, {file: Config.contentJS}, Chrome.catchError);
     };
@@ -525,6 +528,7 @@ export default class Background {
    */
   static checkPopupClosed(windowId) {
     if (popup && windowId === popup.windowId) {
+      Logger.event('Popup closed');
       this.closePopup(windowId);
     }
   }
@@ -556,6 +560,7 @@ export default class Background {
       activeTab = tab;
       this.injectScripts(tab);
       Logger.success(`activateTab: Tab activated: ${tab.url}`);
+      return true;
     } else {
       activeTab = undefined;
     }

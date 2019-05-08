@@ -9,8 +9,7 @@ export default {
    * @returns {Promise<Object>}
    */
   getSavedMappings() {
-    const object = this.getStorageKeys(Config.mappingPrefix);
-    return {...object.preset, ...object.selectors};
+    return this.getStorageKeys(Config.mappingPrefix);
   },
 
   /**
@@ -42,24 +41,19 @@ export default {
    * @returns {Promise}
    */
   async saveMappings(data) {
-    const {url, field, path, preset} = data;
+    const {field, path} = data;
 
+    // Data is saved and retrieved by hostname, not full href
+    const url = new URL(data.url).hostname;
     const mappings = await this.getSavedMappingsForURL(url) || {};
 
-    const newMappings = {
-      ...mappings,
-    };
-
-    if (preset) {
-      newMappings.preset = preset;
-    }
-
+    // Append mapped field to existing mappings
     if (field && path) {
-      newMappings[field] = path;
+      mappings[field] = path;
     }
 
     const key = {
-      [`${Config.mappingPrefix}${url}`]: JSON.stringify(newMappings),
+      [`${Config.mappingPrefix}${url}`]: JSON.stringify(mappings),
     };
 
     this.saveToStorage(key);
@@ -164,14 +158,5 @@ export default {
    */
   removeFromStorage(key, callback = Chrome.catchError) {
     chrome.storage.sync.remove(key, callback);
-  },
-
-  /**
-   * Clear all keys in storage.
-   *
-   * @param {Function} callback - Callback function.
-   */
-  clearAll(callback = Chrome.catchError) {
-    chrome.storage.sync.clear(callback);
   },
 };

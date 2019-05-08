@@ -1,7 +1,6 @@
 import {sendToContent, sendToPopup} from '../Background';
 import ActionNames from '../helpers/ActionNames';
 import Logger from '../helpers/Logger'; // strip-log
-import Presets from '../helpers/Presets';
 import defaultSettings from '../settings/defaultSettings';
 import storage from './storage';
 
@@ -24,40 +23,21 @@ export default class BackgroundActions {
    * @returns {Promise}
    */
   static async getContent(request) {
-    const {url, href, preset} = request;
-    let selectors = await storage.getSavedMappingsForURL(url);
-    let presetData;
-
-    // Use the preset from the request or if it's undefined try to map the url to one.
-    const presetName = preset || Presets.findByURL(href);
-
-    if (presetName) {
-      // Add overridden values to the object to be able to differentiate them from preset values (and allow the user to
-      // delete them)
-      const overrides = selectors ? Object.keys(selectors) : null;
-      presetData = {name: presetName, overrides};
-
-      // Merge the preset selectors with existing selectors.
-      selectors = {...await Presets.getFields(presetName), ...selectors};
-
-      // Add the new preset to the saved data for this url.
-      storage.saveMappings({url, preset: presetData});
-    }
+    const {url, preset} = request;
+    const selectors = await storage.getSavedMappingsForURL(url);
 
     const data = {
       action: ActionNames.getContent,
+      selectors: {...preset, ...selectors},
     };
 
-    if (presetData) {
-      data.preset = presetData;
-    }
-
-    if (selectors) {
-      data.selectors = selectors;
+    // Set selectors to undefined if there are no keys.
+    if (!Object.keys(data.selectors).length) {
+      data.selectors = undefined;
     }
 
     // Only send to content if either a preset or at least one selector is present.
-    if (data.preset || data.selectors) {
+    if (data.selectors) {
       sendToContent(data);
     } else {
       Logger.warning(`No preset or selectors present for "${url}".`);
@@ -76,16 +56,15 @@ export default class BackgroundActions {
   }
 
   /**
-   * Save mapped field to local storage and send it to popup if not null.
+   * Save mapped field to local storage if not null and send it to popup.
    *
    * @param {Object} request - Request object.
    */
   static saveMappedField(request) {
-    if (!request.path) {
-      return;
+    if (request.path) {
+      storage.saveMappings(request);
     }
 
-    storage.saveMappings(request);
     sendToPopup(request);
   }
 

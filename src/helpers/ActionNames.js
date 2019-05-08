@@ -13,7 +13,6 @@
  * sendToPopup({
  *   action: ActionNames.foundContent,
  *   values: {...},
- *   preset: {...},
  * }
  */
 export default class ActionNames {

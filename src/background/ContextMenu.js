@@ -1,5 +1,5 @@
-import Background from '../Background';
 import ActionNames from '../helpers/ActionNames';
+import Background from '../Background';
 import Chrome from '../helpers/Chrome';
 import Config from '../helpers/Config';
 import Connection from './Connection';

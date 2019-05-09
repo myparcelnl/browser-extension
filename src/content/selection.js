@@ -2,6 +2,7 @@
 import '../helpers/prototype';
 import Config from '../helpers/Config';
 import Logger from '../helpers/Logger'; // strip-log
+import tooltipHTML from './tooltip.html';
 
 const listeners = {};
 
@@ -169,9 +170,10 @@ export const selection = {
   },
 
   /**
+   * Show the tooltip. It's created if it doesn't exist yet.
    *
-   * @param name
-   * @param text
+   * @param {string} name -
+   * @param {string} text -
    */
   showTooltip(name, text) {
     if (!document.getElementById(Config.tooltipID)) {
@@ -193,7 +195,7 @@ export const selection = {
 
     tooltip = document.createElement('div');
     tooltip.setAttribute('id', Config.tooltipID);
-    tooltip.innerHTML = '<div class="arrow"></div><div class="text"><span></span><em></em>or<em class="esc">esc</em></div>';
+    tooltip.innerHTML = tooltipHTML;
     document.body.appendChild(tooltip);
   },
 

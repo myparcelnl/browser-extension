@@ -92,6 +92,10 @@ module.exports = (env, argv) => {
           },
         },
         {
+          test: /\.(html)$/,
+          use: ['html-loader'],
+        },
+        {
           test: /\.scss$/,
           use: [
             {loader: MiniCssExtractPlugin.loader},

@@ -141,7 +141,7 @@ export default class Connection {
     this.contentConnected = this.content.sender.url;
 
     this.contentQueue = this.flushQueue(this.CONTENT);
-    this.sendToPopup({...request, action: ActionNames.contentConnected});
+    this.sendToPopup({...request, action: ActionNames.contentConnected}, true);
   }
 
   /**

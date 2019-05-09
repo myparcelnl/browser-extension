@@ -1,5 +1,5 @@
-import {sendToContent, sendToPopup} from '../Background';
 import ActionNames from '../helpers/ActionNames';
+import Connection from './Connection';
 import Logger from '../helpers/Logger'; // strip-log
 import defaultSettings from '../settings/defaultSettings';
 import storage from './storage';
@@ -39,7 +39,7 @@ export default class BackgroundActions {
 
     // Only send to content if either a preset or at least one selector is present.
     if (data.selectors) {
-      sendToContent(data);
+      Connection.sendToContent(data);
     } else {
       Logger.warning(`No preset or selectors present for "${url}".`);
     }
@@ -66,11 +66,11 @@ export default class BackgroundActions {
       storage.saveMappings(request);
     }
 
-    sendToPopup(request);
+    Connection.sendToPopup(request);
   }
 
   /**
-   * Save settings to local storage.
+   * Save settings to local storage, tell the popup about it and return them.
    *
    * @param {Object} settings - Request object.
    *
@@ -79,7 +79,8 @@ export default class BackgroundActions {
   static saveSettings(settings) {
     const newSettings = {...this.getSettings(), ...settings};
     storage.saveSettings(newSettings);
-    sendToPopup({action: ActionNames.savedSettings});
+
+    Connection.sendToPopup({action: ActionNames.savedSettings});
     return newSettings;
   }
 

@@ -167,8 +167,7 @@ export default class Background {
         break;
 
       case ActionNames.checkContentConnection:
-        Connection.sendToContent(request);
-        // Connection.sendToPopup({action: ActionNames.contentConnected}, true);
+        Connection.sendToPopup({action: ActionNames.contentConnected}, true);
         break;
 
       case ActionNames.mapField:
@@ -189,11 +188,7 @@ export default class Background {
         break;
 
       case ActionNames.getContent:
-        try {
-          await BackgroundActions.getContent(request);
-        } catch (e) {
-          Logger.error('Error:', e);
-        }
+        BackgroundActions.getContent(request);
         break;
     }
   }
@@ -284,14 +279,15 @@ export default class Background {
       };
 
       if (Connection.contentConnected === tab.url) {
-        insertScripts();
-      } else {
         try {
+          // Use content connection directly instead of sendToContent to skip the queue
           Connection.content.postMessage({action: ActionNames.checkContentConnection});
           resolve(true);
         } catch (e) {
           insertScripts();
         }
+      } else {
+        insertScripts();
       }
     });
 
@@ -306,7 +302,7 @@ export default class Background {
    * @returns {Promise<undefined>}
    */
   static switchTab(addedTabId, removedTabId) {
-    // Connection.contentConnected = false;
+    Connection.contentConnected = false;
 
     // Check if id equals id of console windows or popup id
     if (addedTabId === chrome.tabs.TAB_ID_NONE || (this.popupWindow && addedTabId === this.popupWindow.id)) {
@@ -347,12 +343,11 @@ export default class Background {
       chrome.tabs.query(
         {
           active: true,
-          currentWindow: true,
           highlighted: true,
           // Exclude popups and other unexpected "tabs"
           windowType: 'normal',
         },
-        (tabs) => resolve(tabs[0]),
+        (tabs) => resolve(tabs[0] || {}),
       );
     });
   }
@@ -365,7 +360,13 @@ export default class Background {
    * @param {chrome.tabs.Tab} tab  - Chrome tab object.
    */
   static updateTab(id, data, tab) {
+    // Ignore popup
     if (this.popupWindow && tab.id === this.popupWindow.id) {
+      return;
+    }
+
+    // Ignore updates on other tabs than the active tab
+    if (this.activeTab && tab.id !== this.activeTab.id) {
       return;
     }
 
@@ -419,31 +420,31 @@ export default class Background {
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    *
-   * @returns {boolean}
+   * @returns {undefined}
    */
   static async activateTab(tab = undefined) {
     if (!tab) {
       tab = await this.getActiveTab();
     }
 
-    if (!tab || tab.url === this.popupExternalURL) {
-      Logger.warning('activateTab: Can\'t activate popup.');
-      return false;
+    if (!!this.popupWindow && tab.windowId === this.popupWindow.windowId) {
+      return;
     }
 
-    if ((!!this.popupWindow && tab.windowId === this.popupWindow.windowId) || (!!this.activeTab && tab.id === this.activeTab.id)) {
-      Logger.warning('activateTab: Tab is popup or already active.');
-      return false;
+    if (!!this.activeTab && tab.id === this.activeTab.id) {
+      Logger.warning('Can\'t activate tab; Tab is already active.');
+      return;
     }
 
     if (this.isWebsite(tab)) {
       this.activeTab = tab;
-      Logger.success(`activateTab: Tab activated: ${tab.url}`);
+      Logger.success(`Active tab: ${tab.url}`);
 
       await this.injectScripts(tab);
       Connection.sendToPopup({action: ActionNames.contentConnected}, true);
     } else {
       this.activeTab = undefined;
+      Connection.sendToPopup({action: ActionNames.contentConnected, url: undefined});
     }
   }
 
@@ -551,6 +552,7 @@ export default class Background {
    */
   static getURL() {
     console.log('getURL', this.activeTab ? this.activeTab.url : undefined);
+    console.log(this.activeTab);
     if (this.activeTab) {
       return this.activeTab.url;
     }

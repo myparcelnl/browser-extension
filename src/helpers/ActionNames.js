@@ -24,7 +24,7 @@ export default class ActionNames {
   static checkContentConnection = 'checkContentConnection';
 
   /**
-   * From content. To confirm content is connected. Should be the response to `checkContentConnection`.
+   * To popup. To confirm content is connected. Should be the response to `checkContentConnection`.
    * @type {string}
    */
   static contentConnected = 'contentConnected';

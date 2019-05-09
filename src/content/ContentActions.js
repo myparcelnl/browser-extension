@@ -26,11 +26,11 @@ export default class ContentActions {
    * @returns {Promise}
    */
   static async mapField(request) {
-    const {field} = request;
+    const {field, url} = request;
     const path = await clickedElement();
     const elementContent = await elementsContent(path);
 
-    const data = {field, path, content: elementContent};
+    const data = {url, field, path, content: elementContent};
     Content.sendToBackground(ActionNames.mappedField, data);
   }
 }

@@ -1,7 +1,8 @@
-import background, {sendToPopup} from '../Background';
+import Background from '../Background';
 import ActionNames from '../helpers/ActionNames';
 import Chrome from '../helpers/Chrome';
 import Config from '../helpers/Config';
+import Connection from './Connection';
 
 /**
  * Context menu class. Contains functions to create and handle the context menu items.
@@ -60,7 +61,7 @@ export default class ContextMenu {
    */
   static selectContentText(selection) {
     selection = selection.trim().replace(/[\s\n]/, ' ');
-    background.openPopup();
-    sendToPopup({action: ActionNames.createShipmentFromSelection, selection: selection});
+    Background.openPopup();
+    Connection.sendToPopup({action: ActionNames.createShipmentFromSelection, selection: selection});
   }
 };

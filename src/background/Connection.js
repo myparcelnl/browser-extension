@@ -117,8 +117,6 @@ export default class Connection {
    * @param {Object} data - Request object.
    */
   static sendToContent(data) {
-    console.log('sendToContent', this.content.sender.url);
-
     if (this.contentConnected) {
       try {
         this.content.postMessage(data);

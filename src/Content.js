@@ -1,7 +1,7 @@
 import ActionNames from './helpers/ActionNames';
 import ContentActions from './content/ContentActions';
 import Logger from './helpers/Logger'; // strip-log
-import {selection} from './content/selection';
+import Selection from './content/Selection';
 
 export default class Content {
 
@@ -28,7 +28,8 @@ export default class Content {
     };
 
     this.listeners.disconnect = () => {
-      selection.stopMapping();
+      Selection.stopMapping();
+      Selection.removeTooltip();
     };
 
     // Establish the connection to the background script

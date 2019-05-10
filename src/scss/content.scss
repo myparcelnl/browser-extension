@@ -3,24 +3,65 @@
 @import "mixins";
 
 .myparcel {
-  &__mapping-field {
-    background-color: transparentize($secondary, 0.75);
-    outline: 3px solid $primary;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25) !important;
-    cursor: pointer !important;
-  }
-
+  // The hovering tooltip
   &__mapping-tooltip {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     background-color: $secondary;
-    border-color: darken($secondary, 10);
-    border-radius: 3px;
+    border-radius: $border-radius;
+    box-shadow: 0.1em 0.1em 10px rgba(0, 0, 0, 0.15);
     color: #fff;
     display: none;
-    height: 20px;
-    margin-left: 5px;
-    padding: .25em;
-    position: absolute;
-    width: 100px;
+    font-size: $font-size;
+    margin-left: 20px;
+    margin-top: -5px;
+    padding: 0.35em 0.45em;
+    pointer-events: none;
+    position: fixed;
+    user-select: none;
     z-index: 99999;
+
+    &:before {
+      content: ' ';
+      background: $secondary;
+      bottom: 0;
+      height: 10px;
+      left: -5px;
+      margin: auto;
+      position: absolute;
+      top: 0;
+      transform: rotate(45deg);
+      width: 10px;
+    }
+
+    &__content {
+      hr {
+        border: none;
+        border-bottom: 1px solid #fff;
+      }
+
+      &__escape {
+        background-color: #fff;
+        border-radius: $border-radius;
+        color: #222;
+        font-family: monospace;
+        margin-right: 2px;
+        padding: 3px 5px;
+      }
+    }
+
+    &--visible {
+      display: flex;
+    }
+  }
+
+  // The wrapper span around hovered elements
+  &__mapping-field {
+    background-color: transparentize($secondary, 0.75);
+    // We support Chrome 54+ and filter is a 53+ feature (without vendor prefix)
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, .25));
+    color: black;
+    cursor: pointer;
+    outline: 3px solid $primary;
   }
 }
+

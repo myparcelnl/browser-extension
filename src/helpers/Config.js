@@ -19,12 +19,9 @@ export default class Config {
     },
   ];
 
-  static classPrefix = 'myparcel__';
+  // Prefixes used for the key names to save to browser storage
   static mappingPrefix = 'myparcel-mapping-';
   static settingPrefix = 'myparcel-setting-';
-  static selectionClass = `${this.classPrefix}mapping-field`;
-  static tooltipID = `${this.classPrefix}mapping-tooltip`;
-  static wrappedItemClass = `${this.classPrefix}wrapped-item`;
 
   // Directories
   static configDir = './config';

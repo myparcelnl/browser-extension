@@ -61,7 +61,9 @@ export default class ContextMenu {
    */
   static selectContentText(selection) {
     selection = selection.trim().replace(/[\s\n]/, ' ');
-    Background.openPopup();
-    Connection.sendToPopup({action: ActionNames.createShipmentFromSelection, selection: selection});
+
+    Background.openPopup().then(() => {
+      Connection.sendToPopup({action: ActionNames.createShipmentFromSelection, selection});
+    });
   }
 };

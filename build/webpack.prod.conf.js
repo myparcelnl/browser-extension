@@ -87,13 +87,11 @@ module.exports = (env, argv) => {
         {
           test: /\.m?js$/,
           exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-          },
+          loader: 'babel-loader',
         },
         {
           test: /\.(html)$/,
-          use: ['html-loader'],
+          loader: 'mustache-loader?minify',
         },
         {
           test: /\.scss$/,

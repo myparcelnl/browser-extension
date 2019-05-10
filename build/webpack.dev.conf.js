@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers,no-console */
 const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 const merge = require('webpack-merge');
 const prodConfig = require('./webpack.prod.conf.js');
@@ -8,7 +7,7 @@ module.exports = (env, argv) => merge(
   {
     mode: 'development',
     watchOptions: {
-      ignored: ['dist', 'node_modules', 'zip'],
+      ignored: ['/dist', '/node_modules', '/zip'],
     },
     devServer: {
       disableHostCheck: true,
@@ -18,10 +17,10 @@ module.exports = (env, argv) => merge(
     plugins: [
       new ChromeExtensionReloader({
         port: 9091,
+        reloadPage: false,
         entries: {
           background: 'background',
-          content: 'content',
-          popup: 'popup',
+          contentScript: ['content', 'popup'],
         },
       }),
     ],

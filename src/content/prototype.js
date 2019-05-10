@@ -66,4 +66,6 @@ EventTarget.prototype.hasDepth = function(depth) {
       return true;
     }
   });
+
+  return false;
 };

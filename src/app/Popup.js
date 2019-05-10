@@ -1,11 +1,8 @@
+import popupHTML from './popup.html';
+
 const env = process.env.NODE_ENV;
 
-export default class Popup {
-
-  /**
-   * @type {HTMLElement}
-   */
-  static root;
+class Popup {
 
   /**
    * @type {Object}
@@ -33,21 +30,14 @@ export default class Popup {
    * @returns {undefined}
    */
   static createPage() {
-    this.root = document.getElementById('popup');
+    const root = document.getElementById('popup');
 
-    let element, link;
-    for (const appName in this.apps) {
-      if (this.apps.hasOwnProperty(appName)) {
-        element = document.createElement('div');
-        link = this.root.appendChild(element);
-        link.innerHTML = `<div class="app app--${appName}">
-                            <img src="images/logo_${appName}.png" alt="${appName}"/>
-                          </div>`;
+    root.innerHTML = popupHTML({apps: Object.keys(this.apps)});
+    const links = root.querySelectorAll('.app');
 
-        // Add onclick event to the created link.
-        link.onclick = () => this.start(appName);
-      }
-    }
+    links.forEach((link) => {
+      link.addEventListener('click', () => this.start(link.attributes.getNamedItem('data-app').value));
+    });
   }
 
   /**

@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Index</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous"/>
 </head>
 <body>
-  <div id="popup">
-    <div class="loader"></div>
-  </div>
+<div id="popup">
+  {{#apps}}
+    <div class="app app--{{.}}" data-app="{{.}}">
+      <img src="images/logo_{{.}}.png" alt="{{.}}"/>
+    </div>
+  {{/apps}}
+</div>
 </body>
 </html>

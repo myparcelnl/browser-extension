@@ -1,4 +1,3 @@
-import Popup from '../src/app/Popup';
 import Background from '../src/Background';
 
 const util = require('util');

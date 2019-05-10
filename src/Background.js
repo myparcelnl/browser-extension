@@ -24,8 +24,6 @@ export default class Background {
    */
   static activeTab;
 
-  static lastTabId;
-
   /**
    * ID of the last window the browser was focused on.
    *
@@ -157,7 +155,7 @@ export default class Background {
    *
    * @returns {undefined}
    */
-  static async popupListener(request) {
+  static popupListener(request) {
     Logger.request(Connection.POPUP, request, true);
 
     switch (request.action) {
@@ -358,6 +356,8 @@ export default class Background {
    * @param {number} id - Chrome tab ID.
    * @param {chrome.tabs.TabChangeInfo} data - Chrome event data.
    * @param {chrome.tabs.Tab} tab  - Chrome tab object.
+   *
+   * @returns {undefined}
    */
   static updateTab(id, data, tab) {
     // Ignore popup
@@ -551,8 +551,6 @@ export default class Background {
    * @returns {string}
    */
   static getURL() {
-    console.log('getURL', this.activeTab ? this.activeTab.url : undefined);
-    console.log(this.activeTab);
     if (this.activeTab) {
       return this.activeTab.url;
     }

@@ -43,14 +43,8 @@ export default class ContextMenu {
    * @param {Object} data - Data received from click event.
    */
   static activate(data) {
-    switch (data.menuItemId) {
-      case Config.contextMenuCreateShipment:
-        console.log('create shipment', data.selectionText);
-        this.selectContentText(data.selectionText);
-        break;
-      case Config.contextMenuSwitchApp:
-        console.log('switch app');
-        break;
+    if (data.menuItemId === Config.contextMenuCreateShipment) {
+      this.selectContentText(data.selectionText);
     }
   }
 

@@ -130,11 +130,6 @@ export default class Selection {
     Object.keys(selectors).forEach((key) => {
       values[key] = Selection.getSelectorContent(selectors[key]);
     });
-    // for (const key in selectors) {
-    //   if (selectors.hasOwnProperty(key)) {
-    //     values[key] = Selection.getSelectorContent(selectors[key]);
-    //   }
-    // }
 
     return values;
   };

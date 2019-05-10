@@ -297,7 +297,7 @@ export default class Background {
    * @param {number} addedTabId - Tab ID.
    * @param {number} removedTabId - Tab ID.
    *
-   * @returns {Promise<undefined>}
+   * @returns {undefined}
    */
   static switchTab(addedTabId, removedTabId) {
     Connection.contentConnected = false;
@@ -314,10 +314,9 @@ export default class Background {
   /**
    * Set active tab and send messages to popup and content to process the change.
    *
-   * @param {chrome.tabs.TabHighlightInfo} info - Chrome highlight info/.
+   * @param {chrome.tabs.TabHighlightInfo} info - Chrome highlight info.
    */
   static async highlightTab(info) {
-    // Connection.contentConnected = false;
     Logger.event('highlightTab', info);
 
     const tab = chrome.tabs.get(info.tabIds[0], (tab) => {
@@ -387,9 +386,10 @@ export default class Background {
    * @param {number} windowId - ID of the newly-focused window.
    */
   static changeFocus(windowId) {
-    if (windowId === chrome.windows.WINDOW_ID_NONE
+    if (!this.popupWindow
+      || windowId === chrome.windows.WINDOW_ID_NONE
       || windowId === this.lastWindowId
-      || (!!this.popupWindow && windowId === this.popupWindow.windowId)
+      || (this.popupWindow && windowId === this.popupWindow.windowId)
     ) {
       return;
     }

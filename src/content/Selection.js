@@ -6,8 +6,6 @@ import tooltipHTML from './tooltip.html';
 
 /**
  * Selection functions.
- *
- *
  */
 export default class Selection {
 
@@ -82,6 +80,7 @@ export default class Selection {
     const element = event.target;
     const path = element.getPath();
     this.stopMapping();
+
     resolve(path);
   }
 
@@ -201,6 +200,7 @@ export default class Selection {
   }
 
   /**
+   * Position the tooltip so it floats next to the user's cursor.
    *
    * @param {MouseEvent} event - Mouse event.
    */
@@ -215,7 +215,7 @@ export default class Selection {
   }
 
   /**
-   * TODO.
+   * Hide the tooltip.
    */
   static hideTooltip() {
     const tooltip = this.getTooltip();
@@ -246,7 +246,7 @@ export default class Selection {
   }
 
   /**
-   * TODO.
+   * Remove the added classes.
    */
   static removeSelectionClass() {
     const elements = document.querySelectorAll(`.${Config.selectionClass}`);

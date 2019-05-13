@@ -84,6 +84,13 @@ export default class Content {
         this.backgroundConnection.onMessage.removeListener(this.listeners.background);
         this.backgroundConnection.disconnect();
         break;
+
+      /**
+       * Remove listener and connection to extension.
+       */
+      case ActionNames.stopMapping:
+        Selection.stopMapping();
+        break;
     }
   }
 };

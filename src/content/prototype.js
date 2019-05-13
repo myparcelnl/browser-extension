@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import Config from '../helpers/Config';
+import Config from '../content/Config';
 import getSelector from 'unique-selector';
 
 /**
@@ -31,6 +31,8 @@ HTMLElement.prototype.getPath = function() {
 
   return path + index;
 };
+
+EventTarget.prototype.getPath = HTMLElement.prototype.getPath;
 
 /**
  * Get text parts from element.

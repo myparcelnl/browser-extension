@@ -77,6 +77,7 @@ export default class Selection {
   static handleClick(event, resolve) {
     event.stopPropagation();
     event.preventDefault();
+
     const element = event.target;
     const path = element.getPath();
     this.stopMapping();

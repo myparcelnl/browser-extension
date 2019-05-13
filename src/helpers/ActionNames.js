@@ -100,6 +100,12 @@ export default class ActionNames {
   static stopListening = 'stopListening';
 
   /**
+   * From popup, to content. Stop mapping.
+   * @type {string}
+   */
+  static stopMapping = 'stopMapping';
+
+  /**
    * To popup. Fired on a tab switch and contains URL of new tab in `url`.
    * @type {string}
    */

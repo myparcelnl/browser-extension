@@ -16,6 +16,16 @@ export default class Selection {
   static listeners = {};
 
   /**
+   * The variables to use in the mustache template for the mapping tooltip.
+   * @type {Object}
+   */
+  static tooltipVariables = {
+    contentClass: Config.tooltipClassContent,
+    textClass: Config.tooltipClassText,
+    escapeClass: Config.tooltipClassEscape,
+  };
+
+  /**
    * Add event listeners for mapping field.
    *
    * @param {Object} strings - Object with translated strings.
@@ -24,12 +34,17 @@ export default class Selection {
    * @returns {undefined}
    */
   static startMapping(strings, resolve) {
+    this.stopMapping();
     Logger.info('Start mapping');
 
     this.showTooltip(strings);
 
-    this.listeners.click = (event) => this.handleClick(event, resolve);
-    this.listeners.keyup = (event) => this.handleKeyup(event, resolve);
+    this.listeners.click =
+      (event) => this.handleClick(event,
+        resolve);
+    this.listeners.keyup =
+      (event) => this.handleKeyup(event,
+        resolve);
     this.listeners.mouseMove = (event) => this.handleMouseMove(event);
 
     document.addEventListener('click', this.listeners.click);
@@ -75,8 +90,8 @@ export default class Selection {
    * @param {Function} resolve - Promise resolve function.
    */
   static handleClick(event, resolve) {
-    event.stopPropagation();
     event.preventDefault();
+    event.stopPropagation();
 
     const element = event.target;
     const path = element.getPath();
@@ -105,7 +120,8 @@ export default class Selection {
    */
   static clickedElement(strings) {
     return new Promise((resolve) => {
-      Selection.startMapping(strings, resolve);
+      Selection.startMapping(strings,
+        resolve);
     });
   };
 
@@ -142,7 +158,7 @@ export default class Selection {
    */
   static addSelectionClass(event) {
     event.stopPropagation();
-    if (event.target.hasDepth(1)) {
+    if (event.target.hasDepth(2)) {
       return false;
     }
 
@@ -170,16 +186,13 @@ export default class Selection {
 
     tooltip.classList.add(Config.tooltipClass);
 
-    // Get the mustache template and add the class variables
-    tooltip.innerHTML = tooltipHTML({
-      contentClass: Config.tooltipClassContent,
-      textClass: Config.tooltipClassText,
-      escapeClass: Config.tooltipClassEscape,
-      fieldName: strings.choose,
-      cancelText: strings.cancel,
-    });
-
     document.body.appendChild(tooltip);
+
+    // Add the variables
+    this.updateTooltipHTML({
+      fieldName: strings.choose,
+      cancel: strings.cancel,
+    });
   }
 
   /**
@@ -188,16 +201,35 @@ export default class Selection {
    * @param {Object} strings - Object with translated strings.
    */
   static showTooltip(strings) {
-    if (!this.getTooltip()) {
+    let tooltip = this.getTooltip();
+    if (tooltip) {
+      this.updateTooltipHTML({
+        fieldName: strings.choose,
+      });
+    } else {
       this.createTooltip(strings);
+      tooltip = this.getTooltip();
     }
 
-    const tooltip = this.getTooltip();
     // To reset its position so it doesn't show until the cursor enters the viewport.
     tooltip.style.top = '-100%';
     tooltip.style.left = '-100%';
 
     tooltip.classList.add(Config.tooltipClassVisible);
+  }
+
+  /**
+   * Update the tooltip template with new variables.
+   *
+   * @param {Object} variables - Variables to add to existing ones.
+   */
+  static updateTooltipHTML(variables) {
+    this.tooltipVariables = {
+      ...this.tooltipVariables,
+      ...variables,
+    };
+
+    this.getTooltip().innerHTML = tooltipHTML(this.tooltipVariables);
   }
 
   /**
@@ -326,7 +358,8 @@ export default class Selection {
         span.innerHTML = el.textContent;
         span.classList.add(Config.wrappedItemClass);
 
-        el.parentNode.insertBefore(span, el);
+        el.parentNode.insertBefore(span,
+          el);
         el.parentNode.removeChild(el);
       }
     });
@@ -346,7 +379,8 @@ export default class Selection {
       const el = nodes[i];
       const txt = document.createTextNode(el.textContent);
 
-      el.parentNode.insertBefore(txt, el);
+      el.parentNode.insertBefore(txt,
+        el);
       el.parentNode.removeChild(el);
     }
   }

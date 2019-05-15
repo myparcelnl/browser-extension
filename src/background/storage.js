@@ -1,5 +1,6 @@
 import Chrome from '../helpers/Chrome';
 import Config from '../helpers/Config';
+import Logger from '../helpers/Logger'; // strip-log
 
 export default {
 
@@ -56,6 +57,9 @@ export default {
     if (field && path) {
       mappings[field] = path;
     }
+
+    // For Mel
+    Logger.success(`Nieuwe mapping voor ${url}:`, mappings);
 
     const key = {
       [`${Config.mappingPrefix}${url}`]: JSON.stringify(mappings),

@@ -1,3 +1,4 @@
+import Selection from './content/Selection';
 import ActionNames from './helpers/ActionNames';
 import BackgroundActions from './background/BackgroundActions';
 import Chrome from './helpers/Chrome';
@@ -188,6 +189,14 @@ export default class Background {
       case ActionNames.getContent:
         BackgroundActions.getContent(request);
         break;
+
+      /**
+       * Just pass to content
+       */
+      case ActionNames.stopMapping:
+        Connection.sendToContent(request);
+        break;
+
     }
   }
 

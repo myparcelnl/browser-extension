@@ -83,8 +83,10 @@ export default class Connection {
         sendFunction(message);
       });
 
-      return [];
+      queue = [];
     }
+
+    return queue;
   };
 
   /**

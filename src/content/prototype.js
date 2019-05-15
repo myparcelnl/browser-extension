@@ -7,7 +7,7 @@ import getSelector from 'unique-selector';
  *
  * @returns {string}
  */
-HTMLElement.prototype.getPath = function() {
+EventTarget.prototype.getPath = function() {
   let selector = this;
   let index = '';
 
@@ -31,8 +31,6 @@ HTMLElement.prototype.getPath = function() {
 
   return path + index;
 };
-
-EventTarget.prototype.getPath = HTMLElement.prototype.getPath;
 
 /**
  * Get text parts from element.

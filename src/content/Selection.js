@@ -1,7 +1,6 @@
 /* eslint-disable func-names */
 import './prototype';
 import Config from '../content/Config';
-import Logger from '../helpers/Logger'; // strip-log
 import tooltipHTML from './tooltip.html';
 
 /**

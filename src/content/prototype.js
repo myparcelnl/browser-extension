@@ -26,6 +26,7 @@ EventTarget.prototype.getPath = function() {
   }
 
   const path = getSelector(selector, {
+    selectorTypes: ['Class', 'Tag', 'NthChild'],
     excludeRegex: RegExp(Config.classPrefix),
   });
 

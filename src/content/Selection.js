@@ -26,7 +26,7 @@ export default class Selection {
   };
 
   /**
-   * Add event listeners for mapping field.
+   * Show tooltip and add event listeners for mapping field. Run `stopMapping` first to make sure everything is clean.
    *
    * @param {Object} strings - Object with translated strings.
    * @param {Function} resolve - Resolve function.
@@ -35,16 +35,10 @@ export default class Selection {
    */
   static startMapping(strings, resolve) {
     this.stopMapping();
-    Logger.info('Start mapping');
 
     this.showTooltip(strings);
-
-    this.listeners.click =
-      (event) => this.handleClick(event,
-        resolve);
-    this.listeners.keyup =
-      (event) => this.handleKeyup(event,
-        resolve);
+    this.listeners.click = (event) => this.handleClick(event, resolve);
+    this.listeners.keyup = (event) => this.handleKeyup(event, resolve);
     this.listeners.mouseMove = (event) => this.handleMouseMove(event);
 
     document.addEventListener('click', this.listeners.click);
@@ -56,8 +50,6 @@ export default class Selection {
    * Clean up event listeners and any added HTML elements.
    */
   static stopMapping() {
-    Logger.info('Stop mapping');
-
     document.removeEventListener('click', this.listeners.click);
     document.removeEventListener('keyup', this.listeners.keyup);
     document.removeEventListener('mousemove', this.listeners.mouseMove);
@@ -180,8 +172,6 @@ export default class Selection {
    * @param {Object.<String, String>} strings - Object with translated strings.
    */
   static createTooltip(strings) {
-    Logger.info('Creating tooltip');
-
     const tooltip = document.createElement('div');
 
     tooltip.classList.add(Config.tooltipClass);

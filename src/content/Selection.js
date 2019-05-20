@@ -347,8 +347,7 @@ export default class Selection {
         span.innerHTML = el.textContent;
         span.classList.add(Config.wrappedItemClass);
 
-        el.parentNode.insertBefore(span,
-          el);
+        el.parentNode.insertBefore(span, el);
         el.parentNode.removeChild(el);
       }
     });
@@ -368,8 +367,7 @@ export default class Selection {
       const el = nodes[i];
       const txt = document.createTextNode(el.textContent);
 
-      el.parentNode.insertBefore(txt,
-        el);
+      el.parentNode.insertBefore(txt, el);
       el.parentNode.removeChild(el);
     }
   }

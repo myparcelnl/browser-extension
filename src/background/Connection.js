@@ -98,7 +98,7 @@ export default class Connection {
   static sendToPopup(data, addURL = false) {
     if (this.popupConnected) {
       try {
-        if (addURL === true) {
+        if (addURL) {
           data.url = Background.getURL();
         }
 

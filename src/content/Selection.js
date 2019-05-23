@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import './prototype';
+import {getPath, getTextParts, hasContent} from './helpers';
 import Config from '../content/Config';
 import tooltipHTML from './tooltip.html';
 
@@ -85,7 +85,13 @@ export default class Selection {
     event.stopPropagation();
 
     const element = event.target;
-    const path = element.getPath();
+
+    // Ignore nodes without text content
+    if (!hasContent(element)) {
+      return;
+    }
+
+    const path = getPath(element);
     this.stopMapping();
 
     resolve(path);
@@ -111,8 +117,7 @@ export default class Selection {
    */
   static clickedElement(strings) {
     return new Promise((resolve) => {
-      Selection.startMapping(strings,
-        resolve);
+      Selection.startMapping(strings, resolve);
     });
   };
 
@@ -144,24 +149,23 @@ export default class Selection {
   /**
    *
    * @param {MouseEvent} event - Mouse event.
-   *
-   * @returns {boolean}
    */
   static addSelectionClass(event) {
     event.stopPropagation();
-    if (event.target.hasDepth(2)) {
-      return false;
-    }
+    this.removeSelectionClass();
 
     const element = event.target;
 
-    this.removeSelectionClass();
+    // Don't highlight nodes without text content
+    if (!hasContent(element)) {
+      return;
+    }
 
     element.classList.add(Config.selectionClass);
 
     // If the element has text nodes, wrap those nodes for more specific mapping.
     if (element.innerHTML !== element.nodeValue) {
-      this.wrap(element.getTextParts());
+      this.wrap(getTextParts(element));
     }
   }
 
@@ -201,7 +205,7 @@ export default class Selection {
     }
 
     // To reset its position so it doesn't show until the cursor enters the viewport.
-    tooltip.style.top = '-100%';
+    tooltip.style.visibility = '-100%';
     tooltip.style.left = '-100%';
 
     tooltip.classList.add(Config.tooltipClassVisible);
@@ -304,35 +308,34 @@ export default class Selection {
       return;
     }
 
-    let content = '';
+    let elementContent = '';
     const inputElements = ['input', 'select', 'textarea'];
 
     // Get the index, if any
-    const parts = selector.split('@');
-    const selectorPath = parts[0];
-    const selectorIndex = parts[1];
+    const selectorParts = selector.split('@');
+    const [selectorPath, selectorIndex] = selectorParts;
 
-    const el = document.querySelector(selectorPath);
+    const element = document.querySelector(selectorPath);
 
-    if (!el) {
+    if (!element) {
       return;
     }
 
-    const tag = el.tagName ? el.tagName.toLowerCase() : '';
+    const tag = element.tagName ? element.tagName.toLowerCase() : '';
 
-    if (el.value && selectorIndex && tag === 'textarea') {
-      content = el.value.split(/\n/g)[selectorIndex];
+    if (element.value && selectorIndex && tag === 'textarea') {
+      elementContent = element.value.split(/\n/g)[selectorIndex];
     } else if (selectorIndex) {
-      const element = el.getTextParts()[selectorIndex];
+      const elementTextPart = element.getTextParts()[selectorIndex];
 
-      if (element) {
-        content = element.textContent;
+      if (elementTextPart) {
+        elementContent = elementTextPart.textContent;
       }
     } else {
-      content = inputElements.includes(tag) ? el.value : el.textContent;
+      elementContent = inputElements.includes(tag) ? element.value : element.textContent;
     }
 
-    return content.trim();
+    return elementContent.trim();
   }
 
   /**

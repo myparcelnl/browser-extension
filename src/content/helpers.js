@@ -5,15 +5,16 @@ import getSelector from 'unique-selector';
 /**
  * Get the unique query selector/path of the element.
  *
+ * @param {EventTarget|HTMLElement} element - Element to get path for.
+ *
  * @returns {string}
  */
-EventTarget.prototype.getPath = function() {
-  let selector = this;
+export function getPath(element) {
   let index = '';
 
-  if (selector.classList.contains(Config.wrappedItemClass)) {
+  if (element.classList.contains(Config.wrappedItemClass)) {
     index = 0;
-    let node = selector;
+    let node = element;
 
     for (let i = 0; (node = node.previousSibling); i++) {
       if (!node.classList.contains(Config.wrappedItemClass)) {
@@ -22,51 +23,47 @@ EventTarget.prototype.getPath = function() {
     }
 
     index = `@${index}`;
-    selector = this.parentElement;
+    element = element.parentElement;
   }
 
-  const path = getSelector(selector, {
+  const path = getSelector(element, {
     selectorTypes: ['Class', 'Tag', 'NthChild'],
     excludeRegex: RegExp(Config.classPrefix),
   });
 
   return path + index;
-};
+}
 
 /**
  * Get text parts from element.
  *
+ * @param {EventTarget|HTMLElement} element - Element retrieve content from.
+ *
  * @returns {Array}
  */
-Element.prototype.getTextParts = function() {
+export function getTextParts(element) {
   const list = [];
 
-  this.childNodes.forEach((node) => {
+  element.childNodes.forEach((node) => {
     if (node.nodeName === '#text' && node.nodeValue.trim() !== '') {
       list.push(node);
     }
   });
 
   return list;
-};
+}
 
 /**
- * Check "depth" of DOM element.
+ * Check if children of DOM element have text content.
  *
- * @param {number} depth - Depth to check for.
+ * @param {EventTarget|HTMLElement} element - Element to check.
  *
- * @returns {boolean}
+ * @returns {boolean} - If a childNode of the element has text content.
  */
-EventTarget.prototype.hasDepth = function(depth) {
-  if (depth < 1) {
-    return true;
-  }
-
-  this.childNodes.forEach((node) => {
-    if (node.childNodes.length > 0 && node.hasDepth(depth - 1)) {
+export function hasContent(element) {
+  for (let i = 0; i < element.childNodes.length; i++) {
+    if (element.childNodes[i].nodeValue) {
       return true;
     }
-  });
-
-  return false;
-};
+  }
+}

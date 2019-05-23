@@ -326,7 +326,7 @@ export default class Selection {
     if (element.value && selectorIndex && tag === 'textarea') {
       elementContent = element.value.split(/\n/g)[selectorIndex];
     } else if (selectorIndex) {
-      const elementTextPart = element.getTextParts()[selectorIndex];
+      const elementTextPart = getTextParts(element)[selectorIndex];
 
       if (elementTextPart) {
         elementContent = elementTextPart.textContent;

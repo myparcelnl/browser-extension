@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
         reloadPage: false,
         entries: {
           background: 'background',
-          contentScript: ['content', 'popup'],
+          contentScript: ['content'],
         },
       }),
     ],

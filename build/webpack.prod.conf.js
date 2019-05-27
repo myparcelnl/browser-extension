@@ -2,7 +2,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ZipPlugin = require('zip-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const packageData = require('../package.json');
 const path = require('path');
 const webpack = require('webpack');
@@ -29,13 +29,15 @@ const prodPlugins = (isProd, platform) => {
     new CleanWebpackPlugin(),
 
     // Create zip file for extension
-    new ZipPlugin({
-      path: 'dist/',
-      filename: `chrome-extension-${platform}-${packageData.version}.zip`,
-      fileOptions: {
-        compress: true,
+    new FileManagerPlugin({
+      onEnd: {
+        archive: [
+          {
+            source: `dist/${platform}`,
+            destination: `dist/chrome-extension-${platform}-${packageData.version}.zip`,
+          },
+        ],
       },
-      include: [`dist/${platform}/`],
     }),
   ];
 };
@@ -137,11 +139,10 @@ module.exports = (env, argv) => {
       entry: {
         background: './src/Background.js',
         content: ['./src/Content.js', './src/scss/content.scss'],
-        popup: ['./src/app/Popup.js', './src/scss/popup.scss'],
       },
       output: {
-        filename: `${platform}-[name].js`,
-        path: `${outputDir}/js/`,
+        filename: `js/${platform}-[name].js`,
+        path: outputDir,
       },
 
       plugins: [
@@ -163,12 +164,8 @@ module.exports = (env, argv) => {
           },
         ]),
         new MiniCssExtractPlugin({
-          filename: `${outputDir}/css/${platform}-[name].css`,
-        }),
-        new HtmlWebpackPlugin({
-          filename: `${outputDir}/popup.html`,
-          template: 'src/app/popup.html',
-          chunks: [`${platform}_popup`],
+          filename: `css/${platform}-[name].css`,
+          path: outputDir,
         }),
       ],
       module: {

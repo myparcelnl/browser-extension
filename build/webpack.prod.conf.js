@@ -25,8 +25,10 @@ const prodPlugins = (isProd, platform) => {
     new webpack.IgnorePlugin({
       resourceRegExp: /helpers\/Logger$/,
     }),
+
     // Clean dist folder before building
     new CleanWebpackPlugin(),
+
     // Create zip file for extension
     new ZipPlugin({
       path: path.resolve(__dirname, '../zip'),
@@ -172,13 +174,6 @@ module.exports = (env, argv) => {
       module: {
         rules: [
           ...prodRules(isProd),
-          // {
-          //   test: /^manifest-?.+\.json$/,
-          //   use: [
-          //     'json-loader',
-          //     'manifest-loader',
-          //   ],
-          // },
           {
             test: /\.m?js$/,
             exclude: /node_modules/,

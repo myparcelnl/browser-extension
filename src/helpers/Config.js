@@ -1,10 +1,12 @@
+const platform = 'myparcel';
+
 /**
  * Config class with all extension settings in it.
  */
 export default class Config {
 
-  static contextMenuCreateShipment = 'myparcel-create-shipment';
-  static contextMenuSwitchApp = 'myparcel-switch-app';
+  static contextMenuCreateShipment = `${platform}-create-shipment`;
+  static contextMenuSwitchApp = `${platform}-switch-app`;
 
   static contextMenus = [
     {
@@ -20,23 +22,20 @@ export default class Config {
   ];
 
   // Prefixes used for the key names to save to browser storage
-  static mappingPrefix = 'myparcel-mapping-';
-  static settingPrefix = 'myparcel-setting-';
+  static mappingPrefix = `${platform}-mapping-`;
+  static settingPrefix = `${platform}-setting-`;
 
   // Directories
-  static configDir = './config';
-  static distDir = './dist';
-  static cssDir = `${this.distDir}/css`;
-  static imgDir = `${this.distDir}/images`;
-  static jsDir = `${this.distDir}/js`;
+  static cssDir = './css';
+  static imgDir = './images';
+  static jsDir = './js';
 
   // Icons
-  static activeIcon = `${this.imgDir}/icon-128px-alt.png`;
-  static defaultIcon = `${this.imgDir}/icon-128px.png`;
+  static activeIcon = `${this.imgDir}/icon-${platform}-128px-alt.png`;
+  static defaultIcon = `${this.imgDir}/icon-${platform}-128px.png`;
 
   // Files
-  static bootPopup = `${this.distDir}/popup.html`;
-  static configFile = `${this.configDir}/config.json`;
-  static contentCSS = `${this.cssDir}/content.css`;
-  static contentJS = `${this.jsDir}/Content.js`;
+  static configFile = './config.json';
+  static contentCSS = `${this.cssDir}/${platform}-content.css`;
+  static contentJS = `${this.jsDir}/${platform}-content.js`;
 };

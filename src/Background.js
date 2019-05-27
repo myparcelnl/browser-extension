@@ -1,4 +1,3 @@
-import Selection from './content/Selection';
 import ActionNames from './helpers/ActionNames';
 import BackgroundActions from './background/BackgroundActions';
 import Chrome from './helpers/Chrome';
@@ -33,45 +32,25 @@ export default class Background {
   static lastWindowId;
 
   /**
-   * Pre-boot function. This communicates with the `default_popup` allowing the user to choose a platform.
-   */
-  static preBoot() {
-    // Set popup.html as popup
-    chrome.browserAction.setPopup({popup: chrome.extension.getURL(Config.bootPopup)});
-
-    Logger.event('Awaiting boot choice.');
-
-    const listener = async(appName) => {
-      Logger.event(`Attempting to load app "${appName}"`);
-      await this.boot(appName);
-      chrome.runtime.onMessage.removeListener(listener);
-    };
-    chrome.runtime.onMessage.addListener(listener);
-  }
-
-  /**
    * Loads config file then binds all events and scripts.
    *
-   * @param {string} app - App name.
+   * @returns {Promise}
    */
-  static async boot(app) {
-    // Remove selection popup
-    await chrome.browserAction.setPopup({popup: ''});
-
-    await this.loadConfig(app);
+  static async boot() {
+    await this.loadConfig();
     await this.setSettings();
 
     this.bindEvents();
     this.bindPopupScript();
     this.bindContentScript();
-
-    this.openPopup();
   }
 
   /**
    * Get saved settings, merge new settings into them and update the settings object.
    *
    * @param {Object} settings - Settings object.
+   *
+   * @returns {Promise}
    */
   static async setSettings(settings = {}) {
     if (Object.keys(settings).length) {
@@ -107,16 +86,15 @@ export default class Background {
   /**
    * Fetch config file and set variables.
    *
-   * @param {string} app - App name.
-   *
    * @returns {Promise}
    */
-  static async loadConfig(app) {
+  static async loadConfig() {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
-    let appURL = json.apps[env][app];
+    let appURL = json.urls[env];
     appURL = new URL(appURL);
+
     appURL.searchParams.set('referralurl', encodeURIComponent(appURL.pathname));
     appURL.searchParams.set('origin', 'browser-extension');
 
@@ -566,4 +544,4 @@ export default class Background {
   }
 }
 
-Background.preBoot();
+Background.boot();

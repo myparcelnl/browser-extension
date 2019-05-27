@@ -5,37 +5,41 @@ const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 const puppeteer = require('puppeteer');
 const {scripts} = require('../package.json');
+const config = require('../config/config');
 
-const extensionPath = path.join(__dirname, '../');
-
-describe('Build and install Chrome extension', () => {
+describe('Build and install Chrome extensions', () => {
 
   /**
    * Try to build the extension
    */
   test('Extension can build', async() => {
-    const {stderr} = await exec(scripts.dist);
+    const {stderr} = await exec(scripts.build);
     expect(stderr).toBeFalsy();
   }, 15000);
 
   /**
-   * Launch a Chrome instance using puppeteer and try to install the extension that was built
+   * Launch a Chrome instance using puppeteer and try to install the extensions that were built
    */
-  test('Extension can be installed', async() => {
-    const options = {
-      headless: false,
-      ignoreHTTPSErrors: true,
-      args: [
-        `--disable-extensions-except=${extensionPath}`,
-        `--load-extension=${extensionPath}`,
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-      ],
-    };
-    const browser = await puppeteer.launch(options);
-    expect(browser).toBeTruthy();
-    await browser.close();
-  }, 5000);
+  Object.keys(config.platforms).forEach((platform) => {
+    const extensionPath = path.join(__dirname, `../dist/${platform}`);
+
+    test(`${config.platforms[platform].manifest.name} can be installed`, async() => {
+      const options = {
+        headless: false,
+        ignoreHTTPSErrors: true,
+        args: [
+          `--disable-extensions-except=${extensionPath}`,
+          `--load-extension=${extensionPath}`,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+        ],
+      };
+
+      const browser = await puppeteer.launch(options);
+      expect(browser).toBeTruthy();
+      await browser.close();
+    }, 5000);
+  });
 });
 
 describe('More things', () => {

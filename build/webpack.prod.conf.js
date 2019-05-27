@@ -5,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
 const packageData = require('../package.json');
 const path = require('path');
-const templateManifest = require('../manifest/manifest-template');
 const webpack = require('webpack');
 const {platforms} = require('../config/config');
 
@@ -31,11 +30,12 @@ const prodPlugins = (isProd, platform) => {
 
     // Create zip file for extension
     new ZipPlugin({
-      path: path.resolve(__dirname, '../zip'),
+      path: 'dist/',
       filename: `chrome-extension-${platform}-${packageData.version}.zip`,
       fileOptions: {
         compress: true,
       },
+      include: [`dist/${platform}/`],
     }),
   ];
 };
@@ -126,7 +126,7 @@ module.exports = (env, argv) => {
   const isProd = argv.mode === 'production';
 
   return Object.keys(platforms).map((platform) => {
-    const outputDir = path.resolve(__dirname, `../public/${platform}`);
+    const outputDir = path.resolve(__dirname, `../dist/${platform}`);
 
     return {
       resolveLoader: {
@@ -140,8 +140,8 @@ module.exports = (env, argv) => {
         popup: ['./src/app/Popup.js', './src/scss/popup.scss'],
       },
       output: {
-        filename: `js/${platform}-[name].js`,
-        path: outputDir,
+        filename: `${platform}-[name].js`,
+        path: `${outputDir}/js/`,
       },
 
       plugins: [
@@ -157,7 +157,7 @@ module.exports = (env, argv) => {
             transform: (content) => updateConfig(content, platform),
           },
           {
-            from: 'manifest/manifest-template.json',
+            from: 'config/manifest-template.json',
             to: `${outputDir}/manifest.json`,
             transform: (content) => updateManifest(content, platform),
           },

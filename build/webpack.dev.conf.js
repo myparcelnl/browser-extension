@@ -7,7 +7,7 @@ module.exports = (env, argv) => {
   const devConfig = (index) => ({
     mode: 'development',
     watchOptions: {
-      ignored: ['/dist', '/node_modules', '/zip'],
+      ignored: ['/dist', '/node_modules'],
     },
     devServer: {
       disableHostCheck: true,

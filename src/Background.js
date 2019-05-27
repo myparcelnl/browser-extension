@@ -487,6 +487,8 @@ export default class Background {
 
   /**
    * Show popup if it exists or create it.
+   *
+   * @returns {Promise}
    */
   static async openPopup() {
     await this.activateTab();
@@ -494,14 +496,6 @@ export default class Background {
     if (this.popupWindow) {
       this.moveFocus(this.popupWindow);
     } else {
-      chrome.windows.getAll(
-        {windowTypes: ['popup']},
-        (popups) => {
-          popups.forEach((popup) => {
-            chrome.windows.remove(popup.id, Chrome.catchError);
-          });
-        },
-      );
       this.popupWindow = await this.createPopup();
     }
 

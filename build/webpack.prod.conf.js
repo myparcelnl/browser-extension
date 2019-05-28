@@ -8,16 +8,13 @@ const webpack = require('webpack');
 const {platforms} = require('../config/config');
 
 /**
- * @param {boolean} isProd - If we're in production mode or not.
+ * Plugins to use in production.
+ *
  * @param {string} platform - Platform name.
  *
  * @returns {Array}
  */
-const prodPlugins = (isProd, platform) => {
-  if (!isProd) {
-    return [];
-  }
-
+const prodPlugins = (platform) => {
   return [
     // Don't import Logger.js.
     new webpack.IgnorePlugin({
@@ -42,30 +39,23 @@ const prodPlugins = (isProd, platform) => {
 };
 
 /**
- *
- * @param {boolean} isProd - If we're in production mode or not.
+ * Rules to apply in production.
  *
  * @returns {Array}
  */
-const prodRules = (isProd) => {
-  if (!isProd) {
-    return [];
-  }
-
-  return [
-    // Strip Logger
-    {
-      test: /\.js?$/,
-      exclude: /node_modules/,
-      use: {
-        loader: 'webpack-strip-log-loader',
-        options: {
-          modules: ['Logger'],
-        },
+const prodRules = [
+  // Strip Logger
+  {
+    test: /\.js?$/,
+    exclude: /node_modules/,
+    use: {
+      loader: 'webpack-strip-log-loader',
+      options: {
+        modules: ['Logger'],
       },
     },
-  ];
-};
+  },
+];
 
 /**
  * Modify the manifest file for each platform.
@@ -118,13 +108,12 @@ const updateConfig = (buffer, platform) => {
 /**
  * Export a webpack config for each platform.
  *
- * @param {*} env - Webpack env.
- * @param {*} argv - Webpack argv.
+ * @param {String} env - Environment. "development", "staging" or "production".
  *
  * @returns {Array.<Object>} - Array of webpack configs.
  */
-module.exports = (env, argv) => {
-  const isProd = argv.mode === 'production';
+module.exports = (env = 'production') => {
+  const isProd = env === 'production';
 
   return Object.keys(platforms).map((platform) => {
     const outputDir = path.resolve(__dirname, `../dist/${platform}`);
@@ -143,9 +132,8 @@ module.exports = (env, argv) => {
         filename: `js/${platform}-[name].js`,
         path: outputDir,
       },
-
       plugins: [
-        ...prodPlugins(isProd, platform),
+        ...(isProd ? prodPlugins(platform) : []),
         new CopyWebpackPlugin([
           {
             from: `src/images/${platform}`,
@@ -169,7 +157,7 @@ module.exports = (env, argv) => {
       ],
       module: {
         rules: [
-          ...prodRules(isProd),
+          ...(isProd ? prodRules : []),
           {
             test: /\.m?js$/,
             exclude: /node_modules/,

@@ -1,7 +1,7 @@
 const prodConfig = require('./webpack.prod.conf');
 const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 
-module.exports = (env, argv) => {
+module.exports = () => {
   const config = [];
 
   const devConfig = (index) => ({
@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
   });
 
   // Merge dev configuration into all prod configs.
-  prodConfig(env, argv).forEach((prodConfig, index) => {
+  prodConfig('development').forEach((prodConfig, index) => {
     config.push({
       ...prodConfig,
       ...{

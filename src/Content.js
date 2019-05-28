@@ -33,7 +33,9 @@ export default class Content {
     };
 
     // Establish the connection to the background script
-    this.backgroundConnection = chrome.runtime.connect({name: 'MyParcelContentScript'});
+    this.backgroundConnection = chrome.runtime.connect({
+      name: `${chrome.runtime.getManifest().short_name}ContentScript`,
+    });
 
     this.backgroundConnection.onMessage.addListener(this.listeners.background);
     this.backgroundConnection.onDisconnect.addListener(this.listeners.disconnect);

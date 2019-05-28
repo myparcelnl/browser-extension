@@ -1,8 +1,10 @@
+const platform = chrome.runtime.getManifest().short_name.toLowerCase();
+
 /**
  * Config class with all content script settings in it.
  */
 export default class ContentConfig {
-  static classPrefix = 'myparcel__';
+  static classPrefix = `${platform}__`;
 
   static selectionClass = `${this.classPrefix}mapping-field`;
 

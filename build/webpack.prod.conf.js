@@ -137,7 +137,7 @@ module.exports = (env, argv) => {
       mode: 'production',
       entry: {
         background: './src/Background.js',
-        content: ['./src/Content.js', './src/scss/content.scss'],
+        content: ['./src/Content.js', `./src/scss/${platform}.scss`],
       },
       output: {
         filename: `js/${platform}-[name].js`,

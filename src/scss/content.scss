@@ -1,6 +1,6 @@
 @import "variables";
 
-.myparcel {
+.#{$platform} {
   // The hovering tooltip
   &__mapping-tooltip {
     font-family: $font-family;
@@ -35,6 +35,8 @@
       hr {
         border: none;
         border-bottom: 1px solid $white;
+        margin-top: .5em;
+        margin-bottom: .5em;
       }
 
       &__escape {

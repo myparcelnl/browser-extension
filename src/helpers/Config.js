@@ -1,4 +1,4 @@
-const platform = 'myparcel';
+const platform = chrome.runtime.getManifest().short_name.toLowerCase();
 
 /**
  * Config class with all extension settings in it.

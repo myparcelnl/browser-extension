@@ -6,18 +6,12 @@ const platform = chrome.runtime.getManifest().short_name.toLowerCase();
 export default class Config {
 
   static contextMenuCreateShipment = `${platform}-create-shipment`;
-  static contextMenuSwitchApp = `${platform}-switch-app`;
 
   static contextMenus = [
     {
       title: 'Label aanmaken van selectie',
       id: this.contextMenuCreateShipment,
       contexts: ['selection'],
-    },
-    {
-      title: 'Switch app',
-      id: this.contextMenuSwitchApp,
-      contexts: ['browser_action'],
     },
   ];
 

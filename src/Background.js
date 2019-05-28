@@ -410,6 +410,10 @@ export default class Background {
    * @returns {undefined}
    */
   static async activateTab(tab = undefined) {
+    if (!this.popupWindow) {
+      return;
+    }
+
     if (!tab) {
       tab = await this.getActiveTab();
     }
@@ -491,14 +495,13 @@ export default class Background {
    * @returns {Promise}
    */
   static async openPopup() {
-    await this.activateTab();
-
     if (this.popupWindow) {
       this.moveFocus(this.popupWindow);
     } else {
       this.popupWindow = await this.createPopup();
     }
 
+    await this.activateTab();
     this.setIcon(Config.activeIcon);
   }
 

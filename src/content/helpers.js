@@ -42,15 +42,8 @@ export function getPath(element) {
  * @returns {Array}
  */
 export function getTextParts(element) {
-  const list = [];
-
-  element.childNodes.forEach((node) => {
-    if (node.nodeName === '#text' && node.nodeValue.trim() !== '') {
-      list.push(node);
-    }
-  });
-
-  return list;
+  const childNodes = Array.from(element.childNodes);
+  return childNodes.filter((node) => node.nodeName === '#text' && node.nodeValue.trim() !== '');
 }
 
 /**
@@ -61,9 +54,6 @@ export function getTextParts(element) {
  * @returns {boolean} - If a childNode of the element has text content.
  */
 export function hasContent(element) {
-  for (let i = 0; i < element.childNodes.length; i++) {
-    if (element.childNodes[i].nodeValue) {
-      return true;
-    }
-  }
+  const childNodes = Array.from(element.childNodes);
+  return childNodes.some((node) => !!node.nodeValue);
 }

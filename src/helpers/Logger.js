@@ -69,10 +69,9 @@ export default class Logger {
    */
   static popup(message, log = '', receiving = false) {
     console.log(
-      `%c${this.receiving(receiving)}%cPopup%c${message}`,
-      `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .4em;`,
+      `%c${this.receiving(receiving)} popup%c${message}`,
       // eslint-disable-next-line max-len
-      `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, red, #ff8c00); color: white; padding: 1px .4em;`,
+      `border-radius: 2px 0 0 2px; background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, red, #ff8c00); color: white; padding: 1px .4em;`,
       `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
       log,
     );
@@ -87,10 +86,9 @@ export default class Logger {
    */
   static content(message, log = '', receiving = false) {
     console.log(
-      `%c${this.receiving(receiving)}%cContent%c${message}`,
-      `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .4em;`,
+      `%c${this.receiving(receiving)} content%c${message}`,
       // eslint-disable-next-line max-len
-      `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, blue, #1eb9c5); color: white; padding: 1px .4em;`,
+      `border-radius: 2px 0 0 2px; background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, blue, #1eb9c5); color: white; padding: 1px .4em;`,
       `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
       log
     );
@@ -105,10 +103,9 @@ export default class Logger {
    */
   static background(message, log = '', receiving = false) {
     console.log(
-      `%c${this.receiving(receiving)}%cBackground%c${message}`,
-      `${this.color(receiving)} border-radius: 2px 0 0 2px; padding: 1px .4em;`,
+      `%c${this.receiving(receiving)} background%c${message}`,
       // eslint-disable-next-line max-len
-      `background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, yellowgreen, #1eb436); color: white; padding: 1px .4em;`,
+      `border-radius: 2px 0 0 2px; background: linear-gradient(to ${receiving ? 'top' : 'bottom'} left, yellowgreen, #1eb436); color: white; padding: 1px .4em;`,
       `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
       log
     );
@@ -153,7 +150,7 @@ export default class Logger {
     if (bool === 'queue') {
       return 'QUEUED';
     }
-    return bool ? '▼' : '▲';
+    return bool ? 'from' : 'to';
   }
 
   /**

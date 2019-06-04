@@ -1,0 +1,67 @@
+@import "variables";
+
+.#{$platform} {
+  // The hovering tooltip
+  &__mapping-tooltip {
+    font-family: $font-family;
+    background-color: $secondary;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    color: $white;
+    display: none;
+    font-size: $font-size;
+    margin-left: 20px;
+    margin-top: -5px;
+    padding: 0.35em 0.45em;
+    pointer-events: none;
+    position: fixed;
+    user-select: none;
+    z-index: 99999;
+
+    // Arrow on the left side of the tooltip
+    &:before {
+      content: ' ';
+      background: $secondary;
+      height: 10px;
+      left: -5px;
+      position: absolute;
+      transform: rotate(45deg);
+      width: 10px;
+      // Align arrow with cursor
+      top: 6px;
+    }
+
+    &__content {
+      hr {
+        border: none;
+        border-bottom: 1px solid $white;
+        margin-top: .5em;
+        margin-bottom: .5em;
+      }
+
+      &__escape {
+        background-color: $white;
+        border-radius: $border-radius;
+        color: $dark-gray;
+        font-family: monospace;
+        margin-right: 2px;
+        padding: 3px 5px;
+      }
+    }
+
+    &--visible {
+      display: flex;
+    }
+  }
+
+  // The wrapper span around hovered elements
+  &__mapping-field {
+    background-color: transparentize($secondary, 0.75);
+    // We support Chrome 54+ and filter is a 53+ feature (without vendor prefix)
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, .25));
+    color: $black;
+    cursor: pointer;
+    outline: 3px solid $primary;
+  }
+}
+

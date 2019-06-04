@@ -1,0 +1,58 @@
+{
+  "platforms": {
+    "myparcel": {
+      "manifest": {
+        "name": "MyParcel Extension",
+        "description": "MyParcel",
+        "short_name": "MyParcel",
+        "externally_connectable": {
+          "matches": [
+            "*://*.myparcel.nl/*"
+          ]
+        }
+      },
+      "urls": {
+        "development": "http://meteor.dev.myparcel.nl:3000/browser-extension/create-shipment",
+        "staging": "http://mel.meteor.staging.myparcel.nl/browser-extension/create-shipment"
+      }
+    },
+    "flespakket": {
+      "manifest": {
+        "name": "Flespakket Extension",
+        "description": "Flespakket",
+        "short_name": "Flespakket",
+        "externally_connectable": {
+          "matches": [
+            "*://*.flespakket.nl/*"
+          ]
+        }
+      },
+      "urls": {
+        "development": "http://backoffice.dev.flespakket.nl:3000/browser-extension/create-shipment",
+        "staging": "http://mel.backoffice.staging.flespakket.nl/browser-extension/create-shipment",
+        "production": "https://backoffice.flespakket.nl/browser-extension/create-shipment"
+      }
+    },
+    "sendmyparcel": {
+      "manifest": {
+        "name": "SendMyParcel Extension",
+        "description": "SendMyParcel",
+        "short_name": "SendMyParcel",
+        "externally_connectable": {
+          "matches": [
+            "*://*.sendmyparcel.be/*"
+          ]
+        }
+      },
+      "urls": {
+        "development": "http://backoffice.dev.sendmyparcel.be:3000/browser-extension/create-shipment",
+        "staging": "http://mel.backoffice.staging.sendmyparcel.be/browser-extension/create-shipment",
+        "production": "https://backoffice.sendmyparcel.be/browser-extension/create-shipment"
+      }
+    }
+  },
+  "popupDimensions": {
+    "width": 500,
+    "height": 620
+  }
+}

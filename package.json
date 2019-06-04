@@ -12,7 +12,7 @@
     "hotfix": "npm --no-git-tag-version version patch && npm run build",
     "stage": "webpack --config build/webpack.stage.conf.js",
     "upload": "node private/upload-extension.js",
-    "publish-test": "node private/publish-extension.js --target trustedTesters --app myparcel",
+    "publish-test": "node private/publish-extension.js --target trustedTesters",
     "publish": "node private/publish-extension.js --target default",
     "test": "jest"
   },
@@ -47,6 +47,7 @@
     "node-sass": "^4.12.0",
     "puppeteer": "^1.17.0",
     "sass-loader": "^7.1.0",
+    "sinon-chrome": "^3.0.1",
     "style-loader": "^0.23.1",
     "webpack": "^4.32.2",
     "webpack-chrome-extension-reloader": "^1.3.0",

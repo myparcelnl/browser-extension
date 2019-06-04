@@ -7,6 +7,11 @@ const target = yargs.argv.target || 'default';
 const app = yargs.argv.app || null;
 const targetName = target === 'trustedTesters' ? 'testers' : 'all users';
 
+/**
+ * Publish an app to the chrome web store.
+ *
+ * @param {string} app - App name.
+ */
 const publishApp = (app) => {
   const store = createStore(app);
 

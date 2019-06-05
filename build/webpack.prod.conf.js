@@ -94,10 +94,11 @@ const stageRules = [];
  *
  * @param {Buffer} buffer - File contents.
  * @param {string} platform - Platform name.
+ * @param {string} env - Environment.
  *
  * @returns {string}
  */
-const updateManifest = (buffer, platform) => {
+const updateManifest = (buffer, platform, env) => {
   // Replace platform placeholder strings with actual platform name
   const string = buffer.toString().replace(/__MSG_platform__/g, platform);
   const templateManifest = JSON.parse(string);
@@ -111,6 +112,13 @@ const updateManifest = (buffer, platform) => {
     version: packageData.version,
   };
 
+  // Change some properties if it's a staging/test build
+  if (env === 'staging') {
+    newManifest.version_name = `${newManifest.version} beta`;
+    newManifest.name += ' – Staging';
+    newManifest.short_name += ' Staging';
+  }
+
   return JSON.stringify(newManifest, null, 2);
 };
 
@@ -119,10 +127,11 @@ const updateManifest = (buffer, platform) => {
  *
  * @param {Buffer} buffer - File contents.
  * @param {string} platform - Platform name.
+ * @param {string} env - Environment.
  *
  * @returns {string}
  */
-const updateConfig = (buffer, platform) => {
+const updateConfig = (buffer, platform, env) => {
   const config = JSON.parse(buffer.toString());
 
   const {platforms, ...configuration} = config;
@@ -217,12 +226,12 @@ module.exports = (env = 'production') => {
           {
             from: 'config/config.json',
             to: `${outputDir}/config.json`,
-            transform: (content) => updateConfig(content, platform),
+            transform: (content) => updateConfig(content, platform, env),
           },
           {
             from: 'config/manifest-template.json',
             to: `${outputDir}/manifest.json`,
-            transform: (content) => updateManifest(content, platform),
+            transform: (content) => updateManifest(content, platform, env),
           },
         ]),
         new MiniCssExtractPlugin({

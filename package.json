@@ -11,9 +11,8 @@
     "release": "npm --no-git-tag-version version minor && npm run build",
     "hotfix": "npm --no-git-tag-version version patch && npm run build",
     "stage": "webpack --config build/webpack.stage.conf.js",
-    "upload": "node private/upload-extension.js",
-    "publish-test": "node private/publish-extension.js --target trustedTesters",
-    "publish": "node private/publish-extension.js --target default",
+    "upload": "node private/process.js --upload",
+    "publish": "node private/process.js --publish",
     "test": "jest"
   },
   "author": "Edie Lemoine",

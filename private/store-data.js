@@ -31,8 +31,8 @@ module.exports = {
     sendmyparcel: 'lnlejgndglbdjmcmehfnljgdamnomnkp',
 
     // Test extensions
-    // staging_myparcel: '',
-    // staging_flespakket: '',
-    // staging_sendmyparcel: '',
+    staging_myparcel: 'ncomggonlkegodkmolbbepaebmoikbph',
+    staging_flespakket: 'jfnlicnaliognohmmdgdhnfgfoknofij',
+    staging_sendmyparcel: 'ealkfididoifbaednkgenfihkaijcmoh',
   },
 };

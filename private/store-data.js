@@ -18,7 +18,7 @@ module.exports = {
    * @see https://github.com/DrewML/chrome-webstore-upload/blob/master/How%20to%20generate%20Google%20API%20keys.md
    * @type {string}
    */
-  refreshToken: '1/I-X6UV89v7LChho7JXzVg1LWFU5F_GvwMhDNqb5l9Jg',
+  refreshToken: '1/-8V0BZ7dOOnoOr7XQ8Yauf0FX0fN-IANaoR8ZPzeIcA',
 
   /**
    * App names and their extension ids.

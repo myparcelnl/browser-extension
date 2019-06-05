@@ -29,5 +29,10 @@ module.exports = {
     myparcel: 'kmholoicenmanogjcnmajgjjpgppcghb',
     flespakket: 'nemmbcegkmaajnbeoedebhhelgncpdob',
     sendmyparcel: 'lnlejgndglbdjmcmehfnljgdamnomnkp',
+
+    // Test extensions
+    // staging_myparcel: '',
+    // staging_flespakket: '',
+    // staging_sendmyparcel: '',
   },
 };

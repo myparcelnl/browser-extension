@@ -13,7 +13,7 @@
       },
       "urls": {
         "development": "http://extension.dev.myparcel.nl:3000/browser-extension/create-shipment",
-        "staging": "http://mel.extension.staging.myparcel.nl/browser-extension/create-shipment",
+        "staging": "http://extension.staging.myparcel.nl/browser-extension/create-shipment",
         "production": "https://extension.myparcel.nl/browser-extension/create-shipment"
       }
     },
@@ -30,7 +30,7 @@
       },
       "urls": {
         "development": "http://extension.dev.flespakket.nl:3000/browser-extension/create-shipment",
-        "staging": "http://mel.extension.staging.flespakket.nl/browser-extension/create-shipment",
+        "staging": "http://extension.staging.flespakket.nl/browser-extension/create-shipment",
         "production": "https://extension.flespakket.nl/browser-extension/create-shipment"
       }
     },
@@ -47,7 +47,7 @@
       },
       "urls": {
         "development": "http://extension.dev.sendmyparcel.be:3000/browser-extension/create-shipment",
-        "staging": "http://mel.extension.staging.sendmyparcel.be/browser-extension/create-shipment",
+        "staging": "http://extension.staging.sendmyparcel.be/browser-extension/create-shipment",
         "production": "https://extension.sendmyparcel.be/browser-extension/create-shipment"
       }
     }

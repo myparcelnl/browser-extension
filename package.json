@@ -8,9 +8,11 @@
   "scripts": {
     "dev": "webpack-dev-server --config build/webpack.dev.conf.js",
     "build": "webpack --config build/webpack.prod.conf.js",
-    "release": "npm --no-git-tag-version version minor && npm run build",
-    "hotfix": "npm --no-git-tag-version version patch && npm run build",
-    "stage": "webpack --config build/webpack.stage.conf.js",
+    "release": "npm --no-git-tag-version version minor && npm run build && node private/process.js --build prod --upload --publish",
+    "hotfix": "npm --no-git-tag-version version patch && npm run build && node private/process.js --build prod --upload --publish",
+    "stage": "webpack --config build/webpack.stage.conf.js && node private/process.js --build stage --upload --publish",
+    "stage:upload": "node private/process.js --build stage --upload",
+    "stage:publish": "node private/process.js --build stage --publish",
     "upload": "node private/process.js --upload",
     "publish": "node private/process.js --publish",
     "test": "jest"

@@ -31,7 +31,7 @@ export default class ContentActions {
    */
   static async mapField(request) {
     const {field, url} = request;
-    const path = await Selection.clickedElement(request.strings);
+    const path = await Selection.startMapping(request.strings);
     const elementContent = await Selection.getElementsContent(path);
 
     const data = {url, field, path, content: elementContent};

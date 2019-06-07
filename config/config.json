@@ -12,8 +12,9 @@
         }
       },
       "urls": {
-        "development": "http://meteor.dev.myparcel.nl:3000/browser-extension/create-shipment",
-        "staging": "http://mel.meteor.staging.myparcel.nl/browser-extension/create-shipment"
+        "development": "http://extension.dev.myparcel.nl:3000/browser-extension/create-shipment",
+        "staging": "http://extension.staging.myparcel.nl/browser-extension/create-shipment",
+        "production": "https://extension.myparcel.nl/browser-extension/create-shipment"
       }
     },
     "flespakket": {
@@ -28,9 +29,9 @@
         }
       },
       "urls": {
-        "development": "http://backoffice.dev.flespakket.nl:3000/browser-extension/create-shipment",
-        "staging": "http://mel.backoffice.staging.flespakket.nl/browser-extension/create-shipment",
-        "production": "https://backoffice.flespakket.nl/browser-extension/create-shipment"
+        "development": "http://extension.dev.flespakket.nl:3000/browser-extension/create-shipment",
+        "staging": "http://extension.staging.flespakket.nl/browser-extension/create-shipment",
+        "production": "https://extension.flespakket.nl/browser-extension/create-shipment"
       }
     },
     "sendmyparcel": {
@@ -45,9 +46,9 @@
         }
       },
       "urls": {
-        "development": "http://backoffice.dev.sendmyparcel.be:3000/browser-extension/create-shipment",
-        "staging": "http://mel.backoffice.staging.sendmyparcel.be/browser-extension/create-shipment",
-        "production": "https://backoffice.sendmyparcel.be/browser-extension/create-shipment"
+        "development": "http://extension.dev.sendmyparcel.be:3000/browser-extension/create-shipment",
+        "staging": "http://extension.staging.sendmyparcel.be/browser-extension/create-shipment",
+        "production": "https://extension.sendmyparcel.be/browser-extension/create-shipment"
       }
     }
   },

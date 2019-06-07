@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import {getPath, getTextParts, hasContent} from './helpers';
+import {getPath, getTextParts, hasContent, isInput, isTextElement} from './helpers';
 import Config from '../content/Config';
 import tooltipHTML from './tooltip.html';
 
@@ -28,21 +28,22 @@ export default class Selection {
    * Show tooltip and add event listeners for mapping field. Run `stopMapping` first to make sure everything is clean.
    *
    * @param {Object} strings - Object with translated strings.
-   * @param {Function} resolve - Resolve function.
    *
-   * @returns {undefined}
+   * @returns {Promise}
    */
-  static startMapping(strings, resolve) {
-    this.stopMapping();
+  static startMapping(strings) {
+    return new Promise((resolve) => {
+      this.stopMapping();
 
-    this.showTooltip(strings);
-    this.listeners.click = (event) => this.handleClick(event, resolve);
-    this.listeners.keyup = (event) => this.handleKeyup(event, resolve);
-    this.listeners.mouseMove = (event) => this.handleMouseMove(event);
+      this.showTooltip(strings);
+      this.listeners.click = (event) => this.handleClick(event, resolve);
+      this.listeners.keyup = (event) => this.handleKeyup(event, resolve);
+      this.listeners.mouseMove = (event) => this.handleMouseMove(event);
 
-    document.addEventListener('click', this.listeners.click);
-    document.addEventListener('keyup', this.listeners.keyup);
-    document.addEventListener('mousemove', this.listeners.mouseMove);
+      document.addEventListener('click', this.listeners.click);
+      document.addEventListener('keyup', this.listeners.keyup);
+      document.addEventListener('mousemove', this.listeners.mouseMove);
+    });
   }
 
   /**
@@ -108,20 +109,6 @@ export default class Selection {
   }
 
   /**
-   * Create the tooltip and start the mapping process, "waiting" for the user to click something which will resolve
-   * this promise.
-   *
-   * @param {Object} strings - Object with translated strings.
-   *
-   * @returns {Promise<any>}
-   */
-  static clickedElement(strings) {
-    return new Promise((resolve) => {
-      Selection.startMapping(strings, resolve);
-    });
-  };
-
-  /**
    * Get elements content by selector key value pairs or string path.
    *
    * @param {Object|string} selectors - Key/value pairs or one path.
@@ -147,7 +134,6 @@ export default class Selection {
   };
 
   /**
-   *
    * @param {MouseEvent} event - Mouse event.
    */
   static addSelectionClass(event) {
@@ -309,7 +295,6 @@ export default class Selection {
     }
 
     let elementContent = '';
-    const inputElements = ['input', 'select', 'textarea'];
 
     // Get the index, if any
     const selectorParts = selector.split('@');
@@ -332,7 +317,7 @@ export default class Selection {
         elementContent = elementTextPart.textContent;
       }
     } else {
-      elementContent = inputElements.includes(tag) ? element.value : element.textContent;
+      elementContent = isTextElement(element) ? element.value : element.textContent;
     }
 
     return elementContent.trim();

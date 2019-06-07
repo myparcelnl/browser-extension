@@ -3,6 +3,27 @@ import Config from '../content/Config';
 import getSelector from 'unique-selector';
 
 /**
+ * HTML elements that contain text.
+ *
+ * @type {string[]}
+ */
+export const contentTags = [
+  'INPUT',
+  'SELECT',
+  'TEXTAREA',
+];
+
+/**
+ * Input tag types that contain text.
+ *
+ * @type {string[]}
+ */
+export const validInputTypes = [
+  'text',
+  'number',
+];
+
+/**
  * Get the unique query selector/path of the element.
  *
  * @param {EventTarget|HTMLElement} element - Element to get path for.
@@ -47,13 +68,36 @@ export function getTextParts(element) {
 }
 
 /**
- * Check if children of DOM element have text content.
+ * Check if element is a textarea or text/number input. If not, check if children of DOM element have text content.
  *
- * @param {EventTarget|HTMLElement} element - Element to check.
+ * @param {EventTarget|HTMLElement|HTMLInputElement|HTMLTextAreaElement} element - Element to check.
  *
- * @returns {boolean} - If a childNode of the element has text content.
+ * @returns {boolean} - If the element has text content.
  */
 export function hasContent(element) {
-  const childNodes = Array.from(element.childNodes);
-  return childNodes.some((node) => !!node.nodeValue);
+  const {childNodes} = element;
+
+  return isTextElement(element) || Array.from(childNodes).some((node) => !!node.nodeValue);
+}
+
+/**
+ * Check if a given element is an element with text content.
+ *
+ * @param {EventTarget|HTMLElement|HTMLInputElement|HTMLTextAreaElement} element - Element.
+ *
+ * @returns {boolean}
+ */
+export function isTextElement(element) {
+  const tag = element.tagName.toUpperCase();
+
+  if (!contentTags.includes(tag)) {
+    return false;
+  }
+
+  // Don't allow all input types.
+  if (tag === 'input') {
+    return validInputTypes.includes(element.type);
+  }
+
+  return true;
 }

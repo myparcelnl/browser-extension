@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import { getPath, getTextParts, hasContent, isInput, isTextElement } from './helpers';
+import {getPath, getTextParts, hasContent, isInput, isTextElement} from './helpers';
 import Config from '../content/Config';
 import tooltipHTML from './tooltip.html';
 
@@ -295,7 +295,6 @@ export default class Selection {
     }
 
     let elementContent = '';
-    // const inputElements = ['input', 'select', 'textarea'];
 
     // Get the index, if any
     const selectorParts = selector.split('@');

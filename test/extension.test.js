@@ -40,10 +40,3 @@ describe('Build and install Chrome extensions', () => {
     }, 5000);
   });
 });
-
-// describe('More things', () => {
-//
-//   it('detects websites correctly', () => {
-//
-//   });
-// });

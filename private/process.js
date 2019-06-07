@@ -4,7 +4,28 @@ const storeData = require('./store-data');
 const uploadExtension = require('./upload-extension');
 const yargs = require('yargs');
 
-console.log('args', yargs.argv);
+const {
+  /**
+   * publish - Toggle publishing.
+   *
+   * @type {Boolean}
+   */
+  publish,
+
+  /**
+   * build - Can be 'stage' or 'prod'. Omit to process all.
+   *
+   * @type {String}
+   */
+  build,
+
+  /**
+   * upload - Toggle uploading.
+   *
+   * @type {Boolean}
+   */
+  upload,
+} = yargs.argv;
 
 /**
  * Which app to process. Leave null for all apps.
@@ -12,13 +33,6 @@ console.log('args', yargs.argv);
  * @type {string}
  */
 const app = yargs.argv.app || null;
-
-/**
- * Target argument. 'default' to publish publicly or 'trustedTesters' to publish to test accounts.
- *
- * @type {string}
- */
-const publish = yargs.argv.publish || 'default';
 
 /**
  * Run functions based on command arguments and given app.
@@ -30,12 +44,12 @@ const publish = yargs.argv.publish || 'default';
 const execute = async(app) => {
   const store = await createStore(app);
 
-  if (yargs.argv.upload) {
+  if (upload) {
     uploadExtension(app, store);
   }
 
-  if (yargs.argv.publish) {
-    publishExtension(app, store, publish);
+  if (publish) {
+    publishExtension(app, store);
   }
 };
 
@@ -46,6 +60,16 @@ if (app) {
   execute(app);
 } else {
   Object.keys(storeData.apps).forEach((app) => {
+    // Ignore prod apps if build is stage.
+    if (build === 'stage' && !app.startsWith('staging')) {
+      return;
+    }
+
+    // Ignore staging apps if build is prod.
+    if (build === 'prod' && app.startsWith('staging')) {
+      return;
+    }
+
     execute(app);
   });
 }

@@ -201,7 +201,8 @@ export default class Background {
         break;
 
       case ActionNames.foundContent:
-        Connection.sendToPopup(request);
+        const {origin, ...newRequest} = request;
+        Connection.sendToPopup(newRequest);
         break;
     }
   }

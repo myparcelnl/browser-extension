@@ -16,7 +16,7 @@ export default class ContentActions {
    */
   static async getContent(request) {
     const values = await Selection.getElementsContent(request.selectors);
-    Content.sendToBackground(ActionNames.foundContent, {...request, values});
+    Content.sendToBackground(ActionNames.foundContent, {origin: window.location.host, values});
   }
 
   /**

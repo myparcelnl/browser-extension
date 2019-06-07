@@ -3,10 +3,10 @@
 /**
  * Publish an app to the chrome web store.
  *
- * @param {Object} store - Store.
  * @param {string} app - App name.
+ * @param {Object} store - Store.
  */
-module.exports = (store, app) => {
+module.exports = (app, store) => {
   let target = 'default';
 
   // Upload staging apps to trustedTesters group instead of default.

@@ -115,7 +115,7 @@ const updateManifest = (buffer, platform, env) => {
   // Change some properties if it's a staging/test build
   if (env === 'staging') {
     newManifest.version_name = `${newManifest.version} beta`;
-    newManifest.name += ' – Staging';
+    newManifest.name += ' - Staging';
     newManifest.short_name += ' Staging';
   }
 

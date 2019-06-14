@@ -201,7 +201,8 @@ export default class Background {
         break;
 
       case ActionNames.foundContent:
-        Connection.sendToPopup(request);
+        const {origin, ...newRequest} = request;
+        Connection.sendToPopup(newRequest);
         break;
     }
   }
@@ -471,6 +472,22 @@ export default class Background {
   static createPopup() {
     return new Promise((resolve) => {
       const {height, width} = this.popupDimensions;
+
+      // Find popups we created and close them before creating a new one.
+      // This is done by checking all popups containing "tabs" with our popup url.
+      chrome.windows.getAll({windowTypes: ['popup']}, (popups) => {
+        popups.forEach((popup) => {
+          chrome.tabs.query({windowId: popup.id}, (tab) => {
+            tab.forEach((tab) => {
+              // If the popup url has the same hostname as the one we are going to create, close it.
+              if (new URL(tab.url).hostname === new URL(this.popupExternalURL).hostname) {
+                chrome.windows.remove(tab.windowId);
+              }
+            });
+          });
+        });
+      });
+
       chrome.windows.getCurrent((win) => {
         chrome.windows.create({
           url: this.popupExternalURL,

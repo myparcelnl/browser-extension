@@ -1,11 +1,10 @@
-import Background from '../src/Background';
+import config from '../config/config';
+import path from 'path';
+import puppeteer from 'puppeteer';
+import {scripts} from '../package.json';
+import util from 'util';
 
-const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const path = require('path');
-const puppeteer = require('puppeteer');
-const {scripts} = require('../package.json');
-const config = require('../config/config');
 
 describe('Build and install Chrome extensions', () => {
 
@@ -15,7 +14,7 @@ describe('Build and install Chrome extensions', () => {
   test('Extension can build', async() => {
     const {stderr} = await exec(scripts.build);
     expect(stderr).toBeFalsy();
-  }, 15000);
+  }, 30000);
 
   /**
    * Launch a Chrome instance using puppeteer and try to install the extensions that were built
@@ -39,24 +38,5 @@ describe('Build and install Chrome extensions', () => {
       expect(browser).toBeTruthy();
       await browser.close();
     }, 5000);
-  });
-});
-
-describe('More things', () => {
-
-  it('detects websites correctly', () => {
-    // <url>, <isWebsite>
-    const websites = [
-      ['chrome://testurl', false],
-      ['about:blank', false],
-      ['http://url.com', true],
-      ['https://url.com', true],
-    ];
-
-    websites.forEach((website) => {
-      const [url, isWebsite] = website;
-
-      expect(Background.isWebsite({url})).toBe(isWebsite);
-    });
   });
 });

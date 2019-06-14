@@ -4,7 +4,7 @@ module.exports = () => {
   const config = [];
 
   const stageConfig = {
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
   };
 
   // Merge stage configuration into all prod configs.

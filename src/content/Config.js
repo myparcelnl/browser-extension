@@ -1,4 +1,6 @@
-const platform = chrome.runtime.getManifest().short_name.toLowerCase();
+import {getPlatform} from '../helpers/GetPlatform';
+
+const platform = getPlatform();
 
 /**
  * Config class with all content script settings in it.

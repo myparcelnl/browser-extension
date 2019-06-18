@@ -1,4 +1,6 @@
-const platform = chrome.runtime.getManifest().short_name.toLowerCase();
+import {getPlatform} from './GetPlatform';
+
+const platform = getPlatform();
 
 /**
  * Config class with all extension settings in it.

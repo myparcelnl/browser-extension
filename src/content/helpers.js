@@ -37,8 +37,12 @@ export function getPath(element) {
     index = 0;
     let node = element;
 
+    /**
+     * Loop through the previous siblings to create an index to use in the selector. Based on how many text elements
+     * exist before the clicked element.
+     */
     for (let i = 0; (node = node.previousSibling); i++) {
-      if (!node.classList.contains(Config.wrappedItemClass)) {
+      if (node.classList.contains(Config.wrappedItemClass)) {
         index++;
       }
     }
@@ -58,7 +62,7 @@ export function getPath(element) {
 /**
  * Get text parts from element.
  *
- * @param {EventTarget|HTMLElement} element - Element retrieve content from.
+ * @param {EventTarget|HTMLElement} element - Element to retrieve content from.
  *
  * @returns {Array}
  */

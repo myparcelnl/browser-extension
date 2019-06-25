@@ -116,12 +116,13 @@ export default class Selection {
    * @returns {Object|undefined}
    */
   static getElementsContent(selectors) {
-    if (!selectors) {
+    if (!selectors || !Object.keys(selectors).length) {
       return;
     }
 
     const values = {};
 
+    // In case of mapping fields `selectors` will be a string.
     if (typeof selectors === 'string') {
       return Selection.getSelectorContent(selectors);
     }

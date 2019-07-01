@@ -116,7 +116,9 @@ const updateManifest = (buffer, platform, env) => {
   if (env === 'staging') {
     newManifest.version_name = `${newManifest.version} beta`;
     newManifest.name += ' - Staging';
-    newManifest.short_name += ' Staging';
+  } else if (env === 'development') {
+    newManifest.version_name = `${newManifest.version} dev`;
+    newManifest.name += ' - Development';
   }
 
   return JSON.stringify(newManifest, null, 2);
@@ -127,11 +129,10 @@ const updateManifest = (buffer, platform, env) => {
  *
  * @param {Buffer} buffer - File contents.
  * @param {string} platform - Platform name.
- * @param {string} env - Environment.
  *
  * @returns {string}
  */
-const updateConfig = (buffer, platform, env) => {
+const updateConfig = (buffer, platform) => {
   const config = JSON.parse(buffer.toString());
 
   const {platforms, ...configuration} = config;

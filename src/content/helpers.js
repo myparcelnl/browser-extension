@@ -51,10 +51,27 @@ export function getPath(element) {
     element = element.parentElement;
   }
 
-  const path = getSelector(element, {
-    selectorTypes: ['Class', 'Tag', 'NthChild'],
+  const options = {
     excludeRegex: RegExp(Config.classPrefix),
-  });
+  };
+
+  /*
+   * Hack to avoid running mapping breaking with Magento1's id "page:main-container" on a div.
+   *
+   * Sets `options.selectorTypes` explicitly to generate unique selector without using ids.
+   * This has to be done because unique-selector uses `document.querySelector`, which doesn't work with selectors with
+   *  illegal characters without escaping.
+   *
+   * This hack is not needed anymore when the package supports escaping selectors that don't follow standard CSS syntax.
+   * See the link below for explanation.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector#Escaping_special_characters
+   */
+  if (document.getElementById('page:main-container')) {
+    options.selectorTypes = ['Class', 'Tag', 'NthChild'];
+  }
+
+  const path = getSelector(element, options);
 
   return path + index;
 }

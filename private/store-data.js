@@ -2,12 +2,14 @@ module.exports = {
 
   /**
    * Oauth2 client ID.
+   *
    * @type {string}
    */
   clientId: '518665115318-gthk8521t8liat2rv04e269kk2u694sm.apps.googleusercontent.com',
 
   /**
    * Oauth2 client secret.
+   *
    * @type {string}
    */
   clientSecret: 'Mp-23VnY82T7NutdsPboPcDN',
@@ -26,12 +28,12 @@ module.exports = {
    * @type {Object}
    */
   apps: {
-    myparcel: 'kmholoicenmanogjcnmajgjjpgppcghb',
+    myparcel: 'ncomggonlkegodkmolbbepaebmoikbph',
     flespakket: 'nemmbcegkmaajnbeoedebhhelgncpdob',
     sendmyparcel: 'lnlejgndglbdjmcmehfnljgdamnomnkp',
 
     // Test extensions
-    staging_myparcel: 'ncomggonlkegodkmolbbepaebmoikbph',
+    staging_myparcel: 'adfgjmldbeaeiedkacmhikiilijjalke',
     staging_flespakket: 'jfnlicnaliognohmmdgdhnfgfoknofij',
     staging_sendmyparcel: 'ealkfididoifbaednkgenfihkaijcmoh',
   },

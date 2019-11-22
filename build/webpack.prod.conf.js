@@ -108,7 +108,6 @@ const updateManifest = (content, platform, env) => {
   // Turn the JSON string into an object and replace platform placeholder strings with actual platform name.
   const templateManifest = JSON.parse(content.toString());
 
-  console.log(env);
   if (fs.existsSync(`${configDir}/manifest-override-${env}.json`)) {
     const overrideFile = fs.readFileSync(`${configDir}/manifest-override-${env}.json`);
     overrideManifest = JSON.parse(overrideFile.toString());

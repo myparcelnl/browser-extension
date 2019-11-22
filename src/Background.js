@@ -6,7 +6,7 @@ import Connection from './background/Connection';
 import ContextMenu from './background/ContextMenu';
 import Logger from './helpers/Logger'; // strip-log
 
-const env = process.env.NODE_ENV;
+const env = chrome.runtime.getManifest().version_name.split('-')[1] || process.env.NODE_ENV;
 
 export default class Background {
 
@@ -92,14 +92,22 @@ export default class Background {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
-    let appURL = json.urls[env];
-    appURL = new URL(appURL);
+    let appUrl = json.urls[env];
 
-    appURL.searchParams.set('referralurl', encodeURIComponent(appURL.pathname));
-    appURL.searchParams.set('origin', 'browser-extension');
+    await new Promise((resolve) => {
+      chrome.storage.sync.get({backofficeUrl: ''}, ({backofficeUrl}) => {
+        appUrl = backofficeUrl || appUrl;
+        resolve();
+      });
+    });
+
+    appUrl = new URL(appUrl);
+
+    appUrl.searchParams.set('referralurl', encodeURIComponent(appUrl.pathname));
+    appUrl.searchParams.set('origin', 'browser-extension');
 
     // Get app by current environment and name.
-    this.popupExternalURL = appURL.href;
+    this.popupExternalURL = appUrl.href;
     this.popupDimensions = json.popupDimensions;
   }
 
@@ -161,7 +169,10 @@ export default class Background {
         break;
 
       case ActionNames.getSettings:
-        Connection.sendToPopup({action: ActionNames.foundSettings, settings: this.settings});
+        Connection.sendToPopup({
+          action: ActionNames.foundSettings,
+          settings: this.settings,
+        });
         break;
 
       case ActionNames.getContent:
@@ -169,7 +180,7 @@ export default class Background {
         break;
 
       /**
-       * Just pass to content
+       * Just pass to content.
        */
       case ActionNames.stopMapping:
         Connection.sendToContent(request);
@@ -436,7 +447,10 @@ export default class Background {
       Connection.sendToPopup({action: ActionNames.contentConnected}, true);
     } else {
       this.activeTab = undefined;
-      Connection.sendToPopup({action: ActionNames.contentConnected, url: undefined});
+      Connection.sendToPopup({
+        action: ActionNames.contentConnected,
+        url: undefined,
+      });
     }
   }
 

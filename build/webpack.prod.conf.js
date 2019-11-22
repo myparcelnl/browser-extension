@@ -2,10 +2,12 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
+const {injectVariable} = require('./helpers/injectVariable');
+const fs = require('fs');
 const packageData = require('../package.json');
 const path = require('path');
 const webpack = require('webpack');
-const {platforms} = require('../config/config');
+const {platforms: platformConfig} = require('../config/config');
 
 /**
  * Plugins to use in production.
@@ -92,34 +94,43 @@ const stageRules = [];
 /**
  * Modify the manifest file for each platform.
  *
- * @param {Buffer} buffer - File contents.
+ * @param {Buffer} content - File contents.
  * @param {string} platform - Platform name.
  * @param {string} env - Environment.
  *
  * @returns {string}
  */
-const updateManifest = (buffer, platform, env) => {
-  // Replace platform placeholder strings with actual platform name
-  const string = buffer.toString().replace(/__MSG_platform__/g, platform);
-  const templateManifest = JSON.parse(string);
+const updateManifest = (content, platform, env) => {
+  const environmentSuffix = env === 'production' ? '' : env;
+  const configDir = path.resolve(__dirname, '../', 'config');
+  let overrideManifest = {};
 
-  const newManifest = {
+  // Turn the JSON string into an object and replace platform placeholder strings with actual platform name.
+  const templateManifest = JSON.parse(content.toString());
+
+  console.log(env);
+  if (fs.existsSync(`${configDir}/manifest-override-${env}.json`)) {
+    const overrideFile = fs.readFileSync(`${configDir}/manifest-override-${env}.json`);
+    overrideManifest = JSON.parse(overrideFile.toString());
+  }
+
+  let newManifest = {
     // Start with the template data
     ...templateManifest,
+    // Add the override data.
+    ...overrideManifest,
     // Get manifest data from platform config
-    ...platforms[platform].manifest,
+    ...platformConfig[platform].manifest,
     // Copy the version from package.json
     version: packageData.version,
+    version_name: `${packageData.version}${environmentSuffix ? `-${environmentSuffix}` : ''}`,
   };
 
-  // Change some properties if it's a staging/test build
-  if (env === 'staging') {
-    newManifest.version_name = `${newManifest.version} beta`;
-    newManifest.name += ' - Staging';
-  } else if (env === 'development') {
-    newManifest.version_name = `${newManifest.version} dev`;
-    newManifest.name += ' - Development';
-  }
+  // Add the platform variable.
+  newManifest = injectVariable(newManifest, '__MSG_platform__', platform);
+
+  // Suffix the name with the uppercased environment suffix.
+  newManifest.name += ` ${environmentSuffix.charAt(0).toUpperCase()}${environmentSuffix.slice(1)}`;
 
   return JSON.stringify(newManifest, null, 2);
 };
@@ -192,16 +203,15 @@ const getEnvironmentPlugins = (env, platform) => {
  * @returns {Array.<Object>} - Array of webpack configs.
  */
 module.exports = (env = 'production') => {
-  return Object.keys(platforms).map((platform) => {
+  return Object.keys(platformConfig).map((platform) => {
+    const environmentPrefix = env === 'production' ? '' : `${env}-`;
 
     /**
      * Output different dirs if environment is staging.
      *
      * @type {string}
      */
-    const outputDir = env === 'staging'
-      ? path.resolve(__dirname, `../dist/staging-${platform}`)
-      : path.resolve(__dirname, `../dist/${platform}`);
+    const outputDir = path.resolve(__dirname, `../dist/${environmentPrefix}${platform}`);
 
     return {
       resolveLoader: {
@@ -229,6 +239,10 @@ module.exports = (env = 'production') => {
             to: `${outputDir}/config.json`,
             transform: (content) => updateConfig(content, platform, env),
           },
+          ...(fs.existsSync(`config/options/${env}`) ? [{
+            from: `config/options/${env}`,
+            to: `${outputDir}/options`,
+          }] : []),
           {
             from: 'config/manifest-template.json',
             to: `${outputDir}/manifest.json`,

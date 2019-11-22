@@ -1,6 +1,6 @@
 const prodConfig = require('./webpack.prod.conf.js');
 
-module.exports = () => {
+module.exports = (env) => {
   const config = [];
 
   const stageConfig = {
@@ -8,7 +8,7 @@ module.exports = () => {
   };
 
   // Merge stage configuration into all prod configs.
-  prodConfig('staging').forEach((prodConfig) => {
+  prodConfig(env.NODE_ENV).forEach((prodConfig) => {
     config.push({
       ...prodConfig,
       ...stageConfig,

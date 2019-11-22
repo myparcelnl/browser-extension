@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head><title>Settings</title></head>
+<link
+  rel="stylesheet"
+  href="https://backoffice2.myparcel.nl/main.css">
+<body>
+<div
+  class="container"
+  style="max-width: 600px;">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mt-2">Extension Settings</h1>
+      <div class="form-horizontal">
+        <div class="form-group row">
+          <label
+            class="control-label col-sm-4 col-12"
+            for="url">Backoffice URL</label>
+          <div class="col-sm-8 col-12">
+            <input
+              class="form-control"
+              placeholder="https://extension.release.myparcel.nl"
+              id="url">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <hr>
+    </div>
+    <div class="col-12">
+      <div class="row">
+        <div class="col-12">
+          <button
+            id="save"
+            class="button button--primary d-inline-flex"
+            type="button">
+            Opslaan <span
+            id="spinner"
+            style="display: none;"
+            class="spinner-border spinner-border-sm ml-2 my-auto"></span>
+          </button>
+
+          <div
+            id="alert"
+            class="alert alert-info w-100"
+            style="display: none">
+            <div class="flex-column">
+              <div>
+                Reload the extension in "Settings > Extensions" (see below) and reload/reopen the popup page.
+              </div>
+              <hr>
+              <div>
+                <img
+                  class="rounded"
+                  width="415"
+                  src="help-1.png"
+                  alt="help-1">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="options.js"></script>
+</body>
+</html>

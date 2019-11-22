@@ -1,4 +1,5 @@
 const spinner = document.getElementById('spinner');
+const alert = document.getElementById('alert');
 
 /**
  * Saves options to chrome.storage.
@@ -13,6 +14,7 @@ function saveOptions() {
      */
     setTimeout(() => {
       spinner.style.display = 'none';
+      alert.style.display = 'flex';
     }, 300);
   });
 }

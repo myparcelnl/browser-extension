@@ -1,6 +1,6 @@
 {
   "name": "myparcel-chrome-extension",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "MyParcel Chrome Extension",
   "repository": {
     "url": "https://git.dmp.zone/projects/MYP/repos/chrome-extension"
@@ -50,7 +50,7 @@
     "jest-webextension-mock": "^3.5.0",
     "mini-css-extract-plugin": "^0.8.0",
     "mustache-loader": "^1.4.3",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.0",
     "puppeteer": "^1.20.0",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",

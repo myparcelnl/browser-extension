@@ -13,7 +13,7 @@
     "prod:publish": "node private/process.js --publish",
     "release": "npm --no-git-tag-version version minor && npm run prod:build && node private/process.js --build prod --upload --publish",
     "hotfix": "npm --no-git-tag-version version patch && npm run prod:build && node private/process.js --build prod --upload --publish",
-    "stage": "webpack --config build/webpack.stage.conf.js && node private/process.js --build stage --upload --publish",
+    "stage": "npm run stage:build && node private/process.js --build stage --upload --publish",
     "stage:build": "webpack --env.NODE_ENV=staging --config build/webpack.stage.conf.js",
     "stage:upload": "node private/process.js --build stage --upload",
     "stage:publish": "node private/process.js --build stage --publish",

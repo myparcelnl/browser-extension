@@ -8,16 +8,12 @@
   "manifest_version": 2,
   "minimum_chrome_version": "54",
   "permissions": [
-    "storage",
-    "webNavigation",
-    "tabs",
-    "notifications",
     "*://*/*",
+    "activeTab",
     "contextMenus",
-    "tabs",
-    "activeTab"
+    "storage",
+    "tabs"
   ],
-  "update_url": "https://clients2.google.com/service/update2/crx",
   "browser_action": {
     "default_icon": "./images/icon-__MSG_platform__-128px.png"
   },

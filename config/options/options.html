@@ -8,18 +8,24 @@
 <div
   class="container"
   style="max-width: 600px;">
-  <div class="row">
+  <form class="row">
     <div class="col-12">
       <h1 class="mt-2">Extension Settings</h1>
       <div class="form-horizontal">
         <div class="form-group row">
+          <div class="col-12">
+            <p>This URL will be saved to your local storage and used by the extension to determine which backoffice to use. Must be a full URL and must match the following pattern(s):</p>
+            <pre class="small" id="patterns"></pre>
+          </div>
           <label
             class="control-label col-sm-4 col-12"
             for="url">Backoffice URL</label>
           <div class="col-sm-8 col-12">
             <input
+              required
+              type="url"
               class="form-control"
-              placeholder="https://extension.release.myparcel.nl"
+              placeholder="https://extension.dev.myparcel.nl"
               id="url">
           </div>
         </div>
@@ -34,8 +40,8 @@
           <button
             id="save"
             class="button button--primary d-inline-flex"
-            type="button">
-            Opslaan <span
+            type="submit">
+            Save <span
             id="spinner"
             style="display: none;"
             class="spinner-border spinner-border-sm ml-2 my-auto"></span>
@@ -47,7 +53,7 @@
             style="display: none">
             <div class="flex-column">
               <div>
-                Reload the extension in "Settings > Extensions" (see below) and reload/reopen the popup page.
+                Reload the extension in "Settings > Extensions" (see below) and close and reopen the popup page.
               </div>
               <hr>
               <div>
@@ -62,7 +68,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </div>
 <script src="options.js"></script>
 </body>

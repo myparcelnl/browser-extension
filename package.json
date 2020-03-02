@@ -1,22 +1,22 @@
 {
   "name": "myparcel-chrome-extension",
-  "version": "2.4.4",
+  "version": "2.4.5",
   "description": "MyParcel Chrome Extension",
   "repository": {
     "url": "https://git.dmp.zone/projects/MYP/repos/chrome-extension"
   },
   "scripts": {
-    "dev": "webpack-dev-server --env.NODE_ENV=development --config build/webpack.dev.conf.js",
-    "prod": "webpack --config build/webpack.prod.conf.js && node private/process.js --upload --publish",
-    "prod:build": "webpack --config build/webpack.prod.conf.js",
-    "prod:upload": "node private/process.js --upload",
-    "prod:publish": "node private/process.js --publish",
     "release": "npm --no-git-tag-version version minor && npm run prod:build && node private/process.js --build prod --upload --publish",
     "hotfix": "npm --no-git-tag-version version patch && npm run prod:build && node private/process.js --build prod --upload --publish",
+    "dev": "webpack-dev-server --env.NODE_ENV=development --config build/webpack.dev.conf.js",
     "stage": "npm run stage:build && node private/process.js --build stage --upload --publish",
     "stage:build": "webpack --env.NODE_ENV=staging --config build/webpack.stage.conf.js",
     "stage:upload": "node private/process.js --build stage --upload",
     "stage:publish": "node private/process.js --build stage --publish",
+    "prod": "webpack --config build/webpack.prod.conf.js && node private/process.js --upload --publish",
+    "prod:build": "webpack --config build/webpack.prod.conf.js",
+    "prod:upload": "node private/process.js --upload",
+    "prod:publish": "node private/process.js --publish",
     "upload": "node private/process.js --upload",
     "publish": "node private/process.js --publish",
     "test": "jest"

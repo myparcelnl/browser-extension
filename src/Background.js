@@ -101,7 +101,7 @@ export default class Background {
       });
     });
 
-    appUrl = new URL(appUrl);
+    appUrl = new URL([appUrl, json.extension_path].join('/'));
 
     appUrl.searchParams.set('referralurl', encodeURIComponent(appUrl.pathname));
     appUrl.searchParams.set('origin', 'browser-extension');

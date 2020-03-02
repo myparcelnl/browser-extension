@@ -92,14 +92,15 @@ export default class Background {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
     const json = await response.json();
 
+    const path = json.extension_path;
     const appUrl = json.urls[env];
 
-    let appUrlClass = new URL([appUrl, json.extension_path].join('/'));
+    let appUrlClass = new URL([appUrl, path].join('/'));
 
     await new Promise((resolve) => {
       chrome.storage.sync.get({backofficeUrl: ''}, ({backofficeUrl}) => {
         if (backofficeUrl) {
-          appUrlClass = new URL([backofficeUrl, json.extension_path].join('/'));
+          appUrlClass = new URL([backofficeUrl, path].join('/'));
         }
         resolve();
       });
@@ -107,6 +108,8 @@ export default class Background {
 
     appUrlClass.searchParams.set('referralurl', encodeURIComponent(json.extension_path));
     appUrlClass.searchParams.set('origin', 'browser-extension');
+
+    console.log(appUrlClass.href);
 
     // Get app by current environment and name.
     this.popupExternalURL = appUrlClass.href;

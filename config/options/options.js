@@ -28,9 +28,9 @@ function saveOptions(e) {
  */
 function initialize() {
   const manifest = chrome.runtime.getManifest();
-  const span = document.querySelector('#patterns');
+  const patterns = document.querySelector('#patterns');
 
-  span.textContent = manifest.externally_connectable.matches.join('\n');
+  patterns.textContent = manifest.externally_connectable.matches.join('\n');
 
   // Restores form state using the preferences stored in chrome.storage.
   chrome.storage.sync.get({

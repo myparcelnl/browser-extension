@@ -109,8 +109,6 @@ export default class Background {
     appUrlClass.searchParams.set('referralurl', encodeURIComponent(json.extension_path));
     appUrlClass.searchParams.set('origin', 'browser-extension');
 
-    console.log(appUrlClass.href);
-
     // Get app by current environment and name.
     this.popupExternalURL = appUrlClass.href;
     this.popupDimensions = json.popupDimensions;

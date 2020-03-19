@@ -9,10 +9,13 @@ const path = require('path');
 const webpack = require('webpack');
 const {platforms: platformConfig} = require('../config/config');
 
+const ENV_STAGING = 'staging';
+const ENV_PRODUCTION = 'production';
+
 /**
  * Plugins to use in production.
  *
- * @param {string} platform - Platform name.
+ * @param {String} platform - Platform name.
  *
  * @returns {Array}
  */
@@ -42,7 +45,7 @@ const prodPlugins = (platform) => {
 /**
  * Plugins to use in staging.
  *
- * @param {string} platform - Platform name.
+ * @param {String} platform - Platform name.
  *
  * @returns {Array}
  */
@@ -95,10 +98,10 @@ const stageRules = [];
  * Modify the manifest file for each platform.
  *
  * @param {Buffer} content - File contents.
- * @param {string} platform - Platform name.
- * @param {string} env - Environment.
+ * @param {String} platform - Platform name.
+ * @param {String} env - Environment.
  *
- * @returns {string}
+ * @returns {String}
  */
 const updateManifest = (content, platform, env) => {
   const environmentSuffix = env === 'production' ? '' : env;
@@ -138,9 +141,9 @@ const updateManifest = (content, platform, env) => {
  * Modify the config file for each platform.
  *
  * @param {Buffer} buffer - File contents.
- * @param {string} platform - Platform name.
+ * @param {String} platform - Platform name.
  *
- * @returns {string}
+ * @returns {String}
  */
 const updateConfig = (buffer, platform) => {
   const config = JSON.parse(buffer.toString());
@@ -160,15 +163,15 @@ const updateConfig = (buffer, platform) => {
 /**
  * Get extra rules based on environment.
  *
- * @param {string} env - Environment. Currently supports 'production' and 'staging'.
+ * @param {String} env - Environment. Currently supports 'production' and 'staging'.
  *
  * @returns {Array}
  */
 const getEnvironmentRules = (env) => {
   switch (env) {
-    case 'production':
+    case ENV_PRODUCTION:
       return prodRules;
-    case 'staging':
+    case ENV_STAGING:
       return stageRules;
     default:
       return [];
@@ -178,16 +181,16 @@ const getEnvironmentRules = (env) => {
 /**
  * Get extra plugins based on environment.
  *
- * @param {string} env - Environment. Currently supports 'production' and 'staging'.
- * @param {string} platform - Platform name.
+ * @param {String} env - Environment. Currently supports 'production' and 'staging'.
+ * @param {String} platform - Platform name.
  *
  * @returns {Array}
  */
 const getEnvironmentPlugins = (env, platform) => {
   switch (env) {
-    case 'production':
+    case ENV_PRODUCTION:
       return prodPlugins(platform);
-    case 'staging':
+    case ENV_STAGING:
       return stagePlugins(platform);
     default:
       return [];
@@ -201,14 +204,14 @@ const getEnvironmentPlugins = (env, platform) => {
  *
  * @returns {Array.<Object>} - Array of webpack configs.
  */
-module.exports = (env = 'production') => {
+module.exports = (env = ENV_PRODUCTION) => {
   return Object.keys(platformConfig).map((platform) => {
-    const environmentPrefix = env === 'production' ? '' : `${env}-`;
+    const environmentPrefix = env === ENV_PRODUCTION ? '' : `${env}-`;
 
     /**
      * Output different dirs if environment is staging.
      *
-     * @type {string}
+     * @type {String}
      */
     const outputDir = path.resolve(__dirname, `../dist/${environmentPrefix}${platform}`);
 
@@ -217,7 +220,7 @@ module.exports = (env = 'production') => {
         modules: [path.resolve(__dirname, 'src'), 'node_modules'],
       },
 
-      mode: 'production',
+      mode: ENV_PRODUCTION,
       entry: {
         background: './src/Background.js',
         content: ['./src/Content.js', `./src/scss/${platform}.scss`],
@@ -229,19 +232,34 @@ module.exports = (env = 'production') => {
       plugins: [
         ...(getEnvironmentPlugins(env, platform)),
         new CopyWebpackPlugin([
+          /**
+           * Copy the image assets.
+           */
           {
             from: `src/images/${platform}`,
             to: `${outputDir}/images`,
           },
+
+          /**
+           * Copy the configuration.
+           */
           {
             from: 'config/config.json',
             to: `${outputDir}/config.json`,
-            transform: (content) => updateConfig(content, platform, env),
+            transform: (content) => updateConfig(content, platform),
           },
-          ...(fs.existsSync(`config/options/${env}`) ? [{
-            from: `config/options/${env}`,
+
+          /**
+           * Copy options directory if environment is not prod.
+           */
+          ...(env === ENV_PRODUCTION ? [] : [{
+            from: 'config/options',
             to: `${outputDir}/options`,
-          }] : []),
+          }]),
+
+          /**
+           * Transform the manifest templates by platform and environment.
+           */
           {
             from: 'config/manifest-template.json',
             to: `${outputDir}/manifest.json`,

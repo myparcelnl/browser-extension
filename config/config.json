@@ -12,9 +12,9 @@
         }
       },
       "urls": {
-        "development": "http://extension.dev.myparcel.nl:3000/browser-extension/create-shipment",
-        "staging": "http://extension.staging.myparcel.nl/browser-extension/create-shipment",
-        "production": "https://extension.myparcel.nl/browser-extension/create-shipment"
+        "development": "http://extension.dev.myparcel.nl:3000",
+        "staging": "http://extension.staging.myparcel.nl",
+        "production": "https://extension.myparcel.nl"
       }
     },
     "flespakket": {
@@ -29,9 +29,9 @@
         }
       },
       "urls": {
-        "development": "http://extension.dev.flespakket.nl:3000/browser-extension/create-shipment",
-        "staging": "http://extension.staging.flespakket.nl/browser-extension/create-shipment",
-        "production": "https://extension.flespakket.nl/browser-extension/create-shipment"
+        "development": "http://extension.dev.flespakket.nl:3000",
+        "staging": "http://extension.staging.flespakket.nl",
+        "production": "https://extension.flespakket.nl"
       }
     },
     "sendmyparcel": {
@@ -46,12 +46,13 @@
         }
       },
       "urls": {
-        "development": "http://extension.dev.sendmyparcel.be:3000/browser-extension/create-shipment",
-        "staging": "http://extension.staging.sendmyparcel.be/browser-extension/create-shipment",
-        "production": "https://extension.sendmyparcel.be/browser-extension/create-shipment"
+        "development": "http://extension.dev.sendmyparcel.be:3000",
+        "staging": "http://extension.staging.sendmyparcel.be",
+        "production": "https://extension.sendmyparcel.be"
       }
     }
   },
+  "extension_path": "browser-extension/create-shipment",
   "popupDimensions": {
     "width": 500,
     "height": 620

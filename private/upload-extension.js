@@ -13,9 +13,9 @@ module.exports = (app, store) => {
     const zip = fs.createReadStream(path);
 
     store.uploadExisting(zip, store.token).then(() => {
-      console.log(`\u001b[32m${app}\u001b[0m`, 'Extension successfully uploaded!');
+      console.log(`\u001b[32m${app}\u001b[0m`, `Extension ${app}@${packageData.version} successfully uploaded!`);
     }).catch((err) => {
-      console.log(`\u001b[31m${app}\u001b[0m`, `Extension could not be uploaded: ${err.message}`);
+      console.log(`\u001b[31m${app}\u001b[0m`, `Extension ${app}@${packageData.version} could not be uploaded: ${err.message}`);
     });
   } catch (e) {
     throw e.getMessage();

@@ -4,7 +4,6 @@ import Logger from './helpers/Logger'; // strip-log
 import Selection from './content/Selection';
 
 export default class Content {
-
   /**
    * The connection to the background script.
    *
@@ -46,7 +45,7 @@ export default class Content {
   /**
    * Send data to background script.
    *
-   * @param {string} action - Action name.
+   * @param {String} action - Action name.
    * @param {Object} data - Request content.
    */
   static sendToBackground(action, data = {}) {
@@ -64,6 +63,9 @@ export default class Content {
     Logger.request('background', request, true);
 
     switch (request.action) {
+      case ActionNames.checkContentConnection:
+        this.sendToBackground(ActionNames.contentConnected);
+        break;
 
       /**
        * Map an element to a field.
@@ -95,6 +97,6 @@ export default class Content {
         break;
     }
   }
-};
+}
 
 Content.boot();

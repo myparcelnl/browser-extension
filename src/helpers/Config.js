@@ -6,7 +6,6 @@ const platform = getPlatform();
  * Config class with all extension settings in it.
  */
 export default class Config {
-
   static contextMenuCreateShipment = `${platform}-create-shipment`;
 
   static contextMenus = [
@@ -18,8 +17,9 @@ export default class Config {
   ];
 
   // Prefixes used for the key names to save to browser storage
+  static globalSettingPrefix = `${platform}-setting-`;
   static mappingPrefix = `${platform}-mapping-`;
-  static settingPrefix = `${platform}-setting-`;
+  static urlSettingPrefix = `${platform}-url-setting-`;
 
   // Directories
   static cssDir = './css';
@@ -34,4 +34,4 @@ export default class Config {
   static configFile = './config.json';
   static contentCSS = `${this.cssDir}/${platform}-content.css`;
   static contentJS = `${this.jsDir}/${platform}-content.js`;
-};
+}

@@ -6,7 +6,6 @@ import Selection from './Selection';
  * Actions to run from the content script.
  */
 export default class ContentActions {
-
   /**
    * Get values using previously mapped fields (if any).
    *
@@ -15,17 +14,23 @@ export default class ContentActions {
    * @returns {Promise}
    */
   static async getContent(request) {
+    const {selectors, action, ...requestProperties} = request;
     const values = await Selection.getElementsContent(request.selectors);
-    Content.sendToBackground(ActionNames.foundContent, {origin: window.location.host, values});
+
+    Content.sendToBackground(ActionNames.foundContent, {
+      ...requestProperties,
+      origin: window.location.host,
+      values,
+    });
   }
 
   /**
    * Start creating new field mapping.
    *
    * @param {Object} request - Request object.
-   * @param {string} request.field - Field key.
+   * @param {String} request.field - Field key.
    * @param {Object} request.strings - Object with translated strings.
-   * @param {string} request.url - Full URL.
+   * @param {String} request.url - Full URL.
    *
    * @returns {Promise}
    */

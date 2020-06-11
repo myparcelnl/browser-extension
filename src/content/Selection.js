@@ -7,15 +7,16 @@ import tooltipHTML from './tooltip.html';
  * Selection functions.
  */
 export default class Selection {
-
   /**
    * Listeners object.
+   *
    * @type {Object.<String, Function>}
    */
   static listeners = {};
 
   /**
    * The variables to use in the mustache template for the mapping tooltip.
+   *
    * @type {Object}
    */
   static tooltipVariables = {
@@ -104,14 +105,15 @@ export default class Selection {
    * @param {MouseEvent} event - Mouse event.
    */
   static handleMouseMove(event) {
-    this.addSelectionClass(event);
+    this.removeSelectionClass();
+    this.addSelectionClass(event.target);
     this.positionTooltip(event);
   }
 
   /**
    * Get elements content by selector key value pairs or string path.
    *
-   * @param {Object|string} selectors - Key/value pairs or one path.
+   * @param {Object|String} selectors - Key/value pairs or one path.
    *
    * @returns {Object|undefined}
    */
@@ -132,17 +134,12 @@ export default class Selection {
     });
 
     return values;
-  };
+  }
 
   /**
-   * @param {MouseEvent} event - Mouse event.
+   * @param {Element|EventTarget} element
    */
-  static addSelectionClass(event) {
-    event.stopPropagation();
-    this.removeSelectionClass();
-
-    const element = event.target;
-
+  static addSelectionClass(element) {
     // Don't highlight nodes without text content
     if (!hasContent(element)) {
       return;

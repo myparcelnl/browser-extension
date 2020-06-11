@@ -42,6 +42,7 @@ const prodPlugins = (platform) => {
     }),
   ];
 };
+
 /**
  * Plugins to use in staging.
  *
@@ -230,42 +231,46 @@ module.exports = (env = ENV_PRODUCTION) => {
         path: outputDir,
       },
       plugins: [
-        ...(getEnvironmentPlugins(env, platform)),
-        new CopyWebpackPlugin([
-          /**
-           * Copy the image assets.
-           */
-          {
-            from: `src/images/${platform}`,
-            to: `${outputDir}/images`,
-          },
+        ...getEnvironmentPlugins(env, platform),
+        new CopyWebpackPlugin({
+          patterns: [
+            /**
+             * Copy the image assets.
+             */
+            {
+              from: `src/images/${platform}`,
+              to: `${outputDir}/images`,
+            },
 
-          /**
-           * Copy the configuration.
-           */
-          {
-            from: 'config/config.json',
-            to: `${outputDir}/config.json`,
-            transform: (content) => updateConfig(content, platform),
-          },
+            /**
+             * Copy the configuration.
+             */
+            {
+              from: 'config/config.json',
+              to: `${outputDir}/config.json`,
+              transform: (content) => updateConfig(content, platform),
+            },
 
-          /**
-           * Copy options directory if environment is not prod.
-           */
-          ...(env === ENV_PRODUCTION ? [] : [{
-            from: 'config/options',
-            to: `${outputDir}/options`,
-          }]),
+            /**
+             * Copy options directory if environment is not prod.
+             */
+            ...env === ENV_PRODUCTION
+              ? []
+              : [{
+                from: 'config/options',
+                to: `${outputDir}/options`,
+              }],
 
-          /**
-           * Transform the manifest templates by platform and environment.
-           */
-          {
-            from: 'config/manifest-template.json',
-            to: `${outputDir}/manifest.json`,
-            transform: (content) => updateManifest(content, platform, env),
-          },
-        ]),
+            /**
+             * Transform the manifest templates by platform and environment.
+             */
+            {
+              from: 'config/manifest-template.json',
+              to: `${outputDir}/manifest.json`,
+              transform: (content) => updateManifest(content, platform, env),
+            },
+          ],
+        }),
         new MiniCssExtractPlugin({
           filename: `css/${platform}-[name].css`,
           path: outputDir,
@@ -273,7 +278,7 @@ module.exports = (env = ENV_PRODUCTION) => {
       ],
       module: {
         rules: [
-          ...(getEnvironmentRules(env)),
+          ...getEnvironmentRules(env),
           {
             test: /\.m?js$/,
             exclude: /node_modules/,

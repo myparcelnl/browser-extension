@@ -1,4 +1,5 @@
 import ActionNames from '../helpers/ActionNames';
+import Config from '../helpers/Config';
 import Connection from './Connection';
 import Logger from '../helpers/Logger'; // strip-log
 import defaultSettings from '../settings/defaultSettings';
@@ -8,7 +9,6 @@ import storage from './storage';
  * Actions to run from the background script.
  */
 export default class BackgroundActions {
-
   /**
    * Get the content for given preset selectors and any selectors in storage. Requires `url` to be present in `request`.
    * Will search stored mappings for `request.url` and send any found selectors to the content script to get the content
@@ -23,18 +23,25 @@ export default class BackgroundActions {
    * @returns {Promise}
    */
   static async getContent(request) {
-    const {preset} = request;
-    const url = new URL(request.url).hostname;
-    const selectors = await storage.getSavedMappingsForURL(url);
+    request.url = new URL(request.url).hostname;
+    const {url, preset} = request;
+
+    const [savedSelectors, newPresetName] = await Promise.all([
+      storage.getSavedMappingsForURL(url),
+      this.handlePresetName(request),
+    ]);
 
     const data = {
       action: ActionNames.getContent,
-      selectors: {...preset, ...selectors},
+      selectors: {...preset, ...savedSelectors},
+      presetName: newPresetName,
     };
 
-    // Set selectors to undefined if there are no keys.
-    if (!Object.keys(data.selectors).length) {
-      data.selectors = undefined;
+    // Set selectors to null if there are no keys.
+    {
+      if (!Object.keys(data.selectors).length) {
+        data.selectors = null;
+      }
     }
 
     // Only send to content if either a preset or at least one selector is present.
@@ -46,14 +53,15 @@ export default class BackgroundActions {
   }
 
   /**
-   * Get settings (if any) and append them to the defaults. Send the settings to the popup and also return them to the
-   * background script.
+   * Get settings (if any) and append them to the defaults.
    *
    * @returns {Object} - Settings object.
    */
-  static async getSettings() {
-    const savedSettings = await storage.getSavedSettings();
-    return {...defaultSettings, ...savedSettings};
+  static async getGlobalSettings() {
+    return {
+      ...defaultSettings,
+      ...await storage.getSavedGlobalSettings(),
+    };
   }
 
   /**
@@ -76,10 +84,13 @@ export default class BackgroundActions {
    *
    * @returns {Object} - New settings.
    */
-  static saveSettings(settings) {
-    const newSettings = {...this.getSettings(), ...settings};
-    storage.saveSettings(newSettings);
+  static saveGlobalSettings(settings) {
+    const newSettings = {
+      ...this.getGlobalSettings(),
+      ...settings,
+    };
 
+    storage.saveSettings(newSettings, Config.globalSettingPrefix);
     Connection.sendToPopup({action: ActionNames.savedSettings});
     return newSettings;
   }
@@ -88,8 +99,38 @@ export default class BackgroundActions {
    * Delete a given field from storage.
    *
    * @param {Object} request - Request object.
+   *
+   * @returns {Promise}
    */
   static deleteFields(request) {
-    storage.deleteMappedFields(request);
+    return storage.deleteMappedFields(request);
+  }
+
+  /**
+   * @param {Object} request
+   *
+   * @returns {String|undefined}
+   */
+  static async handlePresetName(request) {
+    const {url, presetName, presetChosenManually, resetPresetSettings} = request;
+    const presetNameSettingKey = `${url}-chosenPreset`;
+
+    if (resetPresetSettings) {
+      storage.removeFromStorage(presetNameSettingKey);
+    }
+
+    if (presetChosenManually) {
+      storage.saveSettings({
+        [presetNameSettingKey]: presetName,
+      });
+    } else {
+      const settingsKeys = await storage.getStorageKeys(Config.globalSettingPrefix);
+
+      if (settingsKeys.hasOwnProperty(presetNameSettingKey)) {
+        return settingsKeys[presetNameSettingKey];
+      }
+    }
+
+    return presetName;
   }
 }

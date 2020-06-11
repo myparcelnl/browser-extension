@@ -3,7 +3,6 @@ import Background from '../Background';
 import Logger from '../helpers/Logger'; // strip-log
 
 export default class Connection {
-
   static POPUP = 'popup';
   static CONTENT = 'content';
 
@@ -22,12 +21,12 @@ export default class Connection {
   static content;
 
   /**
-   * @type {boolean|number}
+   * @type {Boolean|Number}
    */
   static popupConnected = false;
 
   /**
-   * @type {boolean|Object}
+   * @type {Boolean|Object}
    */
   static contentConnected = false;
 
@@ -44,7 +43,7 @@ export default class Connection {
   /**
    * Actions to skip when trying to add a request to a queue.
    *
-   * @type {{popup: string[], content: string[]}}
+   * @type {{popup: String[], content: String[]}}
    */
   static queueFilters = {
     popup: [ActionNames.contentConnected],
@@ -58,13 +57,13 @@ export default class Connection {
     this.popupConnected = true;
 
     this.flushQueue(this.POPUP);
-    this.sendToPopup({action: ActionNames.contentConnected}, true);
+    Background.confirmContentConnection();
   }
 
   /**
    * Process queue and empty it afterwards.
    *
-   * @param {string} type - Can be 'content' or 'popup'. Decides which queue and sendFunction to use.
+   * @param {String} type - Can be 'content' or 'popup'. Decides which queue and sendFunction to use.
    *
    * @returns {Array}
    */
@@ -73,7 +72,6 @@ export default class Connection {
     const sendFunction = this.getSendFunction(type).bind(this);
 
     if (queue && Object.keys(queue).length) {
-
       // Dedupe queue
       const unique = new Set(queue.map((obj) => JSON.stringify(obj)));
       queue = Array.from(unique).map((obj) => JSON.parse(obj));
@@ -87,20 +85,17 @@ export default class Connection {
     }
 
     return queue;
-  };
+  }
 
   /**
    * Send data to popup.
    *
    * @param {Object} data - Request object.
-   * @param {boolean} addURL - Whether to add url to request or not.
    */
-  static sendToPopup(data, addURL = false) {
+  static sendToPopup(data) {
     if (this.popupConnected) {
       try {
-        if (addURL) {
-          data.url = Background.getURL();
-        }
+        data.url = Background.getURL();
 
         this.popup.postMessage(data);
         Logger.request(this.POPUP, data);
@@ -130,7 +125,7 @@ export default class Connection {
     } else {
       this.addToContentQueue(data);
     }
-  };
+  }
 
   /**
    * Set contentConnected, flush the content queue and tell the popup the content script is ready.
@@ -141,13 +136,13 @@ export default class Connection {
     this.contentConnected = this.content.sender.url;
 
     this.contentQueue = this.flushQueue(this.CONTENT);
-    this.sendToPopup({...request, action: ActionNames.contentConnected}, true);
+    Background.confirmContentConnection(request);
   }
 
   /**
    * Get the message queue for the given type.
    *
-   * @param {string} type - `popup` or `queue`.
+   * @param {String} type - `popup` or `queue`.
    * @returns {Array|undefined}
    */
   static getQueue(type) {
@@ -161,7 +156,7 @@ export default class Connection {
   /**
    * Get the send function for the given type.
    *
-   * @param {string} type - `popup` or `queue`.
+   * @param {String} type - `popup` or `queue`.
    *
    * @returns {Function|undefined}
    */
@@ -177,8 +172,6 @@ export default class Connection {
    * Helper to add message to content queue.
    *
    * @param {Object} data - Data to add to the queue.
-   *
-   * @return {Object} - Object fil.
    */
   static addToContentQueue(data) {
     if (this.queueFilters.content.includes(data.action)) {
@@ -193,8 +186,6 @@ export default class Connection {
    * Helper to add message to popup queue.
    *
    * @param {Object} data - Data to add to the queue.
-   *
-   * @return {Object} - Object fil.
    */
   static addToPopupQueue(data) {
     if (this.queueFilters.popup.includes(data.action)) {

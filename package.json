@@ -15,8 +15,8 @@
     "stage:publish": "node private/process.js --build stage --publish",
     "prod": "webpack --config build/webpack.prod.conf.js && node private/process.js --upload --publish",
     "prod:build": "webpack --config build/webpack.prod.conf.js",
-    "prod:upload": "node private/process.js --upload",
-    "prod:publish": "node private/process.js --publish",
+    "prod:upload": "node private/process.js --build prod --upload",
+    "prod:publish": "node private/process.js --build prod --publish",
     "upload": "node private/process.js --upload",
     "publish": "node private/process.js --publish",
     "test": "jest"

@@ -49,7 +49,7 @@ export default {
     const fieldMappings = await this.getSavedMappings();
 
     if (fieldMappings.hasOwnProperty(url)) {
-      return fieldMappings[url];
+      return JSON.parse(fieldMappings[url]);
     }
 
     return {};
@@ -68,6 +68,8 @@ export default {
     // Data is saved and retrieved by hostname, not full href
     const url = new URL(data.url).hostname;
     const mappings = await this.getSavedMappingsForURL(url);
+
+    console.log({mappings});
 
     // Append mapped field to existing mappings
     if (field && path) {

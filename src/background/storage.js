@@ -9,8 +9,8 @@ export default {
    *
    * @returns {Promise<Object>}
    */
-  getSavedMappings() {
-    const storageKeys = this.getStorageKeys(Config.mappingPrefix);
+  async getSavedMappings() {
+    const storageKeys = await this.getStorageKeys(Config.mappingPrefix);
 
     Object.keys(storageKeys).forEach((key) => {
       storageKeys[key] = JSON.parse(storageKeys[key]);
@@ -49,7 +49,7 @@ export default {
     const fieldMappings = await this.getSavedMappings();
 
     if (fieldMappings.hasOwnProperty(url)) {
-      return JSON.parse(fieldMappings[url]);
+      return fieldMappings[url];
     }
 
     return {};

@@ -69,8 +69,6 @@ export default {
     const url = new URL(data.url).hostname;
     const mappings = await this.getSavedMappingsForURL(url);
 
-    console.log({mappings});
-
     // Append mapped field to existing mappings
     if (field && path) {
       mappings[field] = path;

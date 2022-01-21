@@ -12,8 +12,8 @@
         }
       },
       "urls": {
-        "development": "http://extension.dev.myparcel.nl:3000",
-        "staging": "http://extension.staging.myparcel.nl",
+        "development": "https://extension.dev.myparcel.nl:3000",
+        "staging": "https://extension.staging.myparcel.nl",
         "production": "https://extension.myparcel.nl"
       }
     },
@@ -29,8 +29,8 @@
         }
       },
       "urls": {
-        "development": "http://extension.dev.flespakket.nl:3000",
-        "staging": "http://extension.staging.flespakket.nl",
+        "development": "https://extension.dev.flespakket.nl:3000",
+        "staging": "https://extension.staging.flespakket.nl",
         "production": "https://extension.flespakket.nl"
       }
     },
@@ -46,8 +46,8 @@
         }
       },
       "urls": {
-        "development": "http://extension.dev.sendmyparcel.be:3000",
-        "staging": "http://extension.staging.sendmyparcel.be",
+        "development": "https://extension.dev.sendmyparcel.be:3000",
+        "staging": "https://extension.staging.sendmyparcel.be",
         "production": "https://extension.sendmyparcel.be"
       }
     }

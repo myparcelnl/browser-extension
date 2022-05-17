@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "MyParcel",
+    "description": "The name of the extension, displayed in the web store."
+  },
+  "appDescription": {
+    "message": "Create MyParcel labels from any website. Retrieve all the information you need to create a shipping label in one click.",
+    "description": "The description of the extension, displayed in the web store."
+  }
+}

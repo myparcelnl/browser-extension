@@ -2,8 +2,7 @@
   "platforms": {
     "myparcel": {
       "manifest": {
-        "name": "MyParcel Extension",
-        "description": "MyParcel",
+        "name": "MyParcel",
         "short_name": "MyParcel",
         "externally_connectable": {
           "matches": [
@@ -19,8 +18,7 @@
     },
     "flespakket": {
       "manifest": {
-        "name": "Flespakket Extension",
-        "description": "Flespakket",
+        "name": "Flespakket",
         "short_name": "Flespakket",
         "externally_connectable": {
           "matches": [
@@ -36,8 +34,7 @@
     },
     "sendmyparcel": {
       "manifest": {
-        "name": "SendMyParcel Extension",
-        "description": "SendMyParcel",
+        "name": "SendMyParcel",
         "short_name": "SendMyParcel",
         "externally_connectable": {
           "matches": [

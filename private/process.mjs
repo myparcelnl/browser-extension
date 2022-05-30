@@ -1,8 +1,8 @@
-const createStore = require('./webstore');
-const publishExtension = require('./publish-extension');
-const storeData = require('./store-data');
-const uploadExtension = require('./upload-extension');
-const yargs = require('yargs');
+import createStore from './webstore.mjs';
+import publishExtension from './publish-extension.mjs';
+import { apps } from './store-data.mjs';
+import uploadExtension from './upload-extension.mjs';
+import yargs from 'yargs';
 
 const {
   /**
@@ -45,11 +45,11 @@ const execute = async(app) => {
   const store = await createStore(app);
 
   if (upload) {
-    uploadExtension(app, store);
+    await uploadExtension(app, store);
   }
 
   if (publish) {
-    publishExtension(app, store);
+    await publishExtension(app, store);
   }
 };
 
@@ -59,7 +59,7 @@ const execute = async(app) => {
 if (app) {
   execute(app);
 } else {
-  Object.keys(storeData.apps).forEach((app) => {
+  Object.keys(apps).forEach((app) => {
     // Ignore prod apps if build is stage.
     if (build === 'stage' && !app.startsWith('staging')) {
       return;

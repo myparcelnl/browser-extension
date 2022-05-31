@@ -12,7 +12,7 @@
         }
       },
       "urls": {
-        "development": "https://extension.dev.myparcel.nl:3000",
+        "development": "https://extension.dev.myparcel.nl",
         "staging": "https://extension.staging.myparcel.nl",
         "production": "https://extension.myparcel.nl"
       }
@@ -29,7 +29,7 @@
         }
       },
       "urls": {
-        "development": "https://extension.dev.flespakket.nl:3000",
+        "development": "https://extension.dev.flespakket.nl",
         "staging": "https://extension.staging.flespakket.nl",
         "production": "https://extension.flespakket.nl"
       }
@@ -46,7 +46,7 @@
         }
       },
       "urls": {
-        "development": "https://extension.dev.sendmyparcel.be:3000",
+        "development": "https://extension.dev.sendmyparcel.be",
         "staging": "https://extension.staging.sendmyparcel.be",
         "production": "https://extension.sendmyparcel.be"
       }

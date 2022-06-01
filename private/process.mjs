@@ -1,28 +1,28 @@
 import createStore from './webstore.mjs';
 import publishExtension from './publish-extension.mjs';
-import { apps } from './store-data.mjs';
+import {apps} from './store-data.mjs';
 import uploadExtension from './upload-extension.mjs';
 import yargs from 'yargs';
 
 const {
   /**
-   * publish - Toggle publishing.
+   * Publish - Toggle publishing.
    *
-   * @type {Boolean}
+   * @type {boolean}
    */
   publish,
 
   /**
-   * build - Can be 'stage' or 'prod'. Omit to process all.
+   * Build - Can be 'stage' or 'prod'. Omit to process all.
    *
-   * @type {String}
+   * @type {string}
    */
   build,
 
   /**
-   * upload - Toggle uploading.
+   * Upload - Toggle uploading.
    *
-   * @type {Boolean}
+   * @type {boolean}
    */
   upload,
 } = yargs.argv;

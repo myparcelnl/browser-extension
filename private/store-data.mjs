@@ -4,6 +4,7 @@
  * @type {string}
  */
 export const clientId = '518665115318-enc9qggc1qsp8geedau5esla17keripf.apps.googleusercontent.com';
+
 /**
  * Oauth2 client secret.
  *

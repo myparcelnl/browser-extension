@@ -45,7 +45,7 @@ export default class Content {
   /**
    * Send data to background script.
    *
-   * @param {String} action - Action name.
+   * @param {string} action - Action name.
    * @param {Object} data - Request content.
    */
   static sendToBackground(action, data = {}) {

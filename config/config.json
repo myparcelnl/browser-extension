@@ -2,8 +2,7 @@
   "platforms": {
     "myparcel": {
       "manifest": {
-        "name": "MyParcel Extension",
-        "description": "MyParcel",
+        "name": "MyParcel",
         "short_name": "MyParcel",
         "externally_connectable": {
           "matches": [
@@ -12,15 +11,14 @@
         }
       },
       "urls": {
-        "development": "https://extension.dev.myparcel.nl:3000",
+        "development": "https://extension.dev.myparcel.nl",
         "staging": "https://extension.staging.myparcel.nl",
         "production": "https://extension.myparcel.nl"
       }
     },
     "flespakket": {
       "manifest": {
-        "name": "Flespakket Extension",
-        "description": "Flespakket",
+        "name": "Flespakket",
         "short_name": "Flespakket",
         "externally_connectable": {
           "matches": [
@@ -29,15 +27,14 @@
         }
       },
       "urls": {
-        "development": "https://extension.dev.flespakket.nl:3000",
+        "development": "https://extension.dev.flespakket.nl",
         "staging": "https://extension.staging.flespakket.nl",
         "production": "https://extension.flespakket.nl"
       }
     },
     "sendmyparcel": {
       "manifest": {
-        "name": "SendMyParcel Extension",
-        "description": "SendMyParcel",
+        "name": "SendMyParcel",
         "short_name": "SendMyParcel",
         "externally_connectable": {
           "matches": [
@@ -46,7 +43,7 @@
         }
       },
       "urls": {
-        "development": "https://extension.dev.sendmyparcel.be:3000",
+        "development": "https://extension.dev.sendmyparcel.be",
         "staging": "https://extension.staging.sendmyparcel.be",
         "production": "https://extension.sendmyparcel.be"
       }

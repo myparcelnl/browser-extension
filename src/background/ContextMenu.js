@@ -8,7 +8,6 @@ import Connection from './Connection';
  * Context menu class. Contains functions to create and handle the context menu items.
  */
 export default class ContextMenu {
-
   /**
    * Find context menu item by id.
    *
@@ -60,4 +59,4 @@ export default class ContextMenu {
       Connection.sendToPopup({action: ActionNames.createShipmentFromSelection, selection});
     });
   }
-};
+}

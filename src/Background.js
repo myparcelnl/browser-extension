@@ -29,14 +29,14 @@ export default class Background {
   /**
    * ID of the last window the browser was focused on.
    *
-   * @type {Number}
+   * @type {number}
    */
   static lastWindowId;
 
   /**
    * Loads config file then binds all events and scripts.
    *
-   * @returns {Promise}
+   * @returns {Promise<*>}
    */
   static async boot() {
     await this.loadConfig();
@@ -52,7 +52,7 @@ export default class Background {
    *
    * @param {Object} settings - Settings object.
    *
-   * @returns {Promise}
+   * @returns {Promise<*>}
    */
   static async setGlobalSettings(settings = {}) {
     if (Object.keys(settings).length) {
@@ -88,7 +88,7 @@ export default class Background {
   /**
    * Fetch config file and set variables.
    *
-   * @returns {Promise}
+   * @returns {Promise<*>}
    */
   static async loadConfig() {
     const response = await fetch(chrome.extension.getURL(Config.configFile));
@@ -272,7 +272,7 @@ export default class Background {
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    *
-   * @returns {Promise}
+   * @returns {Promise<*>}
    */
   static injectScripts(tab) {
     return new Promise((resolve) => {
@@ -300,8 +300,8 @@ export default class Background {
   /**
    * Set active tab and send messages to popup and content to process the change.
    *
-   * @param {Number} addedTabId - Tab ID.
-   * @param {Number} removedTabId - Tab ID.
+   * @param {number} addedTabId - Tab ID.
+   * @param {number} removedTabId - Tab ID.
    *
    * @returns {undefined}
    */
@@ -359,7 +359,7 @@ export default class Background {
   /**
    * On updating tab set new tab as active tab and change app icon.
    *
-   * @param {Number} id - Chrome tab ID.
+   * @param {number} id - Chrome tab ID.
    * @param {chrome.tabs.TabChangeInfo} data - Chrome event data.
    * @param {chrome.tabs.Tab} tab -  - Chrome tab object.
    *
@@ -384,7 +384,7 @@ export default class Background {
    * Fired when the currently focused window changes. Try to find valid tab in the window, set it as active tab and
    * change app icon. Ignores popups, invalid windows and ignores change if the window id is equal to the previous one.
    *
-   * @param {Number} windowId - ID of the newly-focused window.
+   * @param {number} windowId - ID of the newly-focused window.
    */
   static changeFocus(windowId) {
     const isInvalidTab = windowId === chrome.windows.WINDOW_ID_NONE;
@@ -410,7 +410,7 @@ export default class Background {
   /**
    * When a window is closed check if it's our popup and clean up if so.
    *
-   * @param {Number} windowId - Chrome window ID.
+   * @param {number} windowId - Chrome window ID.
    */
   static checkPopupClosed(windowId) {
     if (this.isPopup(windowId)) {
@@ -466,7 +466,7 @@ export default class Background {
    *
    * @param {chrome.tabs.Tab} tab - Chrome tab object.
    *
-   * @returns {Boolean}
+   * @returns {boolean}
    */
   static isWebsite(tab) {
     const isInvalidTab = tab.id === chrome.tabs.TAB_ID_NONE;
@@ -502,9 +502,8 @@ export default class Background {
         chrome.windows.create({
           url: this.popupExternalURL,
           type: 'popup',
-          left: win.left + win.width,
-          top: win.top,
-          // TODO: `setSelfAsOpener` is a chrome 64+ feature :(
+          // when we open the extension outside of the window this will result in a error
+          left: win.width - width,
           setSelfAsOpener: true,
           height,
           width,
@@ -519,7 +518,7 @@ export default class Background {
   /**
    * Show popup if it exists or create it.
    *
-   * @returns {Promise}
+   * @returns {Promise<*>}
    */
   static async openPopup() {
     if (this.popupWindow) {
@@ -550,7 +549,7 @@ export default class Background {
   /**
    * Changes the extension icon to given path.
    *
-   * @param {String} path - Path to icon file.
+   * @param {string} path - Path to icon file.
    */
   static setIcon(path = Config.defaultIcon) {
     chrome.browserAction.setIcon({path}, Chrome.catchError);
@@ -559,7 +558,7 @@ export default class Background {
   /**
    * Get the active tab URL if available.
    *
-   * @returns {String}
+   * @returns {string}
    */
   static getURL() {
     if (this.activeTab) {
@@ -570,8 +569,8 @@ export default class Background {
   /**
    * Check if a window/tab ID matches the popup window's id. Returns false if not and if the popup window doesn't exist.
    *
-   * @param {Number} windowOrTabId
-   * @returns {Boolean}
+   * @param {number} windowOrTabId
+   * @returns {boolean}
    */
   static isPopup(windowOrTabId) {
     return this.popupWindow && windowOrTabId === this.popupWindow.windowId;
@@ -580,8 +579,8 @@ export default class Background {
   /**
    * Check if a tab id matches the active tab id. Returns false if not and if there is no active tab.
    *
-   * @param {Number} tabId
-   * @returns {Boolean}
+   * @param {number} tabId
+   * @returns {boolean}
    */
   static isActiveTab(tabId) {
     return this.activeTab && tabId === this.activeTab.id;

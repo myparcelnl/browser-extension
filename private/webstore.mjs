@@ -1,7 +1,7 @@
-const {apps, clientId, clientSecret, refreshToken} = require('./store-data');
-const WebStore = require('chrome-webstore-upload');
+import WebStore from 'chrome-webstore-upload';
+import { apps, clientId, clientSecret, refreshToken } from './store-data.mjs';
 
-module.exports = async(app) => {
+export default async(app) => {
   const store = new WebStore({
     extensionId: apps[app],
     clientId,
@@ -12,4 +12,4 @@ module.exports = async(app) => {
   store.token = await store.fetchToken();
 
   return store;
-};
+}

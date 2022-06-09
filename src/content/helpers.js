@@ -41,8 +41,8 @@ export function getPath(element) {
      * Loop through the previous siblings to create an index to use in the selector. Based on how many text elements
      * exist before the clicked element.
      */
-    for (let i = 0; (node = node.previousSibling); i++) {
-      if (node.classList.contains(Config.wrappedItemClass)) {
+    for (let i = 0; node = node.previousSibling; i++) {
+      if (node.classList && node.classList.contains(Config.wrappedItemClass)) {
         index++;
       }
     }

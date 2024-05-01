@@ -8,20 +8,20 @@
   "license": "MIT",
   "author": "Edie Lemoine <edie@myparcel.nl>",
   "scripts": {
-    "release": "npm --no-git-tag-version version minor && npm run prod:build && node private/process.mjs --build prod --upload --publish",
-    "hotfix": "npm --no-git-tag-version version patch && npm run prod:build && node private/process.mjs --build prod --upload --publish",
-    "dev": "webpack-dev-server --env.NODE_ENV=development --config build/webpack.dev.conf.js",
-    "stage": "npm run stage:build && node private/process.mjs --build stage --upload --publish",
-    "stage:build": "webpack --env.NODE_ENV=staging --config build/webpack.stage.conf.js",
-    "stage:upload": "node private/process.mjs --build stage --upload",
-    "stage:publish": "node private/process.mjs --build stage --publish",
-    "prod": "webpack --config build/webpack.prod.conf.js && node private/process.mjs --upload --publish",
-    "prod:build": "webpack --config build/webpack.prod.conf.js",
-    "prod:upload": "node private/process.mjs --build prod --upload",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server --env.NODE_ENV=development --config build/webpack.dev.conf.js",
+    "hotfix": "npm --no-git-tag-version version patch && run prod:build && node private/process.mjs --build prod --upload --publish",
+    "prod": "NODE_OPTIONS=--openssl-legacy-provider webpack --config build/webpack.prod.conf.js && node private/process.mjs --upload --publish",
+    "prod:build": "NODE_OPTIONS=--openssl-legacy-provider webpack --config build/webpack.prod.conf.js",
     "prod:publish": "node private/process.mjs --build prod --publish",
-    "upload": "node private/process.mjs --upload",
+    "prod:upload": "node private/process.mjs --build prod --upload",
     "publish": "node private/process.mjs --publish",
-    "test": "jest"
+    "release": "npm --no-git-tag-version version minor && run prod:build && node private/process.mjs --build prod --upload --publish",
+    "stage": "run stage:build && node private/process.mjs --build stage --upload --publish",
+    "stage:build": "NODE_OPTIONS=--openssl-legacy-provider webpack --env.NODE_ENV=staging --config build/webpack.stage.conf.js",
+    "stage:publish": "node private/process.mjs --build stage --publish",
+    "stage:upload": "node private/process.mjs --build stage --upload",
+    "test": "jest",
+    "upload": "node private/process.mjs --upload"
   },
   "dependencies": {
     "unique-selector": "^0.4.1"
@@ -60,5 +60,9 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-strip-log-loader": "^0.3.0",
     "yargs": "^15.3.1"
+  },
+  "packageManager": "yarn@4.1.1",
+  "volta": {
+    "node": "20.12.2"
   }
 }

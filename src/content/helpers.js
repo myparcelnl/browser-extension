@@ -1,27 +1,20 @@
 /* eslint-disable func-names */
-import Config from '../content/Config';
 import getSelector from 'unique-selector';
+import Config from './Config';
 
 /**
  * HTML elements that contain text.
  *
  * @type {string[]}
  */
-export const contentTags = [
-  'INPUT',
-  'SELECT',
-  'TEXTAREA',
-];
+export const contentTags = ['INPUT', 'SELECT', 'TEXTAREA'];
 
 /**
  * Input tag types that contain text.
  *
  * @type {string[]}
  */
-export const validInputTypes = [
-  'text',
-  'number',
-];
+export const validInputTypes = ['text', 'number'];
 
 /**
  * Get the unique query selector/path of the element.
@@ -41,7 +34,7 @@ export function getPath(element) {
      * Loop through the previous siblings to create an index to use in the selector. Based on how many text elements
      * exist before the clicked element.
      */
-    for (let i = 0; node = node.previousSibling; i++) {
+    for (let i = 0; (node = node.previousSibling); i++) {
       if (node.classList && node.classList.contains(Config.wrappedItemClass)) {
         index++;
       }

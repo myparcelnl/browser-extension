@@ -1,13 +1,13 @@
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path');
+const fs = require('fs');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
-const { injectVariable } = require('./helpers/injectVariable');
-const fs = require('fs');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const packageData = require('../package.json');
-const path = require('path');
-const webpack = require('webpack');
-const { platforms: platformConfig } = require('../config/config');
+const {platforms: platformConfig} = require('../config/config');
+const {injectVariable} = require('./helpers/injectVariable');
 
 const ENV_STAGING = 'staging';
 const ENV_PRODUCTION = 'production';
@@ -149,8 +149,8 @@ const updateManifest = (content, platform, env) => {
 const updateConfig = (buffer, platform) => {
   const config = JSON.parse(buffer.toString());
 
-  const { platforms, ...configuration } = config;
-  const { manifest, ...platformData } = platforms[platform];
+  const {platforms, ...configuration} = config;
+  const {manifest, ...platformData} = platforms[platform];
 
   // Strip out other platform data and manifest configuration
   const newConfig = {
@@ -262,12 +262,14 @@ module.exports = (env = ENV_PRODUCTION) => {
             /**
              * Copy options directory if environment is not prod.
              */
-            ...env === ENV_PRODUCTION
+            ...(env === ENV_PRODUCTION
               ? []
-              : [{
-                from: 'config/options',
-                to: `${outputDir}/options`,
-              }],
+              : [
+                  {
+                    from: 'config/options',
+                    to: `${outputDir}/options`,
+                  },
+                ]),
 
             /**
              * Transform the manifest templates by platform and environment.
@@ -298,11 +300,7 @@ module.exports = (env = ENV_PRODUCTION) => {
           },
           {
             test: /\.scss$/,
-            use: [
-              { loader: MiniCssExtractPlugin.loader },
-              'css-loader',
-              'sass-loader',
-            ],
+            use: [{loader: MiniCssExtractPlugin.loader}, 'css-loader', 'sass-loader'],
           },
         ],
       },

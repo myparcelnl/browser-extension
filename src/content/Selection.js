@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
-import {getPath, getTextParts, hasContent, isTextElement} from './helpers';
-import Config from '../content/Config';
 import tooltipHTML from './tooltip.html';
+import {getPath, getTextParts, hasContent, isTextElement} from './helpers';
+import Config from './Config';
 
 /**
  * Selection functions.
@@ -179,6 +179,7 @@ export default class Selection {
    */
   static showTooltip(strings) {
     let tooltip = this.getTooltip();
+
     if (tooltip) {
       this.updateTooltipHTML({
         fieldName: strings.choose,
@@ -216,6 +217,7 @@ export default class Selection {
    */
   static positionTooltip(event) {
     const tooltip = this.getTooltip();
+
     if (!tooltip) {
       return;
     }

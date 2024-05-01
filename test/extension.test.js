@@ -7,11 +7,10 @@ import util from 'util';
 const exec = util.promisify(require('child_process').exec);
 
 describe('Build and install Chrome extensions', () => {
-
   /**
    * Try to build the extension
    */
-  test('Extension can build', async() => {
+  test('Extension can build', async () => {
     const {stderr} = await exec(scripts.build);
     expect(stderr).toBeFalsy();
   }, 30000);
@@ -22,7 +21,7 @@ describe('Build and install Chrome extensions', () => {
   Object.keys(config.platforms).forEach((platform) => {
     const extensionPath = path.join(__dirname, `../dist/${platform}`);
 
-    test(`${config.platforms[platform].manifest.name} can be installed`, async() => {
+    test(`${config.platforms[platform].manifest.name} can be installed`, async () => {
       const options = {
         headless: false,
         ignoreHTTPSErrors: true,

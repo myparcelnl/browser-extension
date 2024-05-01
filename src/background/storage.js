@@ -1,9 +1,8 @@
-import Chrome from '../helpers/Chrome';
-import Config from '../helpers/Config';
 import Logger from '../helpers/Logger'; // strip-log
+import Config from '../helpers/Config';
+import Chrome from '../helpers/Chrome';
 
 export default {
-
   /**
    * Retrieve saved field mappings from storage and convert them from to objects.
    *
@@ -90,14 +89,12 @@ export default {
    * @param {String} prefix - Prefix to add to the setting name(s).
    */
   saveSettings(settings, prefix = Config.urlSettingPrefix) {
-    const keys = Object
-      .keys(settings)
-      .reduce((acc, setting) => {
-        return {
-          ...acc,
-          [prefix + setting]: settings[setting],
-        };
-      }, {});
+    const keys = Object.keys(settings).reduce((acc, setting) => {
+      return {
+        ...acc,
+        [prefix + setting]: settings[setting],
+      };
+    }, {});
 
     this.saveToStorage(keys);
   },

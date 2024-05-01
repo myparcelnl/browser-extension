@@ -17,4 +17,4 @@ export default class ContentConfig {
   static tooltipClassVisible = `${this.tooltipClass}--visible`;
 
   static wrappedItemClass = `${this.classPrefix}wrapped-item`;
-};
+}

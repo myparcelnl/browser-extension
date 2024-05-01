@@ -1,7 +1,7 @@
-import ActionNames from './helpers/ActionNames';
-import ContentActions from './content/ContentActions';
 import Logger from './helpers/Logger'; // strip-log
+import ActionNames from './helpers/ActionNames';
 import Selection from './content/Selection';
+import ContentActions from './content/ContentActions';
 
 export default class Content {
   /**

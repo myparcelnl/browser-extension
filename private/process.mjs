@@ -1,8 +1,8 @@
-import createStore from './webstore.mjs';
-import publishExtension from './publish-extension.mjs';
-import {apps} from './store-data.mjs';
-import uploadExtension from './upload-extension.mjs';
 import yargs from 'yargs';
+import createStore from './webstore.mjs';
+import uploadExtension from './upload-extension.mjs';
+import {apps} from './store-data.mjs';
+import publishExtension from './publish-extension.mjs';
 
 const {
   /**
@@ -41,7 +41,7 @@ const app = yargs.argv.app || null;
  *
  * @returns {Promise}
  */
-const execute = async(app) => {
+const execute = async (app) => {
   const store = await createStore(app);
 
   if (upload) {

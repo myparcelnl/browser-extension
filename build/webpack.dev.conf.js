@@ -1,5 +1,5 @@
-const prodConfig = require('./webpack.prod.conf');
 const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
+const prodConfig = require('./webpack.prod.conf');
 
 module.exports = (env) => {
   const config = [];
@@ -33,10 +33,7 @@ module.exports = (env) => {
       ...{
         ...devConfig(index),
         // Concatenate plugins instead of overriding them
-        plugins: [
-          ...prodConfig.plugins,
-          ...devConfig(index).plugins,
-        ],
+        plugins: [...prodConfig.plugins, ...devConfig(index).plugins],
       },
     });
   });

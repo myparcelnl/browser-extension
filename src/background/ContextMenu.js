@@ -1,7 +1,7 @@
+import Config from '../helpers/Config';
+import Chrome from '../helpers/Chrome';
 import ActionNames from '../helpers/ActionNames';
 import Background from '../Background';
-import Chrome from '../helpers/Chrome';
-import Config from '../helpers/Config';
 import Connection from './Connection';
 
 /**
@@ -56,7 +56,10 @@ export default class ContextMenu {
     selection = selection.trim().replace(/[\s\n]/, ' ');
 
     Background.openPopup().then(() => {
-      Connection.sendToPopup({action: ActionNames.createShipmentFromSelection, selection});
+      Connection.sendToPopup({
+        action: ActionNames.createShipmentFromSelection,
+        selection,
+      });
     });
   }
 }

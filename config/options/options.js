@@ -33,11 +33,14 @@ function initialize() {
   patterns.textContent = manifest.externally_connectable.matches.join('\n');
 
   // Restores form state using the preferences stored in chrome.storage.
-  chrome.storage.sync.get({
-    backofficeUrl: null,
-  }, (items) => {
-    document.getElementById('url').value = items.backofficeUrl;
-  });
+  chrome.storage.sync.get(
+    {
+      backofficeUrl: null,
+    },
+    (items) => {
+      document.getElementById('url').value = items.backofficeUrl;
+    },
+  );
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

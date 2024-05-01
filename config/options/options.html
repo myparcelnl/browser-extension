@@ -1,75 +1,87 @@
 <!DOCTYPE html>
 <html>
-<head><title>Settings</title></head>
-<link
-  rel="stylesheet"
-  href="https://assets.myparcel.nl/skin/main.css">
-<body>
-<div
-  class="container"
-  style="max-width: 600px;">
-  <form class="row">
-    <div class="col-12">
-      <h1 class="mt-2">Extension Settings</h1>
-      <div class="form-horizontal">
-        <div class="form-group row">
-          <div class="col-12">
-            <p>This URL will be saved to your local storage and used by the extension to determine which backoffice to use. Must be a full URL and must match the following pattern(s):</p>
-            <pre class="small" id="patterns"></pre>
-          </div>
-          <label
-            class="control-label col-sm-4 col-12"
-            for="url">Backoffice URL</label>
-          <div class="col-sm-8 col-12">
-            <input
-              required
-              type="url"
-              class="form-control"
-              placeholder="https://extension.dev.myparcel.nl"
-              id="url">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12">
-      <hr>
-    </div>
-    <div class="col-12">
-      <div class="row">
+  <head>
+    <title>Settings</title>
+  </head>
+  <link
+    rel="stylesheet"
+    href="https://assets.myparcel.nl/skin/main.css" />
+  <body>
+    <div
+      class="container"
+      style="max-width: 600px">
+      <form class="row">
         <div class="col-12">
-          <button
-            id="save"
-            class="button button--primary d-inline-flex"
-            type="submit">
-            Save <span
-            id="spinner"
-            style="display: none;"
-            class="spinner-border spinner-border-sm ml-2 my-auto"></span>
-          </button>
-
-          <div
-            id="alert"
-            class="alert alert-info w-100"
-            style="display: none">
-            <div class="flex-column">
-              <div>
-                Reload the extension in "Settings > Extensions" (see below) and close and reopen the popup page.
+          <h1 class="mt-2">Extension Settings</h1>
+          <div class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-12">
+                <p>
+                  This URL will be saved to your local storage and used by the
+                  extension to determine which backoffice to use. Must be a full
+                  URL and must match the following pattern(s):
+                </p>
+                <pre
+                  class="small"
+                  id="patterns"></pre>
               </div>
-              <hr>
-              <div>
-                <img
-                  class="rounded"
-                  width="415"
-                  src="help-1.png"
-                  alt="help-1">
+              <label
+                class="control-label col-sm-4 col-12"
+                for="url"
+                >Backoffice URL</label
+              >
+              <div class="col-sm-8 col-12">
+                <input
+                  required
+                  type="url"
+                  class="form-control"
+                  placeholder="https://extension.dev.myparcel.nl"
+                  id="url" />
               </div>
             </div>
           </div>
         </div>
-      </div>
+        <div class="col-12">
+          <hr />
+        </div>
+        <div class="col-12">
+          <div class="row">
+            <div class="col-12">
+              <button
+                id="save"
+                class="button button--primary d-inline-flex"
+                type="submit">
+                Save
+                <span
+                  id="spinner"
+                  style="display: none"
+                  class="spinner-border spinner-border-sm ml-2 my-auto"></span>
+              </button>
+
+              <div
+                id="alert"
+                class="alert alert-info w-100"
+                style="display: none">
+                <div class="flex-column">
+                  <div>
+                    Reload the extension in "Settings > Extensions" (see below)
+                    and close and reopen the popup page.
+                  </div>
+                  <hr />
+                  <div>
+                    <img
+                      class="rounded"
+                      width="415"
+                      src="help-1.png"
+                      alt="help-1" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
-</div>
-<script src="options.js"></script>
-</body>
+    <script src="options.js"></script>
+  </body>
 </html>

@@ -1,6 +1,6 @@
+import Logger from '../helpers/Logger'; // strip-log
 import ActionNames from '../helpers/ActionNames';
 import Background from '../Background';
-import Logger from '../helpers/Logger'; // strip-log
 
 export default class Connection {
   static POPUP = 'popup';

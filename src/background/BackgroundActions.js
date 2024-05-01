@@ -1,9 +1,9 @@
-import ActionNames from '../helpers/ActionNames';
-import Config from '../helpers/Config';
-import Connection from './Connection';
-import Logger from '../helpers/Logger'; // strip-log
 import defaultSettings from '../settings/defaultSettings';
+import Logger from '../helpers/Logger'; // strip-log
+import Config from '../helpers/Config';
+import ActionNames from '../helpers/ActionNames';
 import storage from './storage';
+import Connection from './Connection';
 
 /**
  * Actions to run from the background script.
@@ -60,7 +60,7 @@ export default class BackgroundActions {
   static async getGlobalSettings() {
     return {
       ...defaultSettings,
-      ...await storage.getSavedGlobalSettings(),
+      ...(await storage.getSavedGlobalSettings()),
     };
   }
 

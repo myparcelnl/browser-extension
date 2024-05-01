@@ -1,11 +1,11 @@
-import ActionNames from './helpers/ActionNames';
-import BackgroundActions from './background/BackgroundActions';
-import Chrome from './helpers/Chrome';
-import Config from './helpers/Config';
-import Connection from './background/Connection';
-import ContextMenu from './background/ContextMenu';
 import Logger from './helpers/Logger'; // strip-log
+import Config from './helpers/Config';
+import Chrome from './helpers/Chrome';
+import ActionNames from './helpers/ActionNames';
 import storage from './background/storage';
+import ContextMenu from './background/ContextMenu';
+import Connection from './background/Connection';
+import BackgroundActions from './background/BackgroundActions';
 
 const manifest = chrome.runtime.getManifest();
 
@@ -75,6 +75,7 @@ export default class Background {
     this.settings = settings;
 
     const contextMenusClickListener = (data) => ContextMenu.activate(data);
+
     if (settings.enable_context_menu === true) {
       ContextMenu.create(ContextMenu.find(Config.contextMenuCreateShipment));
       // On opening context menu (right click)
@@ -104,6 +105,7 @@ export default class Background {
         if (backofficeUrl) {
           appUrlClass = new URL([backofficeUrl, path].join('/'));
         }
+
         resolve();
       });
     });
@@ -286,7 +288,9 @@ export default class Background {
       if (Connection.contentConnected === tab.url) {
         try {
           // Use content connection directly instead of sendToContent to skip the queue
-          Connection.content.postMessage({action: ActionNames.checkContentConnection});
+          Connection.content.postMessage({
+            action: ActionNames.checkContentConnection,
+          });
           resolve(true);
         } catch (e) {
           insertScripts();
@@ -371,6 +375,7 @@ export default class Background {
     }
 
     Logger.event(`updateTab – ${data.status}`);
+
     if (data.status === 'complete') {
       this.activeTab = undefined;
       this.setIcon();
@@ -390,11 +395,7 @@ export default class Background {
     const isInvalidTab = windowId === chrome.windows.WINDOW_ID_NONE;
     const tabDidNotChange = windowId === this.lastWindowId;
 
-    if (!this.popupWindow
-      || isInvalidTab
-      || tabDidNotChange
-      || this.isPopup(windowId)
-    ) {
+    if (!this.popupWindow || isInvalidTab || tabDidNotChange || this.isPopup(windowId)) {
       return;
     }
 
@@ -499,18 +500,20 @@ export default class Background {
       });
 
       chrome.windows.getCurrent((win) => {
-        chrome.windows.create({
-          url: this.popupExternalURL,
-          type: 'popup',
-          // when we open the extension outside of the window this will result in a error
-          left: win.width - width,
-          setSelfAsOpener: true,
-          height,
-          width,
-        },
-        (win) => {
-          resolve(win.tabs[0]);
-        });
+        chrome.windows.create(
+          {
+            url: this.popupExternalURL,
+            type: 'popup',
+            // when we open the extension outside of the window this will result in a error
+            left: win.width - width,
+            setSelfAsOpener: true,
+            height,
+            width,
+          },
+          (win) => {
+            resolve(win.tabs[0]);
+          },
+        );
       });
     });
   }
@@ -603,13 +606,11 @@ export default class Background {
       }
     }
 
-    Connection.sendToPopup(
-      {
-        action: ActionNames.contentConnected,
-        settings,
-        ...data,
-      },
-    );
+    Connection.sendToPopup({
+      action: ActionNames.contentConnected,
+      settings,
+      ...data,
+    });
   }
 }
 

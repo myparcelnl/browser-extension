@@ -5,9 +5,7 @@
         "name": "MyParcel",
         "short_name": "MyParcel",
         "externally_connectable": {
-          "matches": [
-            "*://*.myparcel.nl/*"
-          ]
+          "matches": ["*://*.myparcel.nl/*"]
         }
       },
       "urls": {
@@ -21,9 +19,7 @@
         "name": "Flespakket",
         "short_name": "Flespakket",
         "externally_connectable": {
-          "matches": [
-            "*://*.flespakket.nl/*"
-          ]
+          "matches": ["*://*.flespakket.nl/*"]
         }
       },
       "urls": {
@@ -37,9 +33,7 @@
         "name": "SendMyParcel",
         "short_name": "SendMyParcel",
         "externally_connectable": {
-          "matches": [
-            "*://*.sendmyparcel.be/*"
-          ]
+          "matches": ["*://*.sendmyparcel.be/*"]
         }
       },
       "urls": {

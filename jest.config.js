@@ -4,7 +4,5 @@
  */
 module.exports = {
   preset: 'jest-puppeteer',
-  setupFiles: [
-    'jest-webextension-mock',
-  ],
+  setupFiles: ['jest-webextension-mock'],
 };

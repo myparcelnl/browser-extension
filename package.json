@@ -3,7 +3,7 @@
   "version": "2.7.2",
   "description": "MyParcel Chrome Extension",
   "repository": {
-    "url": "https://git.dmp.zone/projects/MYP/repos/chrome-extension"
+    "url": "git+ssh://git@github.com/myparcelnl/browser-extension.git"
   },
   "license": "MIT",
   "author": "Edie Lemoine <edie@myparcel.nl>",

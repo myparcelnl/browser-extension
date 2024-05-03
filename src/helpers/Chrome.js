@@ -1,4 +1,4 @@
-import Logger from './Logger'; // strip-log
+import Logger from './Logger';
 
 /**
  * Chrome (`chrome`) helper functions.

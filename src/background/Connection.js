@@ -1,4 +1,4 @@
-import Logger from '../helpers/Logger'; // strip-log
+import Logger from '../helpers/Logger';
 import ActionNames from '../helpers/ActionNames';
 import Background from '../Background';
 
@@ -7,7 +7,7 @@ export default class Connection {
   static CONTENT = 'content';
 
   /**
-   * Connection with the popup script..
+   * Connection with the popup script.
    *
    * @type {chrome.runtime.Port}
    */
@@ -53,11 +53,12 @@ export default class Connection {
   /**
    * Set popupConnected, flush the popup queue and tell the popup the background is ready.
    */
-  static onPopupConnect() {
+  static onPopupConnect(request) {
     this.popupConnected = true;
 
-    this.flushQueue(this.POPUP);
-    Background.confirmContentConnection();
+    Background.confirmContentConnection(request).then(() => {
+      this.flushQueue(this.POPUP);
+    });
   }
 
   /**
@@ -133,10 +134,10 @@ export default class Connection {
    * @param {Object} request - Request object.
    */
   static onContentConnect(request) {
-    this.contentConnected = this.content.sender.url;
-
+    this.contentConnected = Boolean(this.content.sender.url);
     this.contentQueue = this.flushQueue(this.CONTENT);
-    Background.confirmContentConnection(request);
+
+    void Background.confirmContentConnection(request);
   }
 
   /**

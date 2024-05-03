@@ -1,15 +1,14 @@
-import Logger from './helpers/Logger'; // strip-log
+import {promisify} from './helpers/promisify.js';
+import {isProd} from './helpers/isProd.js';
+import Logger from './helpers/Logger';
 import Config from './helpers/Config';
 import Chrome from './helpers/Chrome';
 import ActionNames from './helpers/ActionNames';
+import {EXTENSION_PATH, POPUP_DIMENSIONS, POPUP_URL} from './constants.js';
 import storage from './background/storage';
 import ContextMenu from './background/ContextMenu';
 import Connection from './background/Connection';
 import BackgroundActions from './background/BackgroundActions';
-
-const manifest = chrome.runtime.getManifest();
-
-const env = manifest.version_name.split('-')[1] || process.env.NODE_ENV;
 
 export default class Background {
   /**
@@ -41,10 +40,23 @@ export default class Background {
   static async boot() {
     await this.loadConfig();
     await this.setGlobalSettings();
+    await this.connectToPopup();
 
     this.bindEvents();
     this.bindPopupScript();
     this.bindContentScript();
+  }
+
+  /**
+   * Connect the popup window if it already exists.
+   * @return {Promise<void>}
+   */
+  static async connectToPopup() {
+    if (this.popupWindow) {
+      return;
+    }
+
+    this.popupWindow = await this.findPopup();
   }
 
   /**
@@ -56,7 +68,7 @@ export default class Background {
    */
   static async setGlobalSettings(settings = {}) {
     if (Object.keys(settings).length) {
-      settings = await BackgroundActions.saveGlobalSettings(settings);
+      settings = BackgroundActions.saveGlobalSettings(settings);
     } else {
       settings = await BackgroundActions.getGlobalSettings();
     }
@@ -92,37 +104,39 @@ export default class Background {
    * @returns {Promise<*>}
    */
   static async loadConfig() {
-    const response = await fetch(chrome.extension.getURL(Config.configFile));
-    const json = await response.json();
+    let appUrlClass = new URL([POPUP_URL, EXTENSION_PATH].join('/'));
 
-    const path = json.extension_path;
-    const appUrl = json.urls[env];
+    // Resolve url from settings if available. This is used for staging and development environments.
+    if (!isProd()) {
+      await new Promise((resolve) => {
+        chrome.storage.sync.get({backofficeUrl: ''}, ({backofficeUrl}) => {
+          if (backofficeUrl) {
+            appUrlClass = new URL([backofficeUrl, EXTENSION_PATH].join('/'));
+          }
 
-    let appUrlClass = new URL([appUrl, path].join('/'));
-
-    await new Promise((resolve) => {
-      chrome.storage.sync.get({backofficeUrl: ''}, ({backofficeUrl}) => {
-        if (backofficeUrl) {
-          appUrlClass = new URL([backofficeUrl, path].join('/'));
-        }
-
-        resolve();
+          resolve();
+        });
       });
-    });
+    }
 
-    appUrlClass.searchParams.set('referralurl', encodeURIComponent(json.extension_path));
+    appUrlClass.searchParams.set('referralurl', encodeURIComponent(EXTENSION_PATH));
     appUrlClass.searchParams.set('origin', 'browser-extension');
 
     // Get app by current environment and name.
     this.popupExternalURL = appUrlClass.href;
-    this.popupDimensions = json.popupDimensions;
+    this.popupDimensions = POPUP_DIMENSIONS;
   }
 
   /**
    * Bind the popup script connection and map external ActionNames.
    */
   static bindPopupScript() {
+    const manifest = chrome.runtime.getManifest();
+
     chrome.runtime.onConnectExternal.addListener((port) => {
+      /** This allows the extension to keep working after reloading the popup. */
+      void this.connectToPopup();
+
       Connection.popup = port;
       Connection.sendToPopup({
         action: ActionNames.booted,
@@ -140,6 +154,8 @@ export default class Background {
    */
   static bindContentScript() {
     chrome.runtime.onConnect.addListener((port) => {
+      void this.connectToPopup();
+
       Connection.content = port;
       port.onMessage.addListener((...args) => {
         this.contentScriptListener(...args);
@@ -159,11 +175,11 @@ export default class Background {
 
     switch (request.action) {
       case ActionNames.popupConnected:
-        Connection.onPopupConnect();
+        Connection.onPopupConnect({url: this.activeTab?.url});
         break;
 
       case ActionNames.checkContentConnection:
-        this.confirmContentConnection();
+        void this.confirmContentConnection({url: this.activeTab?.url});
         break;
 
       case ActionNames.mapField:
@@ -172,11 +188,11 @@ export default class Background {
         break;
 
       case ActionNames.deleteFields:
-        BackgroundActions.deleteFields(request);
+        void BackgroundActions.deleteFields(request);
         break;
 
       case ActionNames.saveSettings:
-        this.setGlobalSettings(request.settings);
+        void this.setGlobalSettings(request.settings);
         break;
 
       case ActionNames.getSettings:
@@ -187,7 +203,7 @@ export default class Background {
         break;
 
       case ActionNames.getContent:
-        BackgroundActions.getContent(request);
+        void BackgroundActions.getContent(request);
         break;
 
       /**
@@ -209,21 +225,22 @@ export default class Background {
 
     switch (request.action) {
       case ActionNames.contentConnected:
-        Connection.onContentConnect(request);
+        this.activateTab();
+        Connection.onContentConnect({url: this.activeTab?.url});
         break;
 
       case ActionNames.mappedField:
         BackgroundActions.saveMappedField(request);
+
         this.moveFocus(this.popupWindow);
         break;
 
       case ActionNames.deleteFields:
-        BackgroundActions.deleteFields(request);
+        void BackgroundActions.deleteFields(request);
         break;
 
       case ActionNames.foundContent:
-        const {origin, ...newRequest} = request;
-        Connection.sendToPopup(newRequest);
+        Connection.sendToPopup(request);
         break;
     }
   }
@@ -232,41 +249,21 @@ export default class Background {
    * Binds all browser events to functions.
    */
   static bindEvents() {
-    const browserActionClickListener = (...args) => {
-      this.openPopup(...args);
-    };
-
-    const windowRemoveListener = (...args) => {
-      this.checkPopupClosed(...args);
-    };
-
-    const tabReplaceListener = (...args) => {
-      this.switchTab(...args);
-    };
-
-    const tabHighlightListener = (...args) => {
-      this.highlightTab(...args);
-    };
-
-    const tabUpdateListener = (...args) => {
-      this.updateTab(...args);
-    };
-
-    const focusChangeListener = (...args) => {
-      this.changeFocus(...args);
+    const withThisScope = (fn) => {
+      return (...args) => fn.apply(this, args);
     };
 
     // Extension button click
-    chrome.browserAction.onClicked.addListener(browserActionClickListener);
+    chrome.action.onClicked.addListener(withThisScope(this.openPopup));
 
     // Tab listeners
-    chrome.tabs.onHighlighted.addListener(tabHighlightListener);
-    chrome.tabs.onReplaced.addListener(tabReplaceListener);
-    chrome.tabs.onUpdated.addListener(tabUpdateListener);
+    chrome.tabs.onHighlighted.addListener(withThisScope(this.highlightTab));
+    chrome.tabs.onReplaced.addListener(withThisScope(this.switchTab));
+    chrome.tabs.onUpdated.addListener(withThisScope(this.updateTab));
 
     // Window listeners
-    chrome.windows.onFocusChanged.addListener(focusChangeListener);
-    chrome.windows.onRemoved.addListener(windowRemoveListener);
+    chrome.windows.onFocusChanged.addListener(withThisScope(this.changeFocus));
+    chrome.windows.onRemoved.addListener(withThisScope(this.checkPopupClosed));
   }
 
   /**
@@ -280,8 +277,9 @@ export default class Background {
     return new Promise((resolve) => {
       const insertScripts = () => {
         Logger.info(`Injecting css and js on ${new URL(tab.url).hostname}.`);
-        chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS}, Chrome.catchError);
-        chrome.tabs.executeScript(tab.id, {file: Config.contentJS}, Chrome.catchError);
+        // TODO: FIX THIS
+        // chrome.tabs.insertCSS(tab.id, {file: Config.contentCSS}, Chrome.catchError);
+        // chrome.tabs.executeScript(tab.id, {file: Config.contentJS}, Chrome.catchError);
         resolve(true);
       };
 
@@ -330,8 +328,10 @@ export default class Background {
   static async highlightTab(info) {
     Logger.event('highlightTab', info);
 
-    const tab = chrome.tabs.get(info.tabIds[0], (tab) => {
-      return tab;
+    const tab = await promisify((resolve) => {
+      chrome.tabs.get(info.tabIds[0], (tab) => {
+        resolve(tab);
+      });
     });
 
     if (await this.activateTab(tab)) {
@@ -405,6 +405,7 @@ export default class Background {
     this.activeTab = undefined;
     this.setIcon();
     this.activateTab();
+
     Connection.sendToPopup({action: ActionNames.switchedTab});
   }
 
@@ -428,10 +429,6 @@ export default class Background {
    * @returns {undefined}
    */
   static async activateTab(tab = undefined) {
-    if (!this.popupWindow) {
-      return;
-    }
-
     if (!tab) {
       tab = await this.getActiveTab();
     }
@@ -441,15 +438,20 @@ export default class Background {
     }
 
     if (this.isWebsite(tab)) {
-      this.activeTab = tab;
-      Logger.success(`Active tab: ${tab.url}`);
+      if (this.activeTab?.url !== tab.url) {
+        this.activeTab = tab;
 
-      await this.injectScripts(tab);
+        Logger.success(`Active tab: ${tab.url}`);
+
+        await this.injectScripts(tab);
+      }
     } else {
+      Logger.info('No active tab found.');
+
       this.activeTab = undefined;
     }
 
-    await this.confirmContentConnection();
+    await this.confirmContentConnection({url: tab.url});
   }
 
   /**
@@ -476,37 +478,56 @@ export default class Background {
   }
 
   /**
+   * Find an existing popup window by checking all popups containing "tabs" with our popup url.
+   * @returns {Promise<chrome.tabs.Tab|null>}
+   */
+  static findPopup() {
+    const {hostname} = new URL(this.popupExternalURL);
+
+    return promisify((resolve) => {
+      chrome.windows.getAll({windowTypes: ['popup']}, (popups) => {
+        popups.forEach((popup) => {
+          chrome.tabs.query({windowId: popup.id}, (tabs) => {
+            tabs.forEach((tab) => {
+              const tabUrl = new URL(tab.url);
+
+              if (tabUrl.hostname !== hostname) {
+                return;
+              }
+
+              resolve(tab);
+            });
+          });
+        });
+
+        resolve(undefined);
+      });
+    });
+  }
+
+  /**
    * Create popup and load given URL in it.
    *
    * @returns {Promise<chrome.tabs.Tab>}
    */
-  static createPopup() {
-    return new Promise((resolve) => {
-      const {height, width} = this.popupDimensions;
+  static async createPopup() {
+    const existingPopup = await this.findPopup();
 
-      // Find popups we created and close them before creating a new one.
-      // This is done by checking all popups containing "tabs" with our popup url.
-      chrome.windows.getAll({windowTypes: ['popup']}, (popups) => {
-        popups.forEach((popup) => {
-          chrome.tabs.query({windowId: popup.id}, (tab) => {
-            tab.forEach((tab) => {
-              // If the popup url has the same hostname as the one we are going to create, close it.
-              if (new URL(tab.url).hostname === new URL(this.popupExternalURL).hostname) {
-                chrome.windows.remove(tab.windowId);
-              }
-            });
-          });
-        });
-      });
+    if (existingPopup) {
+      await chrome.windows.remove(existingPopup.windowId);
+    }
+
+    return promisify((resolve) => {
+      const {height, width} = this.popupDimensions;
 
       chrome.windows.getCurrent((win) => {
         chrome.windows.create(
           {
+            focused: true,
             url: this.popupExternalURL,
             type: 'popup',
             // when we open the extension outside of the window this will result in a error
             left: win.width - width,
-            setSelfAsOpener: true,
             height,
             width,
           },
@@ -555,7 +576,7 @@ export default class Background {
    * @param {string} path - Path to icon file.
    */
   static setIcon(path = Config.defaultIcon) {
-    chrome.browserAction.setIcon({path}, Chrome.catchError);
+    chrome.action.setIcon({path}, Chrome.catchError);
   }
 
   /**
@@ -615,3 +636,4 @@ export default class Background {
 }
 
 Background.boot();
+console.log(Math.round(Math.random() * 1000));

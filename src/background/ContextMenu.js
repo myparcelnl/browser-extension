@@ -24,7 +24,7 @@ export default class ContextMenu {
    * @param {chrome.contextMenus.CreateProperties} item - Context menu item to add.
    */
   static create(item) {
-    window.chrome.contextMenus.create(item, Chrome.catchError);
+    chrome.contextMenus.create(item, Chrome.catchError);
   }
 
   /**
@@ -33,7 +33,7 @@ export default class ContextMenu {
    * @param {string} id - ID of the context menu item to remove.
    */
   static remove(id) {
-    window.chrome.contextMenus.remove(id, Chrome.catchError);
+    chrome.contextMenus.remove(id, Chrome.catchError);
   }
 
   /**

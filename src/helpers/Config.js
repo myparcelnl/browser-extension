@@ -8,6 +8,9 @@ const platform = getPlatform();
 export default class Config {
   static contextMenuCreateShipment = `${platform}-create-shipment`;
 
+  /**
+   * @type {chrome.contextMenus.CreateProperties[]}
+   */
   static contextMenus = [
     {
       title: 'Label aanmaken van selectie',
@@ -22,16 +25,9 @@ export default class Config {
   static urlSettingPrefix = `${platform}-url-setting-`;
 
   // Directories
-  static cssDir = './css';
   static imgDir = './images';
-  static jsDir = './js';
 
   // Icons
   static activeIcon = `${this.imgDir}/icon-${platform}-128px-alt.png`;
   static defaultIcon = `${this.imgDir}/icon-${platform}-128px.png`;
-
-  // Files
-  static configFile = './config.json';
-  static contentCSS = `${this.cssDir}/${platform}-content.css`;
-  static contentJS = `${this.jsDir}/${platform}-content.js`;
 }

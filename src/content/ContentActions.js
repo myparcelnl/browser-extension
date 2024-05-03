@@ -19,7 +19,7 @@ export default class ContentActions {
 
     Content.sendToBackground(ActionNames.foundContent, {
       ...requestProperties,
-      origin: window.location.host,
+      url: window.location.href,
       values,
     });
   }

@@ -1,8 +1,8 @@
-import config from '../config/config';
+import util from 'util';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import {scripts} from '../package.json';
-import util from 'util';
+import config from '../config/config';
 
 const exec = util.promisify(require('child_process').exec);
 

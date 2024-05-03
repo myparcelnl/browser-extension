@@ -1,5 +1,5 @@
 import defaultSettings from '../settings/defaultSettings';
-import Logger from '../helpers/Logger'; // strip-log
+import Logger from '../helpers/Logger';
 import Config from '../helpers/Config';
 import ActionNames from '../helpers/ActionNames';
 import storage from './storage';
@@ -23,12 +23,22 @@ export default class BackgroundActions {
    * @returns {Promise}
    */
   static async getContent(request) {
-    request.url = new URL(request.url).hostname;
-    const {url, preset} = request;
+    if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+      console.log('fixing url');
+      request.url = `https://${request.url}`;
+    }
+
+    const resolvedRequest = {
+      url: new URL(request.url).hostname,
+      ...request,
+    };
+    console.log({resolvedRequest});
+
+    const {url, preset} = resolvedRequest;
 
     const [savedSelectors, newPresetName] = await Promise.all([
       storage.getSavedMappingsForURL(url),
-      this.handlePresetName(request),
+      this.handlePresetName(resolvedRequest),
     ]);
 
     const data = {

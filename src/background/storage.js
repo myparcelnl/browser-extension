@@ -1,4 +1,4 @@
-import Logger from '../helpers/Logger'; // strip-log
+import Logger from '../helpers/Logger';
 import Config from '../helpers/Config';
 import Chrome from '../helpers/Chrome';
 

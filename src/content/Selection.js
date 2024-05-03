@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import tooltipHTML from './tooltip.html';
+import tooltipHTML from './tooltip.html?raw';
 import {getPath, getTextParts, hasContent, isTextElement} from './helpers';
 import Config from './Config';
 
@@ -202,12 +202,14 @@ export default class Selection {
    * @param {Object} variables - Variables to add to existing ones.
    */
   static updateTooltipHTML(variables) {
-    this.tooltipVariables = {
+    const allVariables = {
       ...this.tooltipVariables,
       ...variables,
     };
 
-    this.getTooltip().innerHTML = tooltipHTML(this.tooltipVariables);
+    this.getTooltip().innerHTML = Object.entries(allVariables).reduce((acc, [key, value]) => {
+      return acc.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    }, tooltipHTML);
   }
 
   /**
@@ -240,7 +242,7 @@ export default class Selection {
   /**
    * Fetch the tooltip.
    *
-   * @returns {Element}
+   * @returns {HTMLElement}
    */
   static getTooltip() {
     return document.querySelector(`.${Config.tooltipClass}`);

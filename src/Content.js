@@ -1,4 +1,5 @@
-import Logger from './helpers/Logger'; // strip-log
+import './scss/content.scss';
+import Logger from './helpers/Logger';
 import ActionNames from './helpers/ActionNames';
 import Selection from './content/Selection';
 import ContentActions from './content/ContentActions';
@@ -39,7 +40,11 @@ export default class Content {
     this.backgroundConnection.onMessage.addListener(this.listeners.background);
     this.backgroundConnection.onDisconnect.addListener(this.listeners.disconnect);
 
-    this.sendToBackground(ActionNames.contentConnected);
+    Content.sendConnectedToBackground();
+  }
+
+  static sendConnectedToBackground() {
+    this.sendToBackground(ActionNames.contentConnected, {url: window.location.href});
   }
 
   /**
@@ -64,21 +69,21 @@ export default class Content {
 
     switch (request.action) {
       case ActionNames.checkContentConnection:
-        this.sendToBackground(ActionNames.contentConnected);
+        this.sendConnectedToBackground();
         break;
 
       /**
        * Map an element to a field.
        */
       case ActionNames.mapField:
-        ContentActions.mapField(request);
+        void ContentActions.mapField(request);
         break;
 
       /**
        * Find the content on the current page.
        */
       case ActionNames.getContent:
-        ContentActions.getContent(request);
+        void ContentActions.getContent(request);
         break;
 
       /**

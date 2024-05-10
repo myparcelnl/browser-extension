@@ -1,5 +1,13 @@
 /* eslint-disable no-magic-numbers,@typescript-eslint/no-magic-numbers */
-export const {PLATFORM, ENVIRONMENT, POPUP_URL} = process.env;
+
+// eslint-disable-next-line prefer-destructuring
+export const ENVIRONMENT = process.env.ENVIRONMENT;
+
+// eslint-disable-next-line prefer-destructuring
+export const PLATFORM = process.env.PLATFORM;
+
+// eslint-disable-next-line prefer-destructuring
+export const POPUP_URL = process.env.POPUP_URL;
 
 export const EXTENSION_PATH = 'browser-extension/create-shipment';
 

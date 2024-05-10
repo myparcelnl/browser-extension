@@ -20,13 +20,13 @@ import {ActionNames} from './helpers/ActionNames';
 import {
   EXTENSION_PATH,
   POPUP_DIMENSIONS,
-  POPUP_URL,
   POPUP,
   CONTENT,
   CONTEXT_MENU_CREATE_SHIPMENT,
   CONTEXT_MENU,
   ACTIVE_ICON,
   DEFAULT_ICON,
+  POPUP_URL,
 } from './constants.js';
 import storage from './background/storage';
 import ContextMenu from './background/ContextMenu';

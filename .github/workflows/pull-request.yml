@@ -1,0 +1,23 @@
+name: '⚙️ On pull request'
+
+on:
+  pull_request:
+    branches:
+      - main
+      - beta
+      - alpha
+
+    paths-ignore:
+      - ./**/*.md
+      - ./.idea/**
+
+  merge_group:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit

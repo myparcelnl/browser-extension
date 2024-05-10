@@ -1,3 +1,3 @@
-import {DEFAULT_PLATFORM} from './build/constants.js';
+import {DEFAULT_PLATFORM} from './constants';
 
 export const getPlatform = () => process.env.PLATFORM ?? DEFAULT_PLATFORM;

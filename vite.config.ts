@@ -1,9 +1,6 @@
 import {defineConfig} from 'vite';
 import {crx} from '@crxjs/vite-plugin';
-import {getPlatform} from './private/getPlatform.js';
-import {getEnvironment} from './private/getEnvironment.js';
-import {platformConfig} from './private/build/platformConfig.js';
-import {manifest} from './private/build/manifest.js';
+import {platformConfig, manifest, getPlatform, getEnvironment} from './private/vite';
 
 const modifySassForPlatform = (platform: string) => {
   let sass = `$platform: '${platform}';`;

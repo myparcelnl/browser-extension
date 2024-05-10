@@ -1,0 +1,25 @@
+name: 'Create build'
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: myparcelnl/actions/yarn-install@v4
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+
+      - name: 'Build'
+        shell: bash
+        #language=bash
+        run: |
+          yarn build:all
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: dist

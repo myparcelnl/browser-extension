@@ -1,0 +1,26 @@
+name: 'On push ⚙️'
+
+on:
+  push:
+    branches:
+      - main
+      - beta
+      - alpha
+
+    paths-ignore:
+      - ./**/*.md
+      - ./.idea/**
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
+  rebase-prs:
+    needs: build
+    uses: ./.github/workflows/rebase-prs.yml
+    secrets: inherit

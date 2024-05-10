@@ -1,50 +1,41 @@
+import {type DeleteFieldsMessage, type MappedFields, type StoredExtensionSettings, type StorageObject} from '../types';
 import Logger from '../helpers/Logger';
-import Config from '../helpers/Config';
 import Chrome from '../helpers/Chrome';
+import {GLOBAL_SETTING_PREFIX, MAPPING_PREFIX, URL_SETTING_PREFIX} from '../constants';
 
 export default {
   /**
    * Retrieve saved field mappings from storage and convert them from to objects.
-   *
-   * @returns {Promise<Object>}
    */
-  async getSavedMappings() {
-    const storageKeys = await this.getStorageKeys(Config.mappingPrefix);
+  async getSavedMappings(): Promise<MappedFields> {
+    const storageKeys = await this.getStorageKeys(MAPPING_PREFIX);
 
-    Object.keys(storageKeys).forEach((key) => {
-      storageKeys[key] = JSON.parse(storageKeys[key]);
-    });
-
-    return storageKeys;
+    return Object.keys(storageKeys).reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]: JSON.parse(storageKeys[key] as string),
+      };
+    }, {} as MappedFields);
   },
 
   /**
    * Retrieve saved settings from storage.
-   *
-   * @returns {Promise<Object>}
    */
-  getSavedGlobalSettings() {
-    return this.getStorageKeys(Config.globalSettingPrefix);
+  getSavedGlobalSettings(): Promise<Partial<StoredExtensionSettings>> {
+    return this.getStorageKeys<StoredExtensionSettings>(GLOBAL_SETTING_PREFIX);
   },
 
   /**
    * Retrieve saved settings from storage.
-   *
-   * @returns {Promise<Object>}
-   * @param {String} url - Url to get related settings of.
    */
-  getSavedSettingsForUrl(url) {
-    return this.getStorageKeys(`${Config.urlSettingPrefix + url}-`);
+  getSavedSettingsForUrl(url: string): Promise<StoredExtensionSettings> {
+    return this.getStorageKeys<StoredExtensionSettings>(`${URL_SETTING_PREFIX + url}-`);
   },
 
   /**
    * Get field mappings for given URL. Returns empty object if entry doesn't exist.
-   *
-   * @param {String} url - URL to fetch mappings for.
-   *
-   * @returns {Object}
    */
-  async getSavedMappingsForURL(url) {
+  async getSavedMappingsForUrl(url: string) {
     const fieldMappings = await this.getSavedMappings();
 
     if (fieldMappings.hasOwnProperty(url)) {
@@ -66,17 +57,17 @@ export default {
 
     // Data is saved and retrieved by hostname, not full href
     const url = new URL(data.url).hostname;
-    const mappings = await this.getSavedMappingsForURL(url);
+    const mappings = await this.getSavedMappingsForUrl(url);
 
     // Append mapped field to existing mappings
     if (field && path) {
       mappings[field] = path;
     }
 
-    Logger.success(`Nieuwe mapping voor ${url}:`, mappings);
+    Logger.success(`New mapping for ${url}:`, mappings);
 
     const key = {
-      [`${Config.mappingPrefix}${url}`]: JSON.stringify(mappings),
+      [`${MAPPING_PREFIX}${url}`]: JSON.stringify(mappings),
     };
 
     this.saveToStorage(key);
@@ -84,11 +75,8 @@ export default {
 
   /**
    * Save new/updated settings to storage.
-   *
-   * @param {Object} settings - Settings object.
-   * @param {String} prefix - Prefix to add to the setting name(s).
    */
-  saveSettings(settings, prefix = Config.urlSettingPrefix) {
+  saveSettings(settings: StorageObject, prefix: string = URL_SETTING_PREFIX) {
     const keys = Object.keys(settings).reduce((acc, setting) => {
       return {
         ...acc,
@@ -101,14 +89,10 @@ export default {
 
   /**
    * Delete given field from storage by URL and field.
-   *
-   * @param {{url: String, fields: Array}} data - Object containing URL and field(s) to remove.
-   *
-   * @returns {Promise}
    */
-  async deleteMappedFields(data) {
+  async deleteMappedFields(data: DeleteFieldsMessage) {
     const {url, fields} = data;
-    const mappings = await this.getSavedMappingsForURL(url);
+    const mappings = await this.getSavedMappingsForUrl(url);
     const storageKey = this.getStorageMappingKey(url);
 
     // Delete entire key if no values are given.
@@ -129,30 +113,23 @@ export default {
 
   /**
    * Get all keys from storage. Optionally filter by key prefix.
-   *
-   * @param {String} prefix - Prefix to filter by.
-   * @returns {Promise<Object>}
    */
-  getStorageKeys(prefix = null) {
+  getStorageKeys<T extends StorageObject>(prefix?: string): Promise<T> {
     return new Promise((resolve) => {
       chrome.storage.sync.get(null, (result) => {
         if (prefix) {
           result = this.filterKeys(result, prefix);
         }
 
-        resolve(result);
+        resolve(result as T);
       });
     });
   },
 
   /**
    * Filter object by key prefix.
-   *
-   * @param {Object} object - Object to filter.
-   * @param {String} prefix - Prefix string to filter object keys with.
-   * @returns {Object}
    */
-  filterKeys(object, prefix) {
+  filterKeys(object: StorageObject, prefix: string): StorageObject {
     const result = {};
     const filtered = Object.keys(object).filter((key) => key.startsWith(prefix));
 
@@ -166,30 +143,19 @@ export default {
 
   /**
    * Save key/value pairs to storage.
-   *
-   * @param {Object} data - Object with all data keys to store.
-   * @param {Function} callback - Callback function.
    */
-  saveToStorage(data, callback = Chrome.catchError) {
-    chrome.storage.sync.set(data, callback);
+  saveToStorage(data: StorageObject) {
+    chrome.storage.sync.set(data, Chrome.catchError);
   },
 
   /**
    * Remove key from storage.
-   *
-   * @param {String} key - Key of storage item to remove.
-   * @param {Function} callback - Callback function.
    */
-  removeFromStorage(key, callback = Chrome.catchError) {
-    chrome.storage.sync.remove(key, callback);
+  removeFromStorage(key: string) {
+    chrome.storage.sync.remove(key, Chrome.catchError);
   },
 
-  /**
-   * @param {String} url
-   *
-   * @returns {String}
-   */
-  getStorageMappingKey(url) {
-    return `${Config.mappingPrefix}${url}`;
+  getStorageMappingKey(url: string): string {
+    return `${MAPPING_PREFIX}${url}`;
   },
 };

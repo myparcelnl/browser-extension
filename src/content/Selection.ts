@@ -1,38 +1,30 @@
 /* eslint-disable func-names */
+import {isOfType} from '@myparcel/ts-utils';
+import {type AnyFn} from '../types';
 import tooltipHTML from './tooltip.html?raw';
 import {getPath, getTextParts, hasContent, isTextElement} from './helpers';
 import Config from './Config';
+
+type StringsObject = Record<string, string>;
+
+interface Listeners {
+  click(event: MouseEvent): void;
+
+  keyup(event: KeyboardEvent): void;
+
+  mouseMove(event: MouseEvent): void;
+}
 
 /**
  * Selection functions.
  */
 export default class Selection {
-  /**
-   * Listeners object.
-   *
-   * @type {Object.<String, Function>}
-   */
-  static listeners = {};
-
-  /**
-   * The variables to use in the mustache template for the mapping tooltip.
-   *
-   * @type {Object}
-   */
-  static tooltipVariables = {
-    contentClass: Config.tooltipClassContent,
-    textClass: Config.tooltipClassText,
-    escapeClass: Config.tooltipClassEscape,
-  };
+  private static listeners: Listeners = {} as Listeners;
 
   /**
    * Show tooltip and add event listeners for mapping field. Run `stopMapping` first to make sure everything is clean.
-   *
-   * @param {Object} strings - Object with translated strings.
-   *
-   * @returns {Promise}
    */
-  static startMapping(strings) {
+  static startMapping(strings: Record<string, string>): Promise<string | null> {
     return new Promise((resolve) => {
       this.stopMapping();
 
@@ -63,12 +55,9 @@ export default class Selection {
   /**
    * Keyup event listener to check for escape button press.
    *
-   * @param {KeyboardEvent} event - Keyup event.
-   * @param {Function} resolve - Resolve function.
-   *
    * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
    */
-  static handleKeyup(event, resolve) {
+  static handleKeyup(event: KeyboardEvent, resolve: AnyFn) {
     // Check if escape is pressed
     if (event.key === 'Escape') {
       this.stopMapping();
@@ -78,18 +67,15 @@ export default class Selection {
 
   /**
    * Click event listener that gets content and path of clicked element.
-   *
-   * @param {MouseEvent} event - Mouse event.
-   * @param {Function} resolve - Promise resolve function.
    */
-  static handleClick(event, resolve) {
+  static handleClick(event: MouseEvent, resolve: AnyFn) {
     event.preventDefault();
     event.stopPropagation();
 
-    const element = event.target;
+    const element = event.target as HTMLElement;
 
     // Ignore nodes without text content
-    if (!hasContent(element)) {
+    if (!element || !hasContent(element)) {
       return;
     }
 
@@ -99,35 +85,17 @@ export default class Selection {
     resolve(path);
   }
 
-  /**
-   * On mouse move.
-   *
-   * @param {MouseEvent} event - Mouse event.
-   */
-  static handleMouseMove(event) {
+  static handleMouseMove(event: MouseEvent) {
     this.removeSelectionClass();
-    this.addSelectionClass(event.target);
+    this.addSelectionClass(event.target as HTMLElement);
     this.positionTooltip(event);
   }
 
   /**
-   * Get elements content by selector key value pairs or string path.
-   *
-   * @param {Object|String} selectors - Key/value pairs or one path.
-   *
-   * @returns {Object|undefined}
+   * Get elements content by selector key value pairs.
    */
-  static getElementsContent(selectors) {
-    if (!selectors || !Object.keys(selectors).length) {
-      return;
-    }
-
+  static getElementsContent(selectors: Record<string, string>): Record<string, string> {
     const values = {};
-
-    // In case of mapping fields `selectors` will be a string.
-    if (typeof selectors === 'string') {
-      return Selection.getSelectorContent(selectors);
-    }
 
     Object.keys(selectors).forEach((key) => {
       values[key] = Selection.getSelectorContent(selectors[key]);
@@ -136,10 +104,7 @@ export default class Selection {
     return values;
   }
 
-  /**
-   * @param {Element|EventTarget} element
-   */
-  static addSelectionClass(element) {
+  static addSelectionClass(element: HTMLElement) {
     // Don't highlight nodes without text content
     if (!hasContent(element)) {
       return;
@@ -155,10 +120,8 @@ export default class Selection {
 
   /**
    * Create the tooltip and add it to the DOM.
-   *
-   * @param {Object.<String, String>} strings - Object with translated strings.
    */
-  static createTooltip(strings) {
+  static createTooltip(strings: StringsObject) {
     const tooltip = document.createElement('div');
 
     tooltip.classList.add(Config.tooltipClass);
@@ -166,22 +129,20 @@ export default class Selection {
     document.body.appendChild(tooltip);
 
     // Add the variables
-    this.updateTooltipHTML({
+    this.updateTooltipHtml({
       fieldName: strings.choose,
-      cancel: strings.cancel,
+      cancelText: strings.cancel,
     });
   }
 
   /**
    * Show the tooltip. It's created if it doesn't exist yet.
-   *
-   * @param {Object} strings - Object with translated strings.
    */
-  static showTooltip(strings) {
+  static showTooltip(strings: StringsObject) {
     let tooltip = this.getTooltip();
 
     if (tooltip) {
-      this.updateTooltipHTML({
+      this.updateTooltipHtml({
         fieldName: strings.choose,
       });
     } else {
@@ -189,7 +150,7 @@ export default class Selection {
       tooltip = this.getTooltip();
     }
 
-    // To reset its position so it doesn't show until the cursor enters the viewport.
+    // To reset its position, so it doesn't show until the cursor enters the viewport.
     tooltip.style.visibility = '-100%';
     tooltip.style.left = '-100%';
 
@@ -198,13 +159,13 @@ export default class Selection {
 
   /**
    * Update the tooltip template with new variables.
-   *
-   * @param {Object} variables - Variables to add to existing ones.
    */
-  static updateTooltipHTML(variables) {
+  static updateTooltipHtml(strings: StringsObject) {
     const allVariables = {
-      ...this.tooltipVariables,
-      ...variables,
+      contentClass: Config.tooltipClassContent,
+      textClass: Config.tooltipClassText,
+      escapeClass: Config.tooltipClassEscape,
+      ...strings,
     };
 
     this.getTooltip().innerHTML = Object.entries(allVariables).reduce((acc, [key, value]) => {
@@ -213,11 +174,9 @@ export default class Selection {
   }
 
   /**
-   * Position the tooltip so it floats next to the user's cursor.
-   *
-   * @param {MouseEvent} event - Mouse event.
+   * Position the tooltip, so it floats next to the user's cursor.
    */
-  static positionTooltip(event) {
+  static positionTooltip(event: MouseEvent) {
     const tooltip = this.getTooltip();
 
     if (!tooltip) {
@@ -241,11 +200,10 @@ export default class Selection {
 
   /**
    * Fetch the tooltip.
-   *
-   * @returns {HTMLElement}
    */
-  static getTooltip() {
-    return document.querySelector(`.${Config.tooltipClass}`);
+  static getTooltip(): HTMLElement {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return document.querySelector<HTMLElement>(`.${Config.tooltipClass}`)!;
   }
 
   /**
@@ -286,12 +244,8 @@ export default class Selection {
    *
    * getSelectorContent('.address'); // Returns: "Name Address City"
    * getSelectorContent('.address@2'); // Returns "City"
-   *
-   * @param {String} selector - Selector string.
-   *
-   * @returns {String|undefined}
    */
-  static getSelectorContent(selector) {
+  static getSelectorContent(selector?: string | null): string | undefined {
     if (!selector) {
       return;
     }
@@ -302,7 +256,7 @@ export default class Selection {
     const selectorParts = selector.split('@');
     const [selectorPath, selectorIndex] = selectorParts;
 
-    const element = document.querySelector(selectorPath);
+    const element = document.querySelector<HTMLElement>(selectorPath);
 
     if (!element) {
       return;
@@ -310,7 +264,7 @@ export default class Selection {
 
     const tag = element.tagName ? element.tagName.toLowerCase() : '';
 
-    if (element.value && selectorIndex && tag === 'textarea') {
+    if (isOfType<HTMLTextAreaElement>(element, 'value') && selectorIndex && tag === 'textarea') {
       elementContent = element.value.split(/\n/g)[selectorIndex];
     } else if (selectorIndex) {
       const elementTextPart = getTextParts(element)[selectorIndex];
@@ -319,6 +273,7 @@ export default class Selection {
         elementContent = elementTextPart.textContent;
       }
     } else {
+      // @ts-expect-error todo: fix this
       elementContent = isTextElement(element) ? element.value : element.textContent;
     }
 
@@ -327,19 +282,18 @@ export default class Selection {
 
   /**
    * Wrap given elements in a span.
-   *
-   * @param {Array} array - Array of nodes.
    */
-  static wrap(array) {
+  static wrap(array: Node[]) {
     array.forEach((el) => {
-      if (el.parentElement.childNodes.length > 1 && el.textContent.trim() !== '') {
-        const span = document.createElement('span');
-        span.innerHTML = el.textContent;
-        span.classList.add(Config.wrappedItemClass);
-
-        el.parentNode.insertBefore(span, el);
-        el.parentNode.removeChild(el);
+      if ((el.parentElement?.childNodes?.length ?? 0) <= 1 || !el.textContent?.trim()) {
+        return;
       }
+
+      const span = document.createElement('span');
+      span.innerHTML = el.textContent;
+      span.classList.add(Config.wrappedItemClass);
+      el.parentNode?.insertBefore(span, el);
+      el.parentNode?.removeChild(el);
     });
   }
 
@@ -355,10 +309,11 @@ export default class Selection {
 
     for (let i = nodes.length - 1; i >= 0; i--) {
       const el = nodes[i];
-      const txt = document.createTextNode(el.textContent);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const txt = document.createTextNode(el.textContent!);
 
-      el.parentNode.insertBefore(txt, el);
-      el.parentNode.removeChild(el);
+      el.parentNode?.insertBefore(txt, el);
+      el.parentNode?.removeChild(el);
     }
   }
 }

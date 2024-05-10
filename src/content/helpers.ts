@@ -18,13 +18,9 @@ export const validInputTypes = ['text', 'number'];
 
 /**
  * Get the unique query selector/path of the element.
- *
- * @param {EventTarget|HTMLElement} element - Element to get path for.
- *
- * @returns {string}
  */
-export function getPath(element) {
-  let index = '';
+export function getPath(element: HTMLElement) {
+  let index: string | number = '';
 
   if (element.classList.contains(Config.wrappedItemClass)) {
     index = 0;
@@ -73,22 +69,16 @@ export function getPath(element) {
  * Get text parts from element.
  *
  * @param {EventTarget|HTMLElement} element - Element to retrieve content from.
- *
- * @returns {Array}
  */
-export function getTextParts(element) {
+export function getTextParts(element: Node) {
   const childNodes = Array.from(element.childNodes);
-  return childNodes.filter((node) => node.nodeName === '#text' && node.nodeValue.trim() !== '');
+  return childNodes.filter((node) => node.nodeName === '#text' && node.nodeValue?.trim());
 }
 
 /**
  * Check if element is a textarea or text/number input. If not, check if children of DOM element have text content.
- *
- * @param {EventTarget|HTMLElement|HTMLInputElement|HTMLTextAreaElement} element - Element to check.
- *
- * @returns {boolean} - If the element has text content.
  */
-export function hasContent(element) {
+export function hasContent(element: HTMLElement): boolean {
   const {childNodes} = element;
 
   return isTextElement(element) || Array.from(childNodes).some((node) => !!node.nodeValue);
@@ -96,12 +86,8 @@ export function hasContent(element) {
 
 /**
  * Check if a given element is an element with text content.
- *
- * @param {EventTarget|HTMLElement|HTMLInputElement|HTMLTextAreaElement} element - Element.
- *
- * @returns {boolean}
  */
-export function isTextElement(element) {
+export function isTextElement(element: Node): boolean {
   const tag = element.tagName.toUpperCase();
 
   if (!contentTags.includes(tag)) {

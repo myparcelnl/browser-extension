@@ -1,10 +1,12 @@
+import {type PlatformConfig} from '../../src/types/generic.types';
+
 /**
  * Configuration for each platform. Keys in manifest will be merged into the manifest.json file. The keys in the
  * development, staging and production objects will be merged into the config.json file based on the environment.
  *
  * @type {Record<string, {manifest: Partial<chrome.runtime.ManifestV3>, urls: Record<string, string>}>}
  */
-export const platformConfig = {
+export const platformConfig: PlatformConfig = Object.freeze({
   myparcel: {
     manifest: {
       name: 'MyParcel',
@@ -47,4 +49,4 @@ export const platformConfig = {
       production: 'https://extension.sendmyparcel.be',
     },
   },
-};
+});

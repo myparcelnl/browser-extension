@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "target": "ESNext",
+    "types": ["vite/client", "@types/chrome"]
+  },
+  "include": ["src", "private", "test", "*.ts"],
+  "exclude": ["node_modules", "dist", "build", "coverage"]
+}

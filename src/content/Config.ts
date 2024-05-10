@@ -1,12 +1,10 @@
-import {getPlatform} from '../helpers/GetPlatform';
-
-const platform = getPlatform();
+import {PLATFORM} from '../constants';
 
 /**
  * Config class with all content script settings in it.
  */
 export default class ContentConfig {
-  static classPrefix = `${platform}__`;
+  static classPrefix = `${PLATFORM}__`;
 
   static selectionClass = `${this.classPrefix}mapping-field`;
 

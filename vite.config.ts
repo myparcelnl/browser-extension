@@ -5,7 +5,7 @@ import {getEnvironment} from './private/getEnvironment.js';
 import {platformConfig} from './private/build/platformConfig.js';
 import {manifest} from './private/build/manifest.js';
 
-const modifySassForPlatform = (platform) => {
+const modifySassForPlatform = (platform: string) => {
   let sass = `$platform: '${platform}';`;
 
   switch (platform) {
@@ -26,6 +26,7 @@ const modifySassForPlatform = (platform) => {
 };
 
 export default defineConfig((env) => {
+  const isDev = env.mode === 'development';
   const environment = getEnvironment(env.mode);
   const platform = getPlatform();
   const popupUrl = platformConfig[platform]?.urls[environment];
@@ -33,16 +34,17 @@ export default defineConfig((env) => {
   return {
     plugins: [crx({manifest})],
 
-    // build: {
-    //   cssCodeSplit: true,
-    // },
-
     css: {
       preprocessorOptions: {
         scss: {
           additionalData: modifySassForPlatform(platform),
         },
       },
+    },
+
+    build: {
+      minify: !isDev,
+      sourcemap: true,
     },
 
     define: {

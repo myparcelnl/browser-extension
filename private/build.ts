@@ -1,16 +1,14 @@
-#!/usr/bin/env node
-
-import {spawnSync} from 'child_process';
+import {spawnSync} from 'node:child_process';
 import {Command} from 'commander';
 
 const ALL_PLATFORMS = ['myparcel', 'sendmyparcel', 'flespakket'];
 
 const program = new Command();
 
-const callback = (platform, {environment}) => {
+const callback = (platform: string, {environment}) => {
   const platforms = platform === 'all' ? ALL_PLATFORMS : [platform];
 
-  return Promise.all(
+  void Promise.all(
     platforms.map((platform) => {
       let outDir = `dist/${platform}`;
 

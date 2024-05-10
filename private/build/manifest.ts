@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import {defineManifest} from '@crxjs/vite-plugin';
 import {getPlatform} from '../getPlatform.js';
 import {getEnvironment} from '../getEnvironment.js';
@@ -9,26 +9,30 @@ const {version} = packageJson;
 
 const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
 
-const ucfirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+const ucfirst = (string: string): string => string.charAt(0).toUpperCase() + string.slice(1);
 
+// @ts-expect-error todo: fix type error
+// eslint-disable-next-line max-lines-per-function
 export const manifest = defineManifest((env) => {
   const environment = getEnvironment(env.mode);
   const platform = getPlatform();
 
   const isProd = environment === 'production';
 
-  /** @type {chrome.runtime.ManifestV3} */
   const manifest = {
     background: {
-      service_worker: 'src/Background.js',
+      service_worker: 'src/serviceWorker.ts',
       type: 'module',
+    },
+    author: {
+      email: 'support@myparcel.nl',
     },
     default_locale: 'en',
     host_permissions: ['*://*/*'],
     icons: {
-      16: `icons/icon-${platform}-16px.png`,
-      48: `icons/icon-${platform}-48px.png`,
-      128: `icons/icon-${platform}-128px.png`,
+      16: `assets/icons/icon-${platform}-16px.png`,
+      48: `assets/icons/icon-${platform}-48px.png`,
+      128: `assets/icons/icon-${platform}-128px.png`,
     },
     manifest_version: 3,
     minimum_chrome_version: '88',
@@ -37,30 +41,35 @@ export const manifest = defineManifest((env) => {
     version_name: version,
     content_scripts: [
       {
-        js: ['src/Content.js'],
+        js: ['src/contentScript.ts'],
         all_frames: true,
-        exclude_matches: ['*://*.myparcel.nl/*', '*://*.flespakket.nl/*', '*://*.sendmyparcel.be/*'],
+        exclude_matches: [
+          '*://backoffice.flespakket.nl/*',
+          '*://backoffice.myparcel.nl/*',
+          '*://backoffice.sendmyparcel.be/*',
+          '*://extension.flespakket.nl/*',
+          '*://extension.myparcel.nl/*',
+          '*://extension.sendmyparcel.be/*',
+        ],
         matches: ['<all_urls>'],
         world: 'ISOLATED',
       },
     ],
     action: {
       default_icon: {
-        16: `icons/icon-${platform}-16px.png`,
-        48: `icons/icon-${platform}-48px.png`,
-        128: `icons/icon-${platform}-128px.png`,
+        16: `assets/icons/icon-${platform}-16px.png`,
+        48: `assets/icons/icon-${platform}-48px.png`,
+        128: `assets/icons/icon-${platform}-128px.png`,
       },
     },
 
-    // content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
-
     ...platformConfig[platform]?.manifest,
-  };
+  } satisfies chrome.runtime.ManifestV3;
 
   if (!isProd) {
     // Changes for development environment
     Object.assign(manifest, {
-      options_page: 'src/options/options.html',
+      options_page: 'assets/options/options.html',
       name: `${manifest.name} (${ucfirst(environment)})`,
     });
   }

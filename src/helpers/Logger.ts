@@ -1,56 +1,65 @@
 /* eslint-disable no-console */
 
+import {type AnyMessage} from '../types';
+
+type Receiving = boolean | 'queue';
+
 /**
- * Debug logging file. This is only imported on development.
+ * Debug logging file. This is only present in development mode.
  */
 export default class Logger {
   /**
    * General success message.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
    */
-  static success(message, log = '') {
+  public static success(message: string, log: unknown = '') {
+    if (import.meta.env.PROD) {
+      return;
+    }
+
     this.createMessage(message, 'background-color: #23b237;', log);
   }
 
   /**
    * General info message.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
    */
-  static info(message, log = '') {
+  public static info(message: string, log: unknown = '') {
+    if (import.meta.env.PROD) {
+      return;
+    }
+
     this.createMessage(message, 'background-color: #34b7d4;', log);
   }
 
   /**
    * General warning message.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
    */
-  static warning(message, log = '') {
+  public static warning(message: string, log: unknown = '') {
+    if (import.meta.env.PROD) {
+      return;
+    }
+
     this.createMessage(message, 'background-color: #d18800;', log);
   }
 
   /**
    * General error message.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
    */
-  static error(message, log = '') {
+  public static error(message: string, log: unknown = '') {
+    if (import.meta.env.PROD) {
+      return;
+    }
+
     this.createMessage(message, 'background-color: #d45839;', log);
   }
 
   /**
    * Event message.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
    */
-  static event(message, log = '') {
+  public static event(message: string, log: unknown = '') {
+    if (import.meta.env.PROD) {
+      return;
+    }
+
     console.log(
       `%cEvent%c${message}`,
       'background-color: #7842FF; color: white; border-radius: 2px 0 0 2px; padding: 0 .4em; font-size: 85%;',
@@ -60,13 +69,25 @@ export default class Logger {
   }
 
   /**
-   * Message to or from popup.
+   * Log a request from or to a connection Port.
    *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
-   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
+   * @example Logger.request('background', data, true); // Creates a background-style inbound message.
+   * @example Logger.request('popup', data); // Creates a popup-style outbound message.
    */
-  static popup(message, log = '', receiving = false) {
+  public static request(type: 'popup' | 'content' | 'background', request: AnyMessage, receiving: Receiving = false) {
+    if (import.meta.env.PROD) {
+      return;
+    }
+
+    const {action, ...rest} = request;
+    this[type](action, rest, receiving);
+  }
+
+  // noinspection JSUnusedLocalSymbols
+  /**
+   * Message to or from popup.
+   */
+  private static popup(message: string, log: unknown, receiving: Receiving) {
     console.log(
       `%c${this.receiving(receiving)} popup%c${message}`,
       // eslint-disable-next-line max-len
@@ -78,14 +99,11 @@ export default class Logger {
     );
   }
 
+  // noinspection JSUnusedLocalSymbols
   /**
    * Message to or from content.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
-   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
    */
-  static content(message, log = '', receiving = false) {
+  private static content(message: string, log: unknown, receiving: Receiving) {
     console.log(
       `%c${this.receiving(receiving)} content%c${message}`,
       // eslint-disable-next-line max-len
@@ -97,17 +115,13 @@ export default class Logger {
     );
   }
 
+  // noinspection JSUnusedLocalSymbols
   /**
    * Message to or from background.
-   *
-   * @param {string} message - Message to output.
-   * @param {*} log - Extra data to output.
-   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
    */
-  static background(message, log = '', receiving = false) {
+  private static background(message: string, log: unknown, receiving: Receiving) {
     console.log(
       `%c${this.receiving(receiving)} background%c${message}`,
-      // eslint-disable-next-line max-len
       `border-radius: 2px 0 0 2px; background: linear-gradient(to ${
         receiving ? 'top' : 'bottom'
       } left, yellowgreen, #1eb436); color: white; padding: 1px .4em;`,
@@ -117,27 +131,9 @@ export default class Logger {
   }
 
   /**
-   * Log a request from or to a connection Port.
-   *
-   * @param {string} type - Corresponds to function name.
-   * @param {Object} request - Request object.
-   * @param {boolean|string} receiving - Whether the message is inbound or outbound or `queue` if it's a queue item.
-   *
-   * @example Logger.request('background', data, true); // Creates a background-style inbound message.
-   * @example Logger.request('popup', data); // Creates a popup-style outbound message.
-   */
-  static request(type, request, receiving = false) {
-    const {action, ...rest} = request;
-    this[type](action, rest, receiving);
-  }
-
-  /**
    * Set inbound, outbound or queue message color.
-   *
-   * @param {boolean|string} bool - Boolean or `queue`.
-   * @returns {string} - CSS.
    */
-  static color(bool) {
+  private static color(bool: boolean | 'queue'): string {
     if (bool === 'queue') {
       return 'background-color: #666; color: #fff;';
     }
@@ -148,11 +144,8 @@ export default class Logger {
   /**
    * Whether a message is inbound or outbound. Can also be used to mark a message being queued.
    *
-   * @param {boolean|string} bool - Boolean or 'queue'.
-   *
-   * @returns {string}
    */
-  static receiving(bool) {
+  private static receiving(bool: boolean | 'queue'): string {
     if (bool === 'queue') {
       return 'QUEUED';
     }
@@ -162,12 +155,8 @@ export default class Logger {
 
   /**
    * Log a message.
-   *
-   * @param {string} message - Message.
-   * @param {string} style - CSS to append to the default.
-   * @param {*} log - Extra data to output.
    */
-  static createMessage(message, style = '', log = '') {
+  private static createMessage(message: string, style = '', log: unknown = '') {
     console.log(`%c${message}`, `color: white; ${style} border-radius: 2px; padding: 1px .25em;`, log);
   }
 }

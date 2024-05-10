@@ -67,7 +67,7 @@ export const manifest = defineManifest((env) => {
   } satisfies chrome.runtime.ManifestV3;
 
   if (!isProd) {
-    // Changes for development environment
+    // Changes for development and staging environments
     Object.assign(manifest, {
       options_page: 'assets/options/options.html',
       name: `${manifest.name} (${ucfirst(environment)})`,

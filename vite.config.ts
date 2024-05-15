@@ -23,9 +23,10 @@ const modifySassForPlatform = (platform: string) => {
 };
 
 export default defineConfig((env) => {
-  const isDev = env.mode === 'development';
+  const isDev = env.mode !== 'production';
   const environment = getEnvironment(env.mode);
   const platform = getPlatform();
+
   const popupUrl = platformConfig[platform]?.urls[environment];
 
   return {

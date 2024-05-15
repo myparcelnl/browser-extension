@@ -1,12 +1,12 @@
 import {
-  type MapFieldMessageToContent,
+  type MapFieldMessage,
   type MappedFieldMessage,
   type GetContentMessageToContent,
   type FoundContentMessage,
-} from '../types';
-import {ActionNames} from '../helpers';
-import Content from '../Content';
-import Selection from './Selection';
+} from '../types/index.js';
+import {ActionNames} from '../helpers/index.js';
+import Content from '../Content.js';
+import Selection from './Selection.js';
 
 /**
  * Actions to run from the content script.
@@ -30,7 +30,7 @@ export default class ContentActions {
   /**
    * Start creating new field mapping.
    */
-  static async mapField(message: MapFieldMessageToContent): Promise<void> {
+  static async mapField(message: MapFieldMessage): Promise<void> {
     const {field, url} = message;
     const path = await Selection.startMapping(message.strings);
     const elementContent = Selection.getSelectorContent(path);

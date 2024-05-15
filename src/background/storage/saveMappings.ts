@@ -1,8 +1,8 @@
-import {type MappedFieldMessage} from '../../types';
-import Logger from '../../helpers/Logger';
-import {MAPPING_PREFIX} from '../../constants';
-import {saveToStorage} from './saveToStorage';
-import {getSavedMappingsForUrl} from './getSavedMappingsForUrl';
+import {type MappedFieldMessage} from '../../types/index.js';
+import Logger from '../../helpers/Logger.js';
+import {MAPPING_PREFIX} from '../../constants.js';
+import {saveToStorage} from './saveToStorage.js';
+import {getSavedMappingsForUrl} from './getSavedMappingsForUrl.js';
 
 /**
  * Save given data to local storage.

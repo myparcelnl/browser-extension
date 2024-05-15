@@ -1,2 +1,2 @@
-export * from './generic.types';
-export * from './messages.types';
+export * from './generic.types.js';
+export * from './messages.types.js';

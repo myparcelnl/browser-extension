@@ -1,4 +1,4 @@
-import Content from './Content';
+import Content from './Content.js';
 
 /**
  * The entry file for the content script. This is the script that runs on every browser page.

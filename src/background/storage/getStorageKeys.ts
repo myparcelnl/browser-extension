@@ -1,5 +1,5 @@
-import {type StorageObject} from '../../types';
-import {filterKeys} from './filterKeys';
+import {type StorageObject} from '../../types/index.js';
+import {filterKeys} from './filterKeys.js';
 
 /**
  * Get all keys from storage. Optionally filter by key prefix.

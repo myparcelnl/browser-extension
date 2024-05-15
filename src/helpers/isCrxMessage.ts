@@ -1,4 +1,4 @@
-import {type MessageData} from '../types';
+import {type MessageData} from '../types/index.js';
 
 /**
  * Return whether an incoming message is from the CRX vite plugin. Only relevant in development.

@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
 import getSelector, {type GetSelectorOptions} from 'unique-selector';
-import Config from './Config';
+import Config from './Config.js';
 
 /**
  * Get the unique query selector/path of the element.

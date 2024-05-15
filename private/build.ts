@@ -1,18 +1,21 @@
 import {spawnSync} from 'node:child_process';
 import {Command} from 'commander';
-
-const ALL_PLATFORMS = ['myparcel', 'sendmyparcel', 'flespakket'];
+import {Environment, PlatformName} from '../src/constants.js';
 
 const program = new Command();
 
+const BUILD_ALL = 'all';
+
 const callback = (platform: string, {environment, watch}) => {
-  const platforms = platform === 'all' ? ALL_PLATFORMS : [platform];
+  const platforms = platform === BUILD_ALL ? Object.values(PlatformName) : [platform];
+
+  const isProd = environment === Environment.Production;
 
   void Promise.all(
     platforms.map((platform) => {
       let outDir = `dist/${platform}`;
 
-      if (environment !== 'production') {
+      if (!isProd) {
         outDir += `-${environment}`;
       }
 
@@ -38,8 +41,8 @@ const callback = (platform: string, {environment, watch}) => {
 program
   .name('builder')
   .description('CLI to build extension')
-  .argument('[platform]', 'platform', 'all')
-  .option('--environment <environment>', 'Environment', 'production')
+  .argument('[platform]', 'Platform', BUILD_ALL)
+  .option('--environment <environment>', 'Environment', Environment.Production)
   .option('--watch', 'Watch mode')
   .action(callback);
 

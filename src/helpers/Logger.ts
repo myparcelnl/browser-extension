@@ -1,18 +1,19 @@
 /* eslint-disable no-console */
 
-import {type AnyMessage} from '../types';
+import {type AnyMessage} from '../types/index.js';
+import {Environment} from '../constants.js';
 
 type Receiving = boolean | 'queue';
 
 /**
- * Debug logging file. This is only present in development mode.
+ * Debug logging file. This is only present in development and testing environments.
  */
 export default class Logger {
   /**
    * General success message.
    */
   public static success(message: string, log: unknown = '') {
-    if (import.meta.env.PROD) {
+    if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 
@@ -23,7 +24,7 @@ export default class Logger {
    * General info message.
    */
   public static info(message: string, log: unknown = '') {
-    if (import.meta.env.PROD) {
+    if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 
@@ -34,7 +35,7 @@ export default class Logger {
    * General warning message.
    */
   public static warning(message: string, log: unknown = '') {
-    if (import.meta.env.PROD) {
+    if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 
@@ -45,7 +46,7 @@ export default class Logger {
    * General error message.
    */
   public static error(message: string, log: unknown = '') {
-    if (import.meta.env.PROD) {
+    if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 
@@ -56,7 +57,7 @@ export default class Logger {
    * Event message.
    */
   public static event(message: string, log: unknown = '') {
-    if (import.meta.env.PROD) {
+    if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 
@@ -71,11 +72,11 @@ export default class Logger {
   /**
    * Log a request from or to a connection Port.
    *
-   * @example Logger.request('background', data, true); // Creates a background-style inbound message.
+   * @example Logger.request('serviceWorker', data, true); // Creates a background-style inbound message.
    * @example Logger.request('popup', data); // Creates a popup-style outbound message.
    */
   public static request(type: 'popup' | 'content' | 'background', request: AnyMessage, receiving: Receiving = false) {
-    if (import.meta.env.PROD) {
+    if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 

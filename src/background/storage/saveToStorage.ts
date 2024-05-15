@@ -1,5 +1,5 @@
-import {type StorageObject} from '../../types';
-import Chrome from '../../helpers/Chrome';
+import {type StorageObject} from '../../types/index.js';
+import Chrome from '../../helpers/Chrome.js';
 
 /**
  * Save key/value pairs to storage.

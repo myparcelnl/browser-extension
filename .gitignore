@@ -10,7 +10,8 @@ node_modules/
 
 # Built files
 dist/
-private/build.js
+private/**/*.js
+src/**/*.js
 
 # Temporary build files
 *.tsbuildinfo

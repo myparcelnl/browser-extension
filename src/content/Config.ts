@@ -1,4 +1,4 @@
-import {PLATFORM} from '../constants';
+import {PLATFORM} from '../constants.js';
 
 /**
  * Config class with all content script settings in it.

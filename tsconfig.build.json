@@ -1,11 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "types": ["node"],
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "declaration": false
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "types": ["node", "vite/client", "@types/chrome"]
   },
-  "include": ["private/build.ts"]
+  "include": ["private/build.ts", "src/constants.ts"]
 }

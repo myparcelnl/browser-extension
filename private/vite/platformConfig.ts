@@ -1,13 +1,12 @@
-import {type PlatformConfig} from '../../src/types/generic.types';
+import {type PlatformConfig} from '../../src/types/index.js';
+import {PlatformName, Environment} from '../../src/constants.js';
 
 /**
  * Configuration for each platform. Keys in manifest will be merged into the manifest.json file. The keys in the
- * development, staging and production objects will be merged into the config.json file based on the environment.
- *
- * @type {Record<string, {manifest: Partial<chrome.runtime.ManifestV3>, urls: Record<string, string>}>}
+ * development, testing and production objects will be merged into the config.json file based on the environment.
  */
 export const platformConfig: PlatformConfig = Object.freeze({
-  myparcel: {
+  [PlatformName.MyParcel]: {
     manifest: {
       name: 'MyParcel',
       short_name: 'MyParcel',
@@ -16,12 +15,12 @@ export const platformConfig: PlatformConfig = Object.freeze({
       },
     },
     urls: {
-      development: 'https://extension.dev.myparcel.nl',
-      staging: 'https://extension.staging.myparcel.nl',
-      production: 'https://extension.myparcel.nl',
+      [Environment.Development]: 'https://extension.dev.myparcel.nl',
+      [Environment.Testing]: 'https://remote1.extension.testing.myparcel.nl',
+      [Environment.Production]: 'https://extension.myparcel.nl',
     },
   },
-  flespakket: {
+  [PlatformName.Flespakket]: {
     manifest: {
       name: 'Flespakket',
       short_name: 'Flespakket',
@@ -30,12 +29,12 @@ export const platformConfig: PlatformConfig = Object.freeze({
       },
     },
     urls: {
-      development: 'https://extension.dev.flespakket.nl',
-      staging: 'phttps://extension.staging.flespakket.nl',
-      production: 'https://extension.flespakket.nl',
+      [Environment.Development]: 'https://extension.dev.flespakket.nl',
+      [Environment.Testing]: 'https://remote1.extension.testing.flespakket.nl',
+      [Environment.Production]: 'https://extension.flespakket.nl',
     },
   },
-  sendmyparcel: {
+  [PlatformName.SendMyParcel]: {
     manifest: {
       name: 'SendMyParcel',
       short_name: 'SendMyParcel',
@@ -44,9 +43,9 @@ export const platformConfig: PlatformConfig = Object.freeze({
       },
     },
     urls: {
-      development: 'https://extension.dev.sendmyparcel.be',
-      staging: 'https://extension.staging.sendmyparcel.be',
-      production: 'https://extension.sendmyparcel.be',
+      [Environment.Development]: 'https://extension.dev.sendmyparcel.be',
+      [Environment.Testing]: 'https://remote1.extension.testing.sendmyparcel.be',
+      [Environment.Production]: 'https://extension.sendmyparcel.be',
     },
   },
 });

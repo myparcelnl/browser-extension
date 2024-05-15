@@ -3,18 +3,17 @@ import {
   type MessageDataWithUrl,
   type StoredExtensionSettings,
   type AnyFn,
-  type AnyMessage,
   type MessageFromPopup,
-  type MapFieldMessageToContent,
   type DeleteFieldsMessage,
   type StopMappingMessage,
-  type FoundContentMessage,
   type MessageFromContent,
   type ContentConnectedMessage,
-} from './types';
-import Logger from './helpers/Logger';
-import Chrome from './helpers/Chrome';
-import {isProd, isCrxMessage, ActionNames} from './helpers';
+  type FoundContentMessage,
+  type SaveSettingsMessage,
+} from './types/index.js';
+import {isProd, isCrxMessage, ActionNames} from './helpers/index.js';
+import Logger from './helpers/Logger.js';
+import Chrome from './helpers/Chrome.js';
 import {
   EXTENSION_PATH,
   POPUP_DIMENSIONS,
@@ -26,10 +25,10 @@ import {
   DEFAULT_ICON,
   POPUP_URL,
 } from './constants.js';
-import {getSavedSettingsForUrl} from './background/storage';
-import ContextMenu from './background/ContextMenu';
-import Connection from './background/Connection';
-import BackgroundActions from './background/BackgroundActions';
+import {getSavedSettingsForUrl} from './background/storage/index.js';
+import ContextMenu from './background/ContextMenu.js';
+import Connection from './background/Connection.js';
+import BackgroundActions from './background/BackgroundActions.js';
 
 export default class Background {
   /**
@@ -62,6 +61,8 @@ export default class Background {
     this.bindEvents();
     this.bindPopupScript();
     this.bindContentScript();
+
+    Logger.info('Background script booted');
   }
 
   /**
@@ -111,7 +112,7 @@ export default class Background {
   static async loadConfig() {
     let appUrlClass = new URL([POPUP_URL, EXTENSION_PATH].join('/'));
 
-    // Resolve url from settings if available. This is used for staging and development environments.
+    // Resolve url from settings if available. This is used for testing and development environments.
     if (!isProd()) {
       await new Promise((resolve) => {
         chrome.storage.sync.get({backofficeUrl: ''}, ({backofficeUrl}) => {
@@ -137,7 +138,7 @@ export default class Background {
     const manifest = chrome.runtime.getManifest();
 
     chrome.runtime.onConnectExternal.addListener((port) => {
-      // /** This allows the extension to keep working after reloading the popup. */
+      // This allows the extension to keep working after reloading the popup.
       void this.connectToPopup();
 
       Connection.popup = port;
@@ -146,9 +147,7 @@ export default class Background {
         version: manifest.version,
       });
 
-      port.onMessage.addListener((request: MessageFromPopup) => {
-        this.popupListener(request);
-      });
+      port.onMessage.addListener(this.popupListener.bind(this));
     });
   }
 
@@ -175,42 +174,41 @@ export default class Background {
 
         await this.activateTab(port.sender?.tab);
 
-        this.contentScriptListener(request);
+        this.contentListener(request);
       });
     });
   }
 
   /**
-   * Listener for popup script ActionNames.
+   * Listener for messages from popup.
    */
-  static popupListener<Action extends ActionNames>(request: MessageFromPopup<Action>) {
-    Logger.request(POPUP, request, true);
+  static popupListener<Action extends ActionNames>(message: MessageFromPopup<Action>) {
+    Logger.request(POPUP, message, true);
 
-    const resolvedRequest: AnyMessage<Action> = {
-      ...request,
-      url: request.url ?? this.activeTab?.url,
-    };
+    message.url = message.url ?? this.activeTab?.url;
 
-    switch (resolvedRequest.action) {
+    switch (message.action) {
       case ActionNames.popupConnected:
-        Connection.onPopupConnect(resolvedRequest);
+        Connection.flushQueue(POPUP);
+
+        void this.confirmContentConnection(message);
         break;
 
       case ActionNames.checkContentConnection:
-        void this.confirmContentConnection(resolvedRequest);
+        void this.confirmContentConnection(message as MessageDataWithUrl);
         break;
 
       case ActionNames.mapField:
         this.moveFocus();
-        Connection.sendToContent(resolvedRequest as MapFieldMessageToContent);
+        Connection.sendToContent(message as MessageFromPopup<ActionNames.mapField>);
         break;
 
       case ActionNames.deleteFields:
-        void BackgroundActions.deleteFields(resolvedRequest as DeleteFieldsMessage);
+        void BackgroundActions.deleteFields(message as DeleteFieldsMessage);
         break;
 
       case ActionNames.saveSettings:
-        void this.setGlobalSettings(resolvedRequest.settings as StoredExtensionSettings);
+        void this.setGlobalSettings((message as SaveSettingsMessage).settings);
         break;
 
       case ActionNames.getSettings:
@@ -221,41 +219,43 @@ export default class Background {
         break;
 
       case ActionNames.getContent:
-        void BackgroundActions.getContent(resolvedRequest as MessageGetContentFromPopup);
+        void BackgroundActions.getContent(message as MessageGetContentFromPopup);
         break;
 
       /**
        * Just pass to content.
        */
       case ActionNames.stopMapping:
-        Connection.sendToContent(request as StopMappingMessage);
+        Connection.sendToContent(message as StopMappingMessage);
         break;
     }
   }
 
   /**
-   * Listener for content script ActionNames.
+   * Listener for messages from content script.
    */
-  static contentScriptListener<Action extends ActionNames>(request: MessageFromContent<Action>) {
-    Logger.request(CONTENT, request, true);
+  static contentListener<Action extends ActionNames>(message: MessageFromContent<Action>) {
+    Logger.request(CONTENT, message, true);
 
-    switch (request.action) {
+    switch (message.action) {
       case ActionNames.contentConnected:
-        Connection.onContentConnect({...request, url: this.activeTab?.url} as MessageDataWithUrl);
+        Connection.flushQueue(CONTENT);
+
+        void this.confirmContentConnection({url: message.url ?? this.activeTab?.url} as MessageDataWithUrl);
         break;
 
       case ActionNames.mappedField:
-        BackgroundActions.saveMappedField(request);
+        BackgroundActions.saveMappedField(message);
 
         this.moveFocus(this.popupWindow);
         break;
 
       case ActionNames.deleteFields:
-        void BackgroundActions.deleteFields(request as DeleteFieldsMessage);
+        void BackgroundActions.deleteFields(message as DeleteFieldsMessage);
         break;
 
       case ActionNames.foundContent:
-        Connection.sendToPopup(request as FoundContentMessage);
+        Connection.sendToPopup(message as FoundContentMessage);
         break;
     }
   }
@@ -571,9 +571,9 @@ export default class Background {
     }
 
     Connection.sendToPopup({
-      ...message,
       action: ActionNames.contentConnected,
       settings: settings && Object.keys(settings).length ? settings : null,
+      url: message.url,
     } satisfies ContentConnectedMessage);
   }
 }

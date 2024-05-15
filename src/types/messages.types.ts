@@ -1,12 +1,12 @@
 import {type MakeRequired} from '@myparcel/ts-utils';
-import {type ActionNames} from '../helpers';
-import {type StoredExtensionSettings} from './generic.types';
+import {type ActionNames} from '../helpers/index.js';
+import {type StoredExtensionSettings} from './generic.types.js';
 
-export interface BaseMessageData<Action extends ActionNames = ActionNames> {
+export interface MessageData<Action extends ActionNames = ActionNames> {
   action: Action;
-}
 
-export interface MessageData<Action extends ActionNames = ActionNames> extends BaseMessageData<Action> {
+  url?: string;
+
   /**
    * Key used by crx in dev mode
    */
@@ -16,18 +16,13 @@ export interface MessageData<Action extends ActionNames = ActionNames> extends B
    * Key used by crx in dev mode
    */
   type?: string;
-
-  preset?: Record<string, string>;
-  url?: string;
-
-  [key: string]: unknown;
 }
 
 export interface MessageDataWithUrl<Action extends ActionNames = ActionNames> extends MessageData<Action> {
   url: string;
 }
 
-export interface MessageDataWithPreset<Action extends ActionNames = ActionNames> extends MessageData<Action> {
+export interface MessageDataWithPreset<Action extends ActionNames = ActionNames> extends MessageDataWithUrl<Action> {
   presetChosenManually?: boolean;
   presetName: string;
   resetPresetSettings?: boolean;
@@ -69,7 +64,7 @@ export interface GetContentMessageToContent<Action extends ActionNames = ActionN
 /**
  * Background to content: mapField
  */
-export interface MapFieldMessageToContent extends MakeRequired<MessageData<ActionNames.mapField>, 'url'> {
+export interface MapFieldMessage extends MakeRequired<MessageData<ActionNames.mapField>, 'url'> {
   field: string;
   strings: Record<string, string>;
 }
@@ -115,50 +110,78 @@ export interface ContentConnectedMessage extends MessageData<ActionNames.content
   settings: null | StoredExtensionSettings;
 }
 
-export type StopMappingMessage = MessageData<ActionNames.stopMapping>;
+export interface SaveSettingsMessage extends MessageData<ActionNames.saveSettings> {
+  settings: StoredExtensionSettings;
+}
 
 export type SavedSettingsMessage = MessageData<ActionNames.savedSettings>;
 
-interface ToContentMessageMap {
-  [ActionNames.getContent]: GetContentMessageToContent;
-  [ActionNames.mapField]: MapFieldMessageToContent;
-  [ActionNames.stopMapping]: StopMappingMessage;
-  [ActionNames.contentConnected]: ContentConnectedMessage;
+export type StopMappingMessage = MessageData<ActionNames.stopMapping>;
+
+export interface BootedMessageData extends MessageData<ActionNames.booted> {
+  version: string;
 }
 
-interface FromContentMessageMap {
-  [ActionNames.mappedField]: MappedFieldMessage;
+export interface ShipmentFromSelectionMessageData extends MessageData<ActionNames.createShipmentFromSelection> {
+  selection: string;
 }
 
 interface ToPopupMessageMap {
-  [ActionNames.mappedField]: MappedFieldMessage;
-  [ActionNames.foundSettings]: FoundSettingsMessage;
-  [ActionNames.savedSettings]: SavedSettingsMessage;
-  [ActionNames.getSettings]: GetSettingsMessage;
+  [ActionNames.booted]: BootedMessageData;
+  [ActionNames.createShipmentFromSelection]: ShipmentFromSelectionMessageData;
   [ActionNames.contentConnected]: ContentConnectedMessage;
+  [ActionNames.foundContent]: FoundContentMessage;
+  [ActionNames.foundSettings]: FoundSettingsMessage;
+  [ActionNames.getSettings]: GetSettingsMessage;
+  [ActionNames.mappedField]: MappedFieldMessage;
+  [ActionNames.savedSettings]: SavedSettingsMessage;
+  [ActionNames.switchedTab]: MessageData<ActionNames.switchedTab>;
 }
 
+export type PopupConnectedMessageData = MessageDataWithUrl<ActionNames.popupConnected>;
+
 interface FromPopupMessageMap {
+  [ActionNames.checkContentConnection]: MessageData<ActionNames.checkContentConnection>;
   [ActionNames.deleteFields]: DeleteFieldsMessage;
   [ActionNames.getContent]: GetContentMessageFromPopup;
-  [ActionNames.mapField]: MapFieldMessageToContent;
+  [ActionNames.getSettings]: MessageData<ActionNames.getSettings>;
+  [ActionNames.mapField]: MapFieldMessage;
+  [ActionNames.popupConnected]: PopupConnectedMessageData;
+  [ActionNames.saveSettings]: SaveSettingsMessage;
+  [ActionNames.stopMapping]: MessageData<ActionNames.stopMapping>;
+}
+
+interface ToContentMessageMap {
+  [ActionNames.checkContentConnection]: MessageData<ActionNames.checkContentConnection>;
+  [ActionNames.contentConnected]: ContentConnectedMessage;
+  [ActionNames.getContent]: GetContentMessageToContent;
+  [ActionNames.mapField]: MapFieldMessage;
+  [ActionNames.stopListening]: MessageData<ActionNames.stopListening>;
+  [ActionNames.stopMapping]: StopMappingMessage;
+}
+
+interface FromContentMessageMap {
+  [ActionNames.contentConnected]: ContentConnectedMessage;
+  [ActionNames.deleteFields]: MessageData<ActionNames.deleteFields>;
+  [ActionNames.foundContent]: FoundContentMessage;
+  [ActionNames.mappedField]: MappedFieldMessage;
 }
 
 export type MessageToPopup<Action extends ActionNames = ActionNames> = Action extends keyof ToPopupMessageMap
   ? ToPopupMessageMap[Action]
-  : MessageData<Action>;
+  : never;
 
 export type MessageFromPopup<Action extends ActionNames = ActionNames> = Action extends keyof FromPopupMessageMap
   ? FromPopupMessageMap[Action]
-  : MessageData<Action>;
+  : never;
 
 export type MessageToContent<Action extends ActionNames = ActionNames> = Action extends keyof ToContentMessageMap
   ? ToContentMessageMap[Action]
-  : MessageData<Action>;
+  : never;
 
 export type MessageFromContent<Action extends ActionNames = ActionNames> = Action extends keyof FromContentMessageMap
   ? FromContentMessageMap[Action]
-  : MessageData<Action>;
+  : never;
 
 export type AnyMessage<Action extends ActionNames = ActionNames> =
   | MessageToPopup<Action>

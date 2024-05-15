@@ -1,4 +1,4 @@
-import {validInputTypes, contentTags} from './constants';
+import {validInputTypes, contentTags} from './constants.js';
 
 /**
  * Check if a given element is an element with text content.

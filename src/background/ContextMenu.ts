@@ -1,8 +1,8 @@
-import Chrome from '../helpers/Chrome';
-import {ActionNames} from '../helpers';
-import {CONTEXT_MENU_CREATE_SHIPMENT} from '../constants';
-import Background from '../Background';
-import Connection from './Connection';
+import {ActionNames} from '../helpers/index.js';
+import Chrome from '../helpers/Chrome.js';
+import {CONTEXT_MENU_CREATE_SHIPMENT} from '../constants.js';
+import Background from '../Background.js';
+import Connection from './Connection.js';
 
 /**
  * Context menu class. Contains functions to create and handle the context menu items.
@@ -26,24 +26,24 @@ export default class ContextMenu {
    * On clicking a menu item in the context menu, check if ours is the one that's clicked.
    */
   static activate(data: chrome.contextMenus.OnClickData) {
-    if (data.menuItemId !== CONTEXT_MENU_CREATE_SHIPMENT) {
+    if (data.menuItemId !== CONTEXT_MENU_CREATE_SHIPMENT || !data.selectionText) {
       return;
     }
 
-    this.selectContentText(data.selectionText);
+    void this.selectContentText(data.selectionText);
   }
 
   /**
    * Get the user's selection while clicking the context menu item, filter it and then send it to the popup.
    */
-  static selectContentText(selection?: string) {
-    const resolvedSelection = selection?.trim().replace(/[\s\n]/, ' ');
+  static async selectContentText(selection: string) {
+    const resolvedSelection = selection.trim().replace(/[\s\n]/, ' ');
 
-    void Background.openPopup().then(() => {
-      Connection.sendToPopup({
-        action: ActionNames.createShipmentFromSelection,
-        selection: resolvedSelection,
-      });
+    await Background.openPopup();
+
+    Connection.sendToPopup({
+      action: ActionNames.createShipmentFromSelection,
+      selection: resolvedSelection,
     });
   }
 }

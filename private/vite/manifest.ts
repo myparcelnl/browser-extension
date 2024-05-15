@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import {defineManifest} from '@crxjs/vite-plugin';
+import {Environment} from '../../src/constants.js';
 import packageJson from '../../package.json';
-import {platformConfig} from './platformConfig';
-import {getPlatform} from './getPlatform';
-import {getEnvironment} from './getEnvironment';
+import {platformConfig} from './platformConfig.js';
+import {getPlatform} from './getPlatform.js';
+import {getEnvironment} from './getEnvironment.js';
 
 const {version} = packageJson;
 
@@ -14,10 +15,10 @@ const ucfirst = (string: string): string => string.charAt(0).toUpperCase() + str
 // @ts-expect-error todo: fix type error
 // eslint-disable-next-line max-lines-per-function
 export const manifest = defineManifest((env) => {
-  const environment = getEnvironment(env.mode);
+  const environment = getEnvironment(env.mode as Environment);
   const platform = getPlatform();
 
-  const isProd = environment === 'production';
+  const isProd = environment === Environment.Production;
 
   const manifest = {
     background: {
@@ -67,7 +68,7 @@ export const manifest = defineManifest((env) => {
   } satisfies chrome.runtime.ManifestV3;
 
   if (!isProd) {
-    // Changes for development and staging environments
+    // Changes for development and testing environments
     Object.assign(manifest, {
       options_page: 'assets/options/options.html',
       name: `${manifest.name} (${ucfirst(environment)})`,

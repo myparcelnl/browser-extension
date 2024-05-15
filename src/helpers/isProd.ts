@@ -1,3 +1,3 @@
-import {ENVIRONMENT} from '../constants.js';
+import {ENVIRONMENT, Environment} from '../constants.js';
 
-export const isProd = () => ENVIRONMENT === 'production';
+export const isProd = () => ENVIRONMENT === Environment.Production;

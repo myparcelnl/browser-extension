@@ -1,6 +1,6 @@
-import {type MappedFields} from '../../types';
-import {MAPPING_PREFIX} from '../../constants';
-import {getStorageKeys} from './getStorageKeys';
+import {type MappedFields} from '../../types/index.js';
+import {MAPPING_PREFIX} from '../../constants.js';
+import {getStorageKeys} from './getStorageKeys.js';
 
 /**
  * Retrieve saved field mappings from storage and convert them from to objects.

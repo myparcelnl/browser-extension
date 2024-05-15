@@ -1,16 +1,15 @@
 import {
-  type MessageDataWithUrl,
   type MessageToPopup,
   type MessageToContent,
   type AnyMessage,
   type MessageQueue,
   type AnyFn,
   type ConnectionType,
-} from '../types';
-import Logger from '../helpers/Logger';
-import {ActionNames} from '../helpers';
-import {CONTENT, POPUP} from '../constants';
-import Background from '../Background';
+} from '../types/index.js';
+import {ActionNames} from '../helpers/index.js';
+import Logger from '../helpers/Logger.js';
+import {CONTENT, POPUP} from '../constants.js';
+import Background from '../Background.js';
 
 export default class Connection {
   /**
@@ -41,18 +40,9 @@ export default class Connection {
   }
 
   /**
-   * Set popupConnected, flush the popup queue and tell the popup the background is ready.
-   */
-  static onPopupConnect(request: {url?: string}) {
-    void Background.confirmContentConnection(request).then(() => {
-      this.flushQueue(POPUP);
-    });
-  }
-
-  /**
    * Process queue and empty it afterward.
    */
-  static flushQueue(type: ConnectionType): MessageQueue {
+  static flushQueue(type: ConnectionType): void {
     const queue = this.getQueue(type);
 
     if (queue.size > 0) {
@@ -63,30 +53,25 @@ export default class Connection {
       queue.clear();
       Logger.success(`Flushed ${type} queue`);
     }
-
-    return queue;
   }
 
   /**
    * Send data to popup.
    */
   public static sendToPopup<Action extends ActionNames>(message: MessageToPopup<Action>) {
-    const resolvedMessage: MessageToPopup<Action> = {
-      ...message,
-      url: Background.getUrl(),
-    };
+    message.url = Background.getUrl();
 
     if (!this.popup) {
-      this.addToQueue(POPUP, resolvedMessage);
+      this.addToQueue(POPUP, message);
       return;
     }
 
     try {
-      this.popup?.postMessage(resolvedMessage);
-      Logger.request(POPUP, resolvedMessage);
+      this.popup?.postMessage(message);
+      Logger.request(POPUP, message);
     } catch (e) {
       Logger.error('sendToPopup', e);
-      this.addToQueue(POPUP, resolvedMessage);
+      this.addToQueue(POPUP, message);
       this.popup = undefined;
     }
   }
@@ -123,15 +108,6 @@ export default class Connection {
         this.contentPorts.delete(activeTabId);
       }
     }
-  }
-
-  /**
-   * Set contentConnected, flush the content queue and tell the popup the content script is ready.
-   */
-  static onContentConnect(message: MessageDataWithUrl) {
-    this.contentQueue = this.flushQueue(CONTENT);
-
-    void Background.confirmContentConnection(message);
   }
 
   /**

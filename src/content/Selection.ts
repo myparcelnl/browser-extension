@@ -1,12 +1,12 @@
 /* eslint-disable func-names */
 import {isOfType} from '@myparcel/ts-utils';
-import {type AnyFn} from '../types';
+import {type AnyFn} from '../types/index.js';
 import tooltipHTML from './tooltip.html?raw';
-import {isTextElement} from './isTextElement';
-import {hasContent} from './hasContent';
-import {getTextParts} from './getTextParts';
-import {getPath} from './getPath';
-import Config from './Config';
+import {isTextElement} from './isTextElement.js';
+import {hasContent} from './hasContent.js';
+import {getTextParts} from './getTextParts.js';
+import {getPath} from './getPath.js';
+import Config from './Config.js';
 
 type StringsObject = Record<string, string>;
 

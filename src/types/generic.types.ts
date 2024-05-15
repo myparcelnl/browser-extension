@@ -1,9 +1,8 @@
 import {type RequireOnly} from '@myparcel/ts-utils';
-
-export type Environment = 'development' | 'staging' | 'production';
+import {type Environment, type PlatformName} from '../constants.js';
 
 export type PlatformConfig = Record<
-  string,
+  PlatformName,
   {
     manifest: Partial<chrome.runtime.ManifestV3> & RequireOnly<chrome.runtime.ManifestV3, 'name'>;
     urls: Record<Environment, string>;

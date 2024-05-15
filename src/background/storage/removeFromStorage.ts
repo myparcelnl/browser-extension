@@ -1,4 +1,4 @@
-import Chrome from '../../helpers/Chrome';
+import Chrome from '../../helpers/Chrome.js';
 
 /**
  * Remove key from storage.

@@ -1,6 +1,6 @@
-import {type StorageObject} from '../../types';
-import {URL_SETTING_PREFIX} from '../../constants';
-import {saveToStorage} from './saveToStorage';
+import {type StorageObject} from '../../types/index.js';
+import {URL_SETTING_PREFIX} from '../../constants.js';
+import {saveToStorage} from './saveToStorage.js';
 
 /**
  * Save new/updated settings to storage.

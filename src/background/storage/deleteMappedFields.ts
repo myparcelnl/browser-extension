@@ -1,8 +1,8 @@
-import {type DeleteFieldsMessage} from '../../types';
-import {saveToStorage} from './saveToStorage';
-import {removeFromStorage} from './removeFromStorage';
-import {getStorageMappingKey} from './getStorageMappingKey';
-import {getSavedMappingsForUrl} from './getSavedMappingsForUrl';
+import {type DeleteFieldsMessage} from '../../types/index.js';
+import {saveToStorage} from './saveToStorage.js';
+import {removeFromStorage} from './removeFromStorage.js';
+import {getStorageMappingKey} from './getStorageMappingKey.js';
+import {getSavedMappingsForUrl} from './getSavedMappingsForUrl.js';
 
 /**
  * Delete given field from storage by URL and field.

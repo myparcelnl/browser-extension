@@ -1,4 +1,4 @@
-import {isTextElement} from './isTextElement';
+import {isTextElement} from './isTextElement.js';
 
 /**
  * Check if element is a textarea or text/number input. If not, check if children of DOM element have text content.

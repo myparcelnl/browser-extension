@@ -1,20 +1,21 @@
 import {defineConfig} from 'vite';
 import {crx} from '@crxjs/vite-plugin';
-import {platformConfig, manifest, getPlatform, getEnvironment} from './private/vite';
+import {PlatformName, Environment} from './src/constants.js';
+import {platformConfig, manifest, getPlatform, getEnvironment} from './private/vite/index.js';
 
-const modifySassForPlatform = (platform: string) => {
+const modifySassForPlatform = (platform: PlatformName) => {
   let sass = `$platform: '${platform}';`;
 
   switch (platform) {
-    case 'myparcel':
+    case PlatformName.MyParcel:
       sass += `$primary: #ff8c00;`;
       break;
 
-    case 'sendmyparcel':
+    case PlatformName.SendMyParcel:
       sass += `$primary: #068d94;`;
       break;
 
-    case 'flespakket':
+    case PlatformName.Flespakket:
       sass += `$primary: #ff8c00;`;
       break;
   }
@@ -23,8 +24,8 @@ const modifySassForPlatform = (platform: string) => {
 };
 
 export default defineConfig((env) => {
-  const isDev = env.mode !== 'production';
-  const environment = getEnvironment(env.mode);
+  const isDev = env.mode !== Environment.Production;
+  const environment = getEnvironment(env.mode as Environment);
   const platform = getPlatform();
 
   const popupUrl = platformConfig[platform]?.urls[environment];

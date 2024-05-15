@@ -10,18 +10,13 @@
   "author": "Edie Lemoine <edie@myparcel.nl>",
   "scripts": {
     "build": "run prebuild && node private/build.js",
-    "build:all": "run build:dev && run build:staging && run build:prod",
-    "build:dev": "run build --environment development",
-    "build:prod": "run build --environment production",
-    "build:staging": "run build --environment staging",
+    "build:all": "run prebuild && node private/build.js --environment testing && node private/build.js",
+    "build:prod": "run build",
+    "build:test": "run build --environment testing",
     "prebuild": "tsc --project tsconfig.build.json",
     "prepare": "is-ci || husky install",
-    "publish": "node private/process.mjs --publish",
-    "release": "npm --no-git-tag-version version minor && run prod:build && node private/process.mjs --build prod --upload --publish",
     "serve": "vite",
-    "stage": "run stage:build && node private/process.mjs --build stage --upload --publish",
-    "test": "jest",
-    "upload": "node private/process.mjs --upload"
+    "test": "jest"
   },
   "dependencies": {
     "unique-selector": "^0.5.0"

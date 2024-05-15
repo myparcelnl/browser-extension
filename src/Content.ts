@@ -1,9 +1,9 @@
 import './scss/content.scss';
-import {type MessageToContent, type MessageFromContent, type MapFieldMessageToContent} from './types';
-import Logger from './helpers/Logger';
-import {ActionNames} from './helpers';
-import Selection from './content/Selection';
-import ContentActions from './content/ContentActions';
+import {type MessageToContent, type MessageFromContent, type MapFieldMessage} from './types/index.js';
+import {ActionNames} from './helpers/index.js';
+import Logger from './helpers/Logger.js';
+import Selection from './content/Selection.js';
+import ContentActions from './content/ContentActions.js';
 
 interface Listeners {
   background(data: MessageToContent): void;
@@ -32,7 +32,7 @@ export default class Content {
         delete message.data;
       }
 
-      this.backgroundListener(message);
+      return this.backgroundListener(message);
     };
 
     this.listeners.disconnect = () => {
@@ -52,7 +52,7 @@ export default class Content {
   }
 
   /**
-   * Send data to background script.
+   * Send data to service worker script.
    */
   public static sendToBackground(message: MessageFromContent) {
     Logger.request('background', message);
@@ -61,11 +61,11 @@ export default class Content {
   }
 
   private static sendConnectedToBackground() {
-    this.sendToBackground({action: ActionNames.contentConnected, url: window.location.href});
+    this.sendToBackground({action: ActionNames.contentConnected, url: window.location.href, settings: null});
   }
 
   /**
-   * Listener for messages from background script.
+   * Listener for messages from the service worker.
    */
   private static backgroundListener<Action extends ActionNames>(message: MessageToContent<Action>) {
     Logger.request('background', message, true);
@@ -79,7 +79,7 @@ export default class Content {
        * Map an element to a field.
        */
       case ActionNames.mapField:
-        void ContentActions.mapField(message as MapFieldMessageToContent);
+        void ContentActions.mapField(message as MapFieldMessage);
         break;
 
       /**

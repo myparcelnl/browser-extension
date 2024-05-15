@@ -4,10 +4,10 @@ import {
   type MappedFieldMessage,
   type StoredExtensionSettings,
   type DeleteFieldsMessage,
-} from '../types';
-import Logger from '../helpers/Logger';
-import {ActionNames} from '../helpers';
-import {GLOBAL_SETTING_PREFIX} from '../constants';
+} from '../types/index.js';
+import {ActionNames} from '../helpers/index.js';
+import Logger from '../helpers/Logger.js';
+import {GLOBAL_SETTING_PREFIX} from '../constants.js';
 import {
   saveMappings,
   getSavedMappingsForUrl,
@@ -16,8 +16,8 @@ import {
   deleteMappedFields,
   removeFromStorage,
   getStorageKeys,
-} from './storage';
-import Connection from './Connection';
+} from './storage/index.js';
+import Connection from './Connection.js';
 
 /**
  * Actions to run from the background script.
@@ -81,8 +81,6 @@ export default class BackgroundActions {
 
   /**
    * Save mapped field to local storage if not null and send it to popup.
-   *
-   * @param {Object} request - Request object.
    */
   static saveMappedField(request: MappedFieldMessage) {
     if (request.path) {
@@ -94,7 +92,6 @@ export default class BackgroundActions {
 
   /**
    * Save settings to local storage, tell the popup about it and return them.
-   *
    */
   static async saveGlobalSettings(settings: StoredExtensionSettings): Promise<StoredExtensionSettings> {
     const newSettings = {

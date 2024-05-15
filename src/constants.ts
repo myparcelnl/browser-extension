@@ -37,3 +37,15 @@ export const CONTEXT_MENU = Object.freeze({
   id: CONTEXT_MENU_CREATE_SHIPMENT,
   contexts: ['selection'],
 } satisfies chrome.contextMenus.CreateProperties);
+
+export enum PlatformName {
+  MyParcel = 'myparcel',
+  Flespakket = 'flespakket',
+  SendMyParcel = 'sendmyparcel',
+}
+
+export enum Environment {
+  Development = 'development',
+  Testing = 'testing',
+  Production = 'production',
+}

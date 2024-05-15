@@ -61,8 +61,6 @@ export default class Background {
     this.bindEvents();
     this.bindPopupScript();
     this.bindContentScript();
-
-    Logger.info('Background script booted');
   }
 
   /**
@@ -255,7 +253,7 @@ export default class Background {
         break;
 
       case ActionNames.foundContent:
-        Connection.sendToPopup(message as FoundContentMessage);
+        Connection.sendToPopup(message as unknown as FoundContentMessage);
         break;
     }
   }

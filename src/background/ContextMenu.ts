@@ -1,5 +1,5 @@
 import Chrome from '../helpers/Chrome';
-import {ActionNames} from '../helpers/ActionNames';
+import {ActionNames} from '../helpers';
 import {CONTEXT_MENU_CREATE_SHIPMENT} from '../constants';
 import Background from '../Background';
 import Connection from './Connection';

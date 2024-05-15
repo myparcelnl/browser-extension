@@ -80,7 +80,8 @@ export default class Logger {
     }
 
     const {action, ...rest} = request;
-    this[type](action, rest, receiving);
+
+    this[type](action as string, rest, receiving);
   }
 
   // noinspection JSUnusedLocalSymbols

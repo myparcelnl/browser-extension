@@ -6,9 +6,17 @@ import {
   type DeleteFieldsMessage,
 } from '../types';
 import Logger from '../helpers/Logger';
-import {ActionNames} from '../helpers/ActionNames';
+import {ActionNames} from '../helpers';
 import {GLOBAL_SETTING_PREFIX} from '../constants';
-import storage from './storage';
+import {
+  saveMappings,
+  getSavedMappingsForUrl,
+  getSavedGlobalSettings,
+  saveSettings,
+  deleteMappedFields,
+  removeFromStorage,
+  getStorageKeys,
+} from './storage';
 import Connection from './Connection';
 
 /**
@@ -39,7 +47,7 @@ export default class BackgroundActions {
     const {url, preset} = resolvedRequest;
 
     const [savedSelectors, newPresetName] = await Promise.all([
-      storage.getSavedMappingsForUrl(url),
+      getSavedMappingsForUrl(url),
       this.updatePreset(resolvedRequest),
     ]);
 
@@ -63,7 +71,7 @@ export default class BackgroundActions {
    * Get settings (if any) and append them to the defaults.
    */
   static async getGlobalSettings(): Promise<StoredExtensionSettings> {
-    const savedSettings = await storage.getSavedGlobalSettings();
+    const savedSettings = await getSavedGlobalSettings();
 
     return {
       enable_context_menu: true,
@@ -78,7 +86,7 @@ export default class BackgroundActions {
    */
   static saveMappedField(request: MappedFieldMessage) {
     if (request.path) {
-      void storage.saveMappings(request);
+      void saveMappings(request);
     }
 
     Connection.sendToPopup(request);
@@ -94,7 +102,7 @@ export default class BackgroundActions {
       ...settings,
     } satisfies StoredExtensionSettings;
 
-    storage.saveSettings(newSettings, GLOBAL_SETTING_PREFIX);
+    saveSettings(newSettings, GLOBAL_SETTING_PREFIX);
     Connection.sendToPopup({action: ActionNames.savedSettings});
     return newSettings;
   }
@@ -103,7 +111,7 @@ export default class BackgroundActions {
    * Delete a given field from storage.
    */
   static deleteFields(request: DeleteFieldsMessage) {
-    return storage.deleteMappedFields(request);
+    return deleteMappedFields(request);
   }
 
   /**
@@ -114,15 +122,15 @@ export default class BackgroundActions {
     const presetNameSettingKey = `${url}-chosenPreset`;
 
     if (resetPresetSettings) {
-      storage.removeFromStorage(presetNameSettingKey);
+      removeFromStorage(presetNameSettingKey);
     }
 
     if (presetChosenManually) {
-      storage.saveSettings({[presetNameSettingKey]: presetName});
+      saveSettings({[presetNameSettingKey]: presetName});
       return presetName;
     }
 
-    const settingsKeys = await storage.getStorageKeys(GLOBAL_SETTING_PREFIX);
+    const settingsKeys = await getStorageKeys(GLOBAL_SETTING_PREFIX);
 
     if (!settingsKeys.hasOwnProperty(presetNameSettingKey)) {
       return presetName;

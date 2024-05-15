@@ -1,7 +1,7 @@
 import './scss/content.scss';
 import {type MessageToContent, type MessageFromContent, type MapFieldMessageToContent} from './types';
 import Logger from './helpers/Logger';
-import {ActionNames} from './helpers/ActionNames';
+import {ActionNames} from './helpers';
 import Selection from './content/Selection';
 import ContentActions from './content/ContentActions';
 

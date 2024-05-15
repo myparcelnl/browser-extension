@@ -12,11 +12,9 @@ import {
   type MessageFromContent,
   type ContentConnectedMessage,
 } from './types';
-import {isProd} from './helpers/isProd.js';
-import {isCrxMessage} from './helpers/isCrxMessage';
 import Logger from './helpers/Logger';
 import Chrome from './helpers/Chrome';
-import {ActionNames} from './helpers/ActionNames';
+import {isProd, isCrxMessage, ActionNames} from './helpers';
 import {
   EXTENSION_PATH,
   POPUP_DIMENSIONS,
@@ -28,7 +26,7 @@ import {
   DEFAULT_ICON,
   POPUP_URL,
 } from './constants.js';
-import storage from './background/storage';
+import {getSavedSettingsForUrl} from './background/storage';
 import ContextMenu from './background/ContextMenu';
 import Connection from './background/Connection';
 import BackgroundActions from './background/BackgroundActions';
@@ -569,7 +567,7 @@ export default class Background {
     if (message.url) {
       const activeTabUrl = new URL(message.url).hostname;
 
-      settings = await storage.getSavedSettingsForUrl(activeTabUrl);
+      settings = await getSavedSettingsForUrl(activeTabUrl);
     }
 
     Connection.sendToPopup({

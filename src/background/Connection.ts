@@ -8,7 +8,7 @@ import {
   type ConnectionType,
 } from '../types';
 import Logger from '../helpers/Logger';
-import {ActionNames} from '../helpers/ActionNames';
+import {ActionNames} from '../helpers';
 import {CONTENT, POPUP} from '../constants';
 import Background from '../Background';
 

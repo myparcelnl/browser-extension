@@ -1,4 +1,5 @@
-import {type ActionNames} from '../helpers/ActionNames';
+import {type MakeRequired} from '@myparcel/ts-utils';
+import {type ActionNames} from '../helpers';
 import {type StoredExtensionSettings} from './generic.types';
 
 export interface BaseMessageData<Action extends ActionNames = ActionNames> {
@@ -65,17 +66,10 @@ export interface GetContentMessageToContent<Action extends ActionNames = ActionN
   selectors: Record<string, string>;
 }
 
-export type AnyMessageData<Action extends ActionNames = ActionNames> =
-  | MessageData<Action>
-  | MessageDataWithUrl<Action>
-  | MessageDataWithPreset<Action>
-  | MessageDataWithPresetAndFields<Action>
-  | MappedFieldMessage;
-
 /**
  * Background to content: mapField
  */
-export interface MapFieldMessageToContent extends MessageData<ActionNames.mapField> {
+export interface MapFieldMessageToContent extends MakeRequired<MessageData<ActionNames.mapField>, 'url'> {
   field: string;
   strings: Record<string, string>;
 }
@@ -83,7 +77,7 @@ export interface MapFieldMessageToContent extends MessageData<ActionNames.mapFie
 /**
  * Content to background: mappedField
  */
-export interface MappedFieldMessage extends MessageData<ActionNames.mappedField> {
+export interface MappedFieldMessage extends MakeRequired<MessageData<ActionNames.mappedField>, 'url'> {
   /**
    * Field content.
    */

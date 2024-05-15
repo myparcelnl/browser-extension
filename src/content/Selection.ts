@@ -2,7 +2,10 @@
 import {isOfType} from '@myparcel/ts-utils';
 import {type AnyFn} from '../types';
 import tooltipHTML from './tooltip.html?raw';
-import {getPath, getTextParts, hasContent, isTextElement} from './helpers';
+import {isTextElement} from './isTextElement';
+import {hasContent} from './hasContent';
+import {getTextParts} from './getTextParts';
+import {getPath} from './getPath';
 import Config from './Config';
 
 type StringsObject = Record<string, string>;

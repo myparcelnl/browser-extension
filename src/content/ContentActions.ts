@@ -4,7 +4,7 @@ import {
   type GetContentMessageToContent,
   type FoundContentMessage,
 } from '../types';
-import {ActionNames} from '../helpers/ActionNames';
+import {ActionNames} from '../helpers';
 import Content from '../Content';
 import Selection from './Selection';
 

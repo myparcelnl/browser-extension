@@ -1,4 +1,3 @@
-export * from '../build';
 export * from './manifest';
 export * from './constants';
 export * from './getPlatform';

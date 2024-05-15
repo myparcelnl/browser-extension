@@ -41,6 +41,7 @@ export default defineConfig((env) => {
     },
 
     build: {
+      emptyOutDir: false,
       minify: !isDev,
       sourcemap: true,
     },

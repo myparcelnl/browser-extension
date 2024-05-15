@@ -1,7 +1,7 @@
 import util from 'util';
 import path from 'path';
 import puppeteer from 'puppeteer';
-import {scripts} from '../package.json';
+import {scripts} from '../package.json' assert {type: 'json'};
 
 const exec = util.promisify(require('child_process').exec);
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import {defineManifest} from '@crxjs/vite-plugin';
 import {Environment} from '../../src/constants.js';
-import packageJson from '../../package.json';
+import packageJson from '../../package.json' assert {type: 'json'};
 import {platformConfig} from './platformConfig.js';
 import {getPlatform} from './getPlatform.js';
 import {getEnvironment} from './getEnvironment.js';

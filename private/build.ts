@@ -5,7 +5,7 @@ const ALL_PLATFORMS = ['myparcel', 'sendmyparcel', 'flespakket'];
 
 const program = new Command();
 
-const callback = (platform: string, {environment}) => {
+const callback = (platform: string, {environment, watch}) => {
   const platforms = platform === 'all' ? ALL_PLATFORMS : [platform];
 
   void Promise.all(
@@ -16,7 +16,13 @@ const callback = (platform: string, {environment}) => {
         outDir += `-${environment}`;
       }
 
-      return spawnSync('npx', ['vite', 'build', '--mode', environment, '--outDir', outDir], {
+      const command: string[] = ['vite', 'build', '--mode', environment, '--outDir', outDir];
+
+      if (watch) {
+        command.push('--watch');
+      }
+
+      return spawnSync('npx', command, {
         stdio: 'inherit',
         cwd: process.cwd(),
         env: {
@@ -33,7 +39,8 @@ program
   .name('builder')
   .description('CLI to build extension')
   .argument('[platform]', 'platform', 'all')
-  .option('--environment <environment>', 'environment', 'production')
+  .option('--environment <environment>', 'Environment', 'production')
+  .option('--watch', 'Watch mode')
   .action(callback);
 
 program.parse(process.argv);

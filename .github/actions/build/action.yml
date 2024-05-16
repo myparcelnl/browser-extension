@@ -1,0 +1,54 @@
+name: 'Build extensions'
+description: 'Build all extensions and upload an artifact with the zips'
+
+runs:
+  using: composite
+  steps:
+    - name: 'Create hashes for caching'
+      id: hash
+      env:
+        # The hash for the dependencies.
+        HASH_DEPENDENCIES: ${{ hashFiles('**/yarn.lock', '**/package.json') }}
+        # The hash for the extension build
+        HASH_EXTENSION: ${{ hashFiles('vite.config.ts', 'tsconfig*.json', '_locales/**/*', 'assets/**/*', 'build/**/*', 'private/**/*', 'src/**/*') }}
+        # The hash for the builder that will build the extension
+        HASH_BUILDER: ${{ hashFiles('tsconfig.build.json', 'private/build.ts', 'src/constants.ts') }}
+      shell: bash
+      # language=bash
+      run: |
+        echo "hash-source=$HASH_DEPENDENCIES-$HASH_EXTENSION" >> $GITHUB_OUTPUT
+        echo "hash-builder=$HASH_DEPENDENCIES-$HASH_BUILDER" >> $GITHUB_OUTPUT
+
+    - name: 'Cache extension build'
+      uses: actions/cache@v4
+      id: build-cache
+      with:
+        path: dist/*.zip
+        key: '${{ runner.os }}-build-${{ steps.hash.outputs.hash-source }}'
+
+    - name: 'Cache extension builder tsbuildinfo'
+      uses: actions/cache@v4
+      if: steps.build-cache.outputs.cache-hit != 'true'
+      id: tsbuildinfo-cache
+      with:
+        path: tsconfig.build.tsbuildinfo
+        key: '${{ runner.os }}-tsbuildinfo-${{ steps.hash.outputs.hash-builder }}'
+        restore-keys: |
+          ${{ runner.os }}-tsbuildinfo-
+
+    - uses: myparcelnl/actions/yarn-install@v4
+      if: steps.cache.outputs.cache-hit != 'true'
+      with:
+        node-version: ${{ vars.NODE_VERSION }}
+
+    - name: 'Build'
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      #language=bash
+      run: |
+        yarn build:zip
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: dist/*.zip

@@ -1,58 +1,63 @@
-name: 'Release new version 🚀'
+name: 'Publish extensions 🚀'
 
 on:
   workflow_dispatch:
-
-  schedule:
-    # every day at 18:00 UTC
-    - cron: '0 18 * * *'
+    inputs:
+      target:
+        required: true
+        description: 'The target to publish the extensions to'
+        default: 'default'
+        options:
+          - 'default'
+          - 'trustedTesters'
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
 
-env:
-  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-    secrets: inherit
+  release:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
 
-  #  release:
-  #    runs-on: ubuntu-22.04
-  #    needs:
-  #      - build
-  #    steps:
-  #      - uses: myparcelnl/actions/setup-git-credentials@v4
-  #        id: credentials
-  #        with:
-  #          app-id: ${{ secrets.MYPARCEL_APP_ID }}
-  #          private-key: ${{ secrets.MYPARCEL_APP_PRIVATE_KEY }}
-  #
-  #      - uses: actions/checkout@v4
-  #        with:
-  #          token: ${{ steps.credentials.outputs.token }}
-  #          fetch-depth: 0
-  #
-  #      - uses: myparcelnl/actions/yarn-install@v4
-  #        with:
-  #          node-version: ${{ vars.NODE_VERSION }}
-  #
-  #      - name: 'Download build'
-  #        uses: actions/download-artifact@v4
-  #        with:
-  #          name: build
-  #
-  #      - name: 'Release'
-  #        # language=bash
-  #        run: |
-  #          npx semantic-release
-  #        env:
-  #          GITHUB_TOKEN: ${{ steps.credentials.outputs.token }}
-  #          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - uses: ./.github/actions/build
+        id: build
+
+      - name: 'Publish MyParcel extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: dist/myparcel.zip
+          publish: true
+          publish-target: ${{ github.event.inputs.target }}
+          extension-id: ${{ vars.EXTENSION_ID_MYPARCEL }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+
+      - name: 'Publish Flespakket extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: dist/flespakket.zip
+          publish: true
+          publish-target: ${{ github.event.inputs.target }}
+          extension-id: ${{ vars.EXTENSION_ID_FLESPAKKET }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+
+      - name: 'Publish SendMyParcel extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: dist/sendmyparcel.zip
+          publish: true
+          publish-target: ${{ github.event.inputs.target }}
+          extension-id: ${{ vars.EXTENSION_ID_SENDMYPARCEL }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
 
   rebase-prs:
-    needs: build
-    uses: ./.github/workflows/rebase-prs.yml
+    needs: release
+    uses: ./.github/workflows/workflow-call-rebase-prs.yml
     secrets: inherit

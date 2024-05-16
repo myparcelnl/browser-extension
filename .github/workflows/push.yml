@@ -1,26 +1,63 @@
 name: 'On push ⚙️'
 
 on:
-  push:
-    branches:
-      - main
-      - beta
-      - alpha
+  # TODO: Uncomment this and remove workflow_dispatch when ready
+  #  push:
+  #    branches:
+  #      - alpha
+  #      - beta
+  #      - main
+  #
+  #    paths-ignore:
+  #      - ./**/*.md
+  #      - ./.idea/**
 
-    paths-ignore:
-      - ./**/*.md
-      - ./.idea/**
+  workflow_dispatch:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-    secrets: inherit
+  upload:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build
+        id: build
+
+      - name: 'Upload MyParcel testing extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          publish: false
+          file-path: dist/myparcel-testing.zip
+          extension-id: ${{ vars.EXTENSION_ID_TESTING_MYPARCEL }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+
+      - name: 'Upload Flespakket testing extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          publish: false
+          file-path: dist/flespakket-testing.zip
+          extension-id: ${{ vars.EXTENSION_ID_TESTING_FLESPAKKET }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+
+      - name: 'Upload SendMyParcel testing extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          publish: false
+          file-path: dist/sendmyparcel-testing.zip
+          extension-id: ${{ vars.EXTENSION_ID_TESTING_SENDMYPARCEL }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
 
   rebase-prs:
     needs: build
-    uses: ./.github/workflows/rebase-prs.yml
+    uses: ./.github/workflows/workflow-call-rebase-prs.yml
     secrets: inherit

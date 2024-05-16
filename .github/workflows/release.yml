@@ -22,7 +22,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: ./.github/actions/build
-        id: build
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
 
       - name: 'Publish MyParcel extension'
         uses: mnao305/chrome-extension-upload@v5.0.0

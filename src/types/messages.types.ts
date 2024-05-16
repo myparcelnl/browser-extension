@@ -16,6 +16,11 @@ export interface MessageData<Action extends ActionNames = ActionNames> {
    * Key used by crx in dev mode
    */
   type?: string;
+
+  /**
+   * Tab id of the content script.
+   */
+  id?: number;
 }
 
 export interface MessageDataWithUrl<Action extends ActionNames = ActionNames> extends MessageData<Action> {
@@ -107,7 +112,7 @@ export interface FoundContentMessage extends GetContentMessageFromPopup<ActionNa
 }
 
 export interface ContentConnectedMessage extends MessageData<ActionNames.contentConnected> {
-  settings: null | StoredExtensionSettings;
+  settings?: null | StoredExtensionSettings;
 }
 
 export interface SaveSettingsMessage extends MessageData<ActionNames.saveSettings> {
@@ -127,35 +132,88 @@ export interface ShipmentFromSelectionMessageData extends MessageData<ActionName
 }
 
 interface ToPopupMessageMap {
+  /**
+   * Tells the popup that the content script is connected and passes extension version.
+   */
   [ActionNames.booted]: BootedMessageData;
+
+  /**
+   * Create a shipment from the selected text. Triggered from context menu.
+   */
   [ActionNames.createShipmentFromSelection]: ShipmentFromSelectionMessageData;
+  /**
+   * Confirm the content script is connected.
+   */
   [ActionNames.contentConnected]: ContentConnectedMessage;
+
+  /**
+   * Received from content and passed to popup when it has found content on the current page.
+   */
   [ActionNames.foundContent]: FoundContentMessage;
+
+  /**
+   * Contains the saved settings.
+   */
   [ActionNames.foundSettings]: FoundSettingsMessage;
-  [ActionNames.getSettings]: GetSettingsMessage;
+
+  /**
+   * When the user has chosen a new mapping in the content, this is sent to the popup.
+   */
   [ActionNames.mappedField]: MappedFieldMessage;
+
+  /**
+   * Tells the popup the settings it sent with `saveGlobalSettings` were saved correctly.
+   */
   [ActionNames.savedSettings]: SavedSettingsMessage;
-  [ActionNames.switchedTab]: MessageData<ActionNames.switchedTab>;
 }
 
 export type PopupConnectedMessageData = MessageDataWithUrl<ActionNames.popupConnected>;
 
 interface FromPopupMessageMap {
-  [ActionNames.checkContentConnection]: MessageData<ActionNames.checkContentConnection>;
-  [ActionNames.deleteFields]: DeleteFieldsMessage;
-  [ActionNames.getContent]: GetContentMessageFromPopup;
-  [ActionNames.getSettings]: MessageData<ActionNames.getSettings>;
-  [ActionNames.mapField]: MapFieldMessage;
+  /**
+   * Sent on popup boot.
+   */
   [ActionNames.popupConnected]: PopupConnectedMessageData;
+
+  /**
+   * When on the new shipment page, content is requested. This is passed on to the content script of the active tab.
+   * Content will then respond with `foundContent`, which will be passed back to the popup.
+   */
+  [ActionNames.getContent]: GetContentMessageFromPopup;
+
+  /**
+   * Retrieve the saved settings from the extension.
+   */
+  [ActionNames.getSettings]: MessageData<ActionNames.getSettings>;
+
+  /**
+   * Contains updated settings which will be saved in the extension.
+   */
   [ActionNames.saveSettings]: SaveSettingsMessage;
+
+  /**
+   * When a "map" button on a field is clicked.
+   */
+  [ActionNames.mapField]: MapFieldMessage;
+
+  /**
+   * Stop mapping the fields.
+   */
   [ActionNames.stopMapping]: MessageData<ActionNames.stopMapping>;
+
+  /**
+   * Delete a previously mapped field from the extension storage.
+   */
+  [ActionNames.deleteFields]: DeleteFieldsMessage;
 }
 
 interface ToContentMessageMap {
-  [ActionNames.checkContentConnection]: MessageData<ActionNames.checkContentConnection>;
   [ActionNames.contentConnected]: ContentConnectedMessage;
   [ActionNames.getContent]: GetContentMessageToContent;
   [ActionNames.mapField]: MapFieldMessage;
+  /**
+   * Disable the listeners on the content script.
+   */
   [ActionNames.stopListening]: MessageData<ActionNames.stopListening>;
   [ActionNames.stopMapping]: StopMappingMessage;
 }

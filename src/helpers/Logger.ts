@@ -1,9 +1,15 @@
 /* eslint-disable no-console */
 
 import {type AnyMessage} from '../types/index.js';
-import {Environment} from '../constants.js';
+import {Environment, POPUP, CONTENT, BACKGROUND} from '../constants.js';
 
 type Receiving = boolean | 'queue';
+
+const LOG_COLORS = Object.freeze({
+  [POPUP]: '#b44300',
+  [CONTENT]: '#0b8cb4',
+  [BACKGROUND]: '#37b60c',
+});
 
 /**
  * Debug logging file. This is only present in development and testing environments.
@@ -63,8 +69,8 @@ export default class Logger {
 
     console.log(
       `%cEvent%c${message}`,
-      'background-color: #7842FF; color: white; border-radius: 2px 0 0 2px; padding: 0 .4em; font-size: 85%;',
-      'background-color: #fff; color: #222; border-radius: 0 2px 2px 0; padding: 0 .4em; font-size: 85%;',
+      'background-color: #7842FF; color: white; border-radius: 2px 0 0 2px; padding: 1px .4em',
+      'background-color: #fff; color: #222; border-radius: 0 2px 2px 0; padding: 1px .4em',
       log,
     );
   }
@@ -72,63 +78,27 @@ export default class Logger {
   /**
    * Log a request from or to a connection Port.
    *
-   * @example Logger.request('serviceWorker', data, true); // Creates a background-style inbound message.
+   * @example Logger.request('background', data, true); // Creates a background-style inbound message.
    * @example Logger.request('popup', data); // Creates a popup-style outbound message.
    */
-  public static request(type: 'popup' | 'content' | 'background', request: AnyMessage, receiving: Receiving = false) {
+  public static request(type: 'popup' | 'content' | 'background', message: AnyMessage, receiving: Receiving = false) {
     if (Environment.Production === import.meta.env.MODE) {
       return;
     }
 
-    const {action, ...rest} = request;
+    const {id, action, ...logContext} = message;
 
-    this[type](action as string, rest, receiving);
-  }
+    const icon = this.receiving(receiving);
+    const typeText = id ? `${type} [${id}]` : type;
+    const leftColor = LOG_COLORS[type];
+    const rightColor = this.color(receiving);
 
-  // noinspection JSUnusedLocalSymbols
-  /**
-   * Message to or from popup.
-   */
-  private static popup(message: string, log: unknown, receiving: Receiving) {
     console.log(
-      `%c${this.receiving(receiving)} popup%c${message}`,
+      `%c${icon} ${typeText}%c${action}`,
       // eslint-disable-next-line max-len
-      `border-radius: 2px 0 0 2px; background: linear-gradient(to ${
-        receiving ? 'top' : 'bottom'
-      } left, red, #ff8c00); color: white; padding: 1px .4em;`,
-      `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
-      log,
-    );
-  }
-
-  // noinspection JSUnusedLocalSymbols
-  /**
-   * Message to or from content.
-   */
-  private static content(message: string, log: unknown, receiving: Receiving) {
-    console.log(
-      `%c${this.receiving(receiving)} content%c${message}`,
-      // eslint-disable-next-line max-len
-      `border-radius: 2px 0 0 2px; background: linear-gradient(to ${
-        receiving ? 'top' : 'bottom'
-      } left, blue, #1eb9c5); color: white; padding: 1px .4em;`,
-      `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
-      log,
-    );
-  }
-
-  // noinspection JSUnusedLocalSymbols
-  /**
-   * Message to or from background.
-   */
-  private static background(message: string, log: unknown, receiving: Receiving) {
-    console.log(
-      `%c${this.receiving(receiving)} background%c${message}`,
-      `border-radius: 2px 0 0 2px; background: linear-gradient(to ${
-        receiving ? 'top' : 'bottom'
-      } left, yellowgreen, #1eb436); color: white; padding: 1px .4em;`,
-      `${this.color(receiving)} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
-      log,
+      `border-radius: 2px 0 0 2px; background: ${leftColor}; color: white; padding: 1px .4em;`,
+      `${rightColor} border-radius: 0 2px 2px 0; padding: 1px .4em;`,
+      logContext,
     );
   }
 
@@ -152,7 +122,7 @@ export default class Logger {
       return 'QUEUED';
     }
 
-    return bool ? 'from' : 'to';
+    return bool ? '▼' : '▲';
   }
 
   /**

@@ -27,4 +27,4 @@ export interface MappedFields {
 // JSON encoded messages
 export type MessageQueue = Set<string>;
 
-export type ConnectionType = 'popup' | 'content';
+export type ConnectionType = {type: 'popup' | 'content'; id?: number};

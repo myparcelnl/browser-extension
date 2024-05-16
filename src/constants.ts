@@ -20,6 +20,8 @@ export const POPUP = 'popup';
 
 export const CONTENT = 'content';
 
+export const BACKGROUND = 'background';
+
 export const ACTIVE_ICON = `icon-${PLATFORM}-128px-alt.png`;
 
 export const DEFAULT_ICON = `icon-${PLATFORM}-128px.png`;

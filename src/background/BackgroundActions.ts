@@ -3,7 +3,6 @@ import {
   type MessageDataWithPreset,
   type MappedFieldMessage,
   type StoredExtensionSettings,
-  type DeleteFieldsMessage,
 } from '../types/index.js';
 import {ActionNames} from '../helpers/index.js';
 import Logger from '../helpers/Logger.js';
@@ -13,7 +12,6 @@ import {
   getSavedMappingsForUrl,
   getSavedGlobalSettings,
   saveSettings,
-  deleteMappedFields,
   removeFromStorage,
   getStorageKeys,
 } from './storage/index.js';
@@ -32,23 +30,23 @@ export default class BackgroundActions {
    *
    * @example getContent({ url: 'url.com' });
    */
-  static async getContent(request: MessageGetContentFromPopup) {
-    const requestUrl = request.url;
+  public static async getContent(message: MessageGetContentFromPopup) {
+    const requestUrl = message.url;
 
     if (!requestUrl) {
       throw new Error('No url provided.');
     }
 
-    const resolvedRequest: MessageGetContentFromPopup = {
-      ...request,
+    const resolvedMessage: MessageGetContentFromPopup = {
+      ...message,
       url: new URL(requestUrl).hostname,
     };
 
-    const {url, preset} = resolvedRequest;
+    const {url, preset} = resolvedMessage;
 
     const [savedSelectors, newPresetName] = await Promise.all([
       getSavedMappingsForUrl(url),
-      this.updatePreset(resolvedRequest),
+      this.updatePreset(resolvedMessage),
     ]);
 
     const selectors = {...preset, ...savedSelectors};
@@ -60,7 +58,7 @@ export default class BackgroundActions {
     }
 
     Connection.sendToContent({
-      ...resolvedRequest,
+      ...resolvedMessage,
       action: ActionNames.getContent,
       presetName: newPresetName,
       selectors,
@@ -70,7 +68,7 @@ export default class BackgroundActions {
   /**
    * Get settings (if any) and append them to the defaults.
    */
-  static async getGlobalSettings(): Promise<StoredExtensionSettings> {
+  public static async getGlobalSettings(): Promise<StoredExtensionSettings> {
     const savedSettings = await getSavedGlobalSettings();
 
     return {
@@ -80,20 +78,9 @@ export default class BackgroundActions {
   }
 
   /**
-   * Save mapped field to local storage if not null and send it to popup.
-   */
-  static saveMappedField(request: MappedFieldMessage) {
-    if (request.path) {
-      void saveMappings(request);
-    }
-
-    Connection.sendToPopup(request);
-  }
-
-  /**
    * Save settings to local storage, tell the popup about it and return them.
    */
-  static async saveGlobalSettings(settings: StoredExtensionSettings): Promise<StoredExtensionSettings> {
+  public static async saveGlobalSettings(settings: StoredExtensionSettings): Promise<StoredExtensionSettings> {
     const newSettings = {
       ...(await this.getGlobalSettings()),
       ...settings,
@@ -105,17 +92,21 @@ export default class BackgroundActions {
   }
 
   /**
-   * Delete a given field from storage.
+   * Save mapped field to local storage if not null and send it to popup.
    */
-  static deleteFields(request: DeleteFieldsMessage) {
-    return deleteMappedFields(request);
+  public static saveMappedField(message: MappedFieldMessage) {
+    if (message.path) {
+      void saveMappings(message);
+    }
+
+    Connection.sendToPopup(message);
   }
 
   /**
    * Update/remove preset and return its name.
    */
-  static async updatePreset(request: MessageDataWithPreset): Promise<string> {
-    const {url, presetName, presetChosenManually = false, resetPresetSettings = false} = request;
+  private static async updatePreset(message: MessageDataWithPreset): Promise<string> {
+    const {url, presetName, presetChosenManually = false, resetPresetSettings = false} = message;
     const presetNameSettingKey = `${url}-chosenPreset`;
 
     if (resetPresetSettings) {

@@ -7,7 +7,7 @@ import {getSavedMappingsForUrl} from './getSavedMappingsForUrl.js';
 /**
  * Delete given field from storage by URL and field.
  */
-export const deleteMappedFields = async (data: DeleteFieldsMessage) => {
+export const deleteMappedFields = async (data: DeleteFieldsMessage): Promise<void> => {
   const {url, fields} = data;
   const mappings = await getSavedMappingsForUrl(url);
   const storageKey = getStorageMappingKey(url);

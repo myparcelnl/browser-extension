@@ -30,7 +30,7 @@ export default class BackgroundActions {
    *
    * @example getContent({ url: 'url.com' });
    */
-  public static async getContent(message: MessageGetContentFromPopup) {
+  public static async getContent(message: MessageGetContentFromPopup): Promise<void> {
     const requestUrl = message.url;
 
     if (!requestUrl) {
@@ -94,7 +94,7 @@ export default class BackgroundActions {
   /**
    * Save mapped field to local storage if not null and send it to popup.
    */
-  public static saveMappedField(message: MappedFieldMessage) {
+  public static saveMappedField(message: MappedFieldMessage): void {
     if (message.path) {
       void saveMappings(message);
     }

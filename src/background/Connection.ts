@@ -55,7 +55,7 @@ export default class Connection {
     Logger.success(`Flushed ${typeText} queue`);
   }
 
-  public static savePort(port: chrome.runtime.Port) {
+  public static savePort(port: chrome.runtime.Port): void {
     const tabId = port.sender?.tab?.id;
 
     if (!tabId) {
@@ -109,7 +109,7 @@ export default class Connection {
   /**
    * Send data to popup.
    */
-  public static sendToPopup<Action extends ActionNames>(message: MessageToPopup<Action>) {
+  public static sendToPopup<Action extends ActionNames>(message: MessageToPopup<Action>): void {
     message.url = Background.getUrl();
 
     if (!this.popup) {

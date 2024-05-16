@@ -33,8 +33,6 @@ module.exports = {
 
         // Turn these off to avoid being tempted to refactor the whole project now
         '@typescript-eslint/explicit-function-return-type': 'off',
-        '@typescript-eslint/explicit-member-accessibility': 'off',
-        '@typescript-eslint/explicit-module-boundary-types': 'off',
         '@typescript-eslint/no-extraneous-class': 'off',
       },
     },

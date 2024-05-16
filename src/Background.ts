@@ -57,27 +57,9 @@ export default class Background {
   private static settings: StoredExtensionSettings;
 
   /**
-   * Bind the injected content script connection and map ActionNames.
-   */
-  static bindContentScript() {
-    chrome.runtime.onConnect.addListener((port) => {
-      Connection.savePort(port);
-      void this.connectToPopup();
-
-      port.onMessage.addListener((request) => {
-        if (isCrxMessage(request)) {
-          return;
-        }
-
-        this.contentListener({...request, id: port.sender?.tab?.id});
-      });
-    });
-  }
-
-  /**
    * Loads config file then binds all events and scripts.
    */
-  public static async boot() {
+  public static async boot(): Promise<void> {
     await this.loadConfig();
     await this.setGlobalSettings();
     await this.connectToPopup();
@@ -131,6 +113,24 @@ export default class Background {
     await this.confirmContentConnection({id: tab?.id, url: resolvedTab.url});
 
     return this.activeTab;
+  }
+
+  /**
+   * Bind the injected content script connection and map ActionNames.
+   */
+  private static bindContentScript(): void {
+    chrome.runtime.onConnect.addListener((port) => {
+      Connection.savePort(port);
+      void this.connectToPopup();
+
+      port.onMessage.addListener((request) => {
+        if (isCrxMessage(request)) {
+          return;
+        }
+
+        this.contentListener({...request, id: port.sender?.tab?.id});
+      });
+    });
   }
 
   /**
@@ -240,7 +240,10 @@ export default class Background {
         Connection.sendToContent({...message, action: ActionNames.contentConnected});
         Connection.flushQueue({type: CONTENT, id: message.id});
 
-        void this.confirmContentConnection({...message, url: message.url ?? this.activeTab?.url} as MessageDataWithUrl);
+        void this.confirmContentConnection({
+          ...message,
+          url: message.url ?? this.activeTab?.url,
+        } as MessageDataWithUrl);
         break;
 
       case ActionNames.mappedField:
@@ -278,7 +281,7 @@ export default class Background {
             focused: true,
             url: this.popupExternalUrl,
             type: 'popup',
-            // when we open the extension outside of the window this will result in an error
+            // when we open the extension outside the window this will result in an error
             left: win.width ? win.width - width : 0,
             height,
             width,

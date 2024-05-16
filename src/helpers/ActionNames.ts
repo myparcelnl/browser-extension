@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+
 /**
  * Action names. These are sent to or from the popup and content and are used as (arbitrary) handles to decide which
  * actions to execute on either side.

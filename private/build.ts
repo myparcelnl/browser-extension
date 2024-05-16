@@ -1,3 +1,4 @@
+/* eslint-disable no-console,@typescript-eslint/no-magic-numbers */
 import * as fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {Command} from 'commander';
@@ -51,7 +52,7 @@ const callback = async (platform: string, {environment, watch, zip}) => {
         command.push('--watch');
       }
 
-      spawnSync('npx', command, {
+      return spawnSync('npx', command, {
         stdio: 'inherit',
         cwd: process.cwd(),
         env: {

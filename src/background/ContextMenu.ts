@@ -9,23 +9,9 @@ import Connection from './Connection.js';
  */
 export default class ContextMenu {
   /**
-   * Add our custom menu item to the context menu.
-   */
-  static create(item: chrome.contextMenus.CreateProperties) {
-    chrome.contextMenus.create(item, Chrome.catchError);
-  }
-
-  /**
-   * Remove a context menu item by id.
-   */
-  static remove(id: string) {
-    chrome.contextMenus.remove(id, Chrome.catchError);
-  }
-
-  /**
    * On clicking a menu item in the context menu, check if ours is the one that's clicked.
    */
-  static activate(data: chrome.contextMenus.OnClickData) {
+  public static activate(data: chrome.contextMenus.OnClickData): void {
     if (data.menuItemId !== CONTEXT_MENU_CREATE_SHIPMENT || !data.selectionText) {
       return;
     }
@@ -34,9 +20,23 @@ export default class ContextMenu {
   }
 
   /**
+   * Add our custom menu item to the context menu.
+   */
+  public static create(item: chrome.contextMenus.CreateProperties): void {
+    chrome.contextMenus.create(item, Chrome.catchError);
+  }
+
+  /**
+   * Remove a context menu item by id.
+   */
+  public static remove(id: string): void {
+    chrome.contextMenus.remove(id, Chrome.catchError);
+  }
+
+  /**
    * Get the user's selection while clicking the context menu item, filter it and then send it to the popup.
    */
-  static async selectContentText(selection: string) {
+  private static async selectContentText(selection: string): Promise<void> {
     const resolvedSelection = selection.trim().replace(/[\s\n]/, ' ');
 
     await Background.openPopup();

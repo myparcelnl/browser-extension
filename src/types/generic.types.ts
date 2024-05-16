@@ -19,10 +19,7 @@ export interface StoredExtensionSettings extends StorageObject {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyFn = (...args: any[]) => any;
 
-export interface MappedFields {
-  url: string;
-  fields: string[];
-}
+export type SavedFieldMappings = Record<string, Record<string, string>>;
 
 // JSON encoded messages
 export type MessageQueue = Set<string>;

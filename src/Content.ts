@@ -23,21 +23,19 @@ export default class Content {
    * The connection to the background script.
    */
   private static backgroundConnection: chrome.runtime.Port;
-
+  /**
+   * String identifier for the content script.
+   */
+  private static identifier: number | undefined;
   /**
    * Listener object.
    */
   private static listeners: Listeners = {} as Listeners;
 
   /**
-   * String identifier for the content script.
-   */
-  private static identifier: number | undefined;
-
-  /**
    * Set up the event listeners for the background script.
    */
-  public static boot() {
+  public static boot(): void {
     this.listeners.background = (message: MessageToContent) => {
       if (import.meta.env.DEV) {
         // The data property is used by crx and does not need to be passed on.
@@ -66,7 +64,7 @@ export default class Content {
   /**
    * Send data to service worker script.
    */
-  public static sendToBackground(message: MessageFromContent) {
+  public static sendToBackground(message: MessageFromContent): void {
     Logger.request(BACKGROUND, message);
 
     this.backgroundConnection.postMessage({...message, id: this.identifier});
@@ -75,7 +73,7 @@ export default class Content {
   /**
    * Listener for messages from the service worker.
    */
-  private static backgroundListener<Action extends ActionNames>(message: MessageToContent<Action>) {
+  private static backgroundListener<Action extends ActionNames>(message: MessageToContent<Action>): void {
     Logger.request(BACKGROUND, {...message, id: this.identifier}, true);
 
     const resolvedMessage = {...message, id: message.id ?? this.identifier};

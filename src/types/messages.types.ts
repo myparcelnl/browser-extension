@@ -4,23 +4,19 @@ import {type StoredExtensionSettings} from './generic.types.js';
 
 export interface MessageData<Action extends ActionNames = ActionNames> {
   action: Action;
-
-  url?: string;
-
   /**
    * Key used by crx in dev mode
    */
   data?: string;
-
-  /**
-   * Key used by crx in dev mode
-   */
-  type?: string;
-
   /**
    * Tab id of the content script.
    */
   id?: number;
+  /**
+   * Key used by crx in dev mode
+   */
+  type?: string;
+  url?: string;
 }
 
 export interface MessageDataWithUrl<Action extends ActionNames = ActionNames> extends MessageData<Action> {
@@ -184,7 +180,7 @@ interface FromPopupMessageMap {
   /**
    * Retrieve the saved settings from the extension.
    */
-  [ActionNames.getSettings]: MessageData<ActionNames.getSettings>;
+  [ActionNames.getSettings]: GetSettingsMessage;
 
   /**
    * Contains updated settings which will be saved in the extension.

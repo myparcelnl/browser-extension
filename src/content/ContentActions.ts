@@ -15,7 +15,7 @@ export default class ContentActions {
   /**
    * Get values using previously mapped fields (if any).
    */
-  static getContent(message: GetContentMessageToContent) {
+  public static getContent(message: GetContentMessageToContent): void {
     const {selectors, action, ...requestProperties} = message;
     const values = Selection.getElementsContent(message.selectors ?? {});
 
@@ -30,7 +30,7 @@ export default class ContentActions {
   /**
    * Start creating new field mapping.
    */
-  static async mapField(message: MapFieldMessage): Promise<void> {
+  public static async mapField(message: MapFieldMessage): Promise<void> {
     const {field, url} = message;
     const path = await Selection.startMapping(message.strings);
     const elementContent = Selection.getSelectorContent(path);

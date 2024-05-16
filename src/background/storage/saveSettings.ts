@@ -5,7 +5,7 @@ import {saveToStorage} from './saveToStorage.js';
 /**
  * Save new/updated settings to storage.
  */
-export const saveSettings = (settings: StorageObject, prefix: string = URL_SETTING_PREFIX) => {
+export const saveSettings = (settings: StorageObject, prefix: string = URL_SETTING_PREFIX): void => {
   const keys = Object.keys(settings).reduce((acc, setting) => {
     return {
       ...acc,

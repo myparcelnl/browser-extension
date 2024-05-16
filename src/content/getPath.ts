@@ -1,15 +1,15 @@
 /* eslint-disable func-names */
 import getSelector, {type GetSelectorOptions} from 'unique-selector';
-import Config from './Config.js';
+import {CLASS_PREFIX, WRAPPED_ITEM_CLASS} from './constants.js';
 
 /**
  * Get the unique query selector/path of the element.
  */
-export const getPath = (element: HTMLElement) => {
+export const getPath = (element: HTMLElement): string => {
   let resolvedElement: HTMLElement | null = element;
   let index: string | number = '';
 
-  if (resolvedElement.classList.contains(Config.wrappedItemClass)) {
+  if (resolvedElement.classList.contains(WRAPPED_ITEM_CLASS)) {
     index = 0;
     let node: HTMLElement | null = resolvedElement;
 
@@ -18,7 +18,7 @@ export const getPath = (element: HTMLElement) => {
      * exist before the clicked element.
      */
     for (let i = 0; (node = node.previousSibling as HTMLElement | null); i++) {
-      if (!node.classList?.contains(Config.wrappedItemClass)) {
+      if (!node.classList?.contains(WRAPPED_ITEM_CLASS)) {
         continue;
       }
 
@@ -30,7 +30,7 @@ export const getPath = (element: HTMLElement) => {
   }
 
   const options: GetSelectorOptions = {
-    excludeRegex: RegExp(Config.classPrefix),
+    excludeRegex: RegExp(CLASS_PREFIX),
   };
 
   /*

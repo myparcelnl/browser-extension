@@ -6,9 +6,9 @@ import {Environment, POPUP, CONTENT, BACKGROUND} from '../constants.js';
 type Receiving = boolean | 'queue';
 
 const LOG_COLORS = Object.freeze({
-  [POPUP]: '#b44300',
-  [CONTENT]: '#0b8cb4',
-  [BACKGROUND]: '#37b60c',
+  [POPUP]: '#B44300',
+  [CONTENT]: '#0B8CB4',
+  [BACKGROUND]: '#37B60C',
 });
 
 /**
@@ -16,42 +16,9 @@ const LOG_COLORS = Object.freeze({
  */
 export default class Logger {
   /**
-   * General success message.
-   */
-  public static success(message: string, log: unknown = '') {
-    if (Environment.Production === import.meta.env.MODE) {
-      return;
-    }
-
-    this.createMessage(message, 'background-color: #23b237;', log);
-  }
-
-  /**
-   * General info message.
-   */
-  public static info(message: string, log: unknown = '') {
-    if (Environment.Production === import.meta.env.MODE) {
-      return;
-    }
-
-    this.createMessage(message, 'background-color: #34b7d4;', log);
-  }
-
-  /**
-   * General warning message.
-   */
-  public static warning(message: string, log: unknown = '') {
-    if (Environment.Production === import.meta.env.MODE) {
-      return;
-    }
-
-    this.createMessage(message, 'background-color: #d18800;', log);
-  }
-
-  /**
    * General error message.
    */
-  public static error(message: string, log: unknown = '') {
+  public static error(message: string, log: unknown = ''): void {
     if (Environment.Production === import.meta.env.MODE) {
       return;
     }
@@ -62,7 +29,7 @@ export default class Logger {
   /**
    * Event message.
    */
-  public static event(message: string, log: unknown = '') {
+  public static event(message: string, log: unknown = ''): void {
     if (Environment.Production === import.meta.env.MODE) {
       return;
     }
@@ -76,12 +43,27 @@ export default class Logger {
   }
 
   /**
+   * General info message.
+   */
+  public static info(message: string, log: unknown = ''): void {
+    if (Environment.Production === import.meta.env.MODE) {
+      return;
+    }
+
+    this.createMessage(message, 'background-color: #34b7d4;', log);
+  }
+
+  /**
    * Log a request from or to a connection Port.
    *
    * @example Logger.request('background', data, true); // Creates a background-style inbound message.
    * @example Logger.request('popup', data); // Creates a popup-style outbound message.
    */
-  public static request(type: 'popup' | 'content' | 'background', message: AnyMessage, receiving: Receiving = false) {
+  public static request(
+    type: 'popup' | 'content' | 'background',
+    message: AnyMessage,
+    receiving: Receiving = false,
+  ): void {
     if (Environment.Production === import.meta.env.MODE) {
       return;
     }
@@ -103,6 +85,28 @@ export default class Logger {
   }
 
   /**
+   * General success message.
+   */
+  public static success(message: string, log: unknown = ''): void {
+    if (Environment.Production === import.meta.env.MODE) {
+      return;
+    }
+
+    this.createMessage(message, 'background-color: #23b237;', log);
+  }
+
+  /**
+   * General warning message.
+   */
+  public static warning(message: string, log: unknown = ''): void {
+    if (Environment.Production === import.meta.env.MODE) {
+      return;
+    }
+
+    this.createMessage(message, 'background-color: #d18800;', log);
+  }
+
+  /**
    * Set inbound, outbound or queue message color.
    */
   private static color(bool: boolean | 'queue'): string {
@@ -111,6 +115,13 @@ export default class Logger {
     }
 
     return bool ? 'background-color: #fff; color: #222;' : 'background-color: #333; color: #fff;';
+  }
+
+  /**
+   * Log a message.
+   */
+  private static createMessage(message: string, style = '', log: unknown = ''): void {
+    console.log(`%c${message}`, `color: white; ${style} border-radius: 2px; padding: 1px .25em;`, log);
   }
 
   /**
@@ -123,12 +134,5 @@ export default class Logger {
     }
 
     return bool ? '▼' : '▲';
-  }
-
-  /**
-   * Log a message.
-   */
-  private static createMessage(message: string, style = '', log: unknown = '') {
-    console.log(`%c${message}`, `color: white; ${style} border-radius: 2px; padding: 1px .25em;`, log);
   }
 }

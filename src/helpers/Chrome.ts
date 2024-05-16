@@ -7,7 +7,7 @@ export default class Chrome {
   /**
    * Helper function to catch `chrome.runtime.lastError`. To be used as callback in `chrome` functions.
    */
-  public static catchError() {
+  public static catchError(): void {
     const message = chrome.runtime.lastError?.message;
 
     if (!message) {

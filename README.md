@@ -22,6 +22,12 @@ Build all:
 yarn build:all
 ```
 
+Build all and zip the builds:
+
+```bash
+yarn build:zip
+```
+
 Build all for specific environment:
 
 ```bash

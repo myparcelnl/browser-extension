@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.husky" />
       <excludeFolder url="file://$MODULE_DIR$/.yarn" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludePattern pattern="*.timestamp-*" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

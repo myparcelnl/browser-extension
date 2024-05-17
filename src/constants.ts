@@ -22,9 +22,9 @@ export const CONTENT = 'content';
 
 export const BACKGROUND = 'background';
 
-export const ACTIVE_ICON = `icon-${PLATFORM}-128px-alt.png`;
+export const ACTIVE_ICON = `assets/icons/icon-${PLATFORM}-128px-alt.png`;
 
-export const DEFAULT_ICON = `icon-${PLATFORM}-128px.png`;
+export const DEFAULT_ICON = `assets/icons/icon-${PLATFORM}-128px.png`;
 
 export const URL_SETTING_PREFIX = `${PLATFORM}-url-setting-`;
 

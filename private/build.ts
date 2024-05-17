@@ -2,6 +2,7 @@
 
 /* eslint-disable no-console,@typescript-eslint/no-magic-numbers */
 import * as fs from 'node:fs';
+import {copyFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {Command} from 'commander';
 import chalk from 'chalk';
@@ -11,6 +12,9 @@ import {Environment, PlatformName} from '../src/constants.js';
 const program = new Command();
 
 const BUILD_ALL = 'all';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
+const __dirname = new URL('.', import.meta.url).pathname;
 
 const zipFolder = (source: string, dest: string): Promise<void> => {
   const archive = archiver('zip', {zlib: {level: 9}});
@@ -54,7 +58,7 @@ const callback = async (platform: string, {environment, watch, zip}) => {
         command.push('--watch');
       }
 
-      return spawnSync('npx', command, {
+      const viteCommand = spawnSync('npx', command, {
         stdio: 'inherit',
         cwd: process.cwd(),
         env: {
@@ -63,6 +67,24 @@ const callback = async (platform: string, {environment, watch, zip}) => {
           PLATFORM: platform,
         },
       });
+
+      /**
+       * @TODO: find better way to get these icons into the bundle
+       */
+      const ADDITIONAL_ICONS = Object.freeze([
+        `icon-${platform}-16px-alt.png`,
+        `icon-${platform}-48px-alt.png`,
+        `icon-${platform}-128px-alt.png`,
+      ]);
+
+      const sourceIconDir = `${__dirname}/../assets/icons/`;
+      const destIconDir = `${__dirname}/../dist/${buildName}/assets/icons/`;
+
+      ADDITIONAL_ICONS.forEach((icon) => {
+        copyFileSync(`${sourceIconDir}${icon}`, `${destIconDir}${icon}`);
+      });
+
+      return viteCommand;
     }),
   );
 

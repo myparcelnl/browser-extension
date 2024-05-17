@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* eslint-disable no-console,@typescript-eslint/no-magic-numbers */
 import * as fs from 'node:fs';
 import {spawnSync} from 'node:child_process';

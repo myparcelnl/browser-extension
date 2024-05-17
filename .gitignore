@@ -9,9 +9,8 @@ node_modules/
 !.yarn/versions
 
 # Built files
+bin/
 dist/
-private/**/*.js
-src/**/*.js
 
 # Temporary build files
 *.tsbuildinfo

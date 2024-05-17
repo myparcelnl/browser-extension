@@ -9,12 +9,12 @@
   "license": "MIT",
   "author": "Edie Lemoine <edie@myparcel.nl>",
   "scripts": {
-    "build": "run prebuild && node private/build.js",
-    "build:all": "run prebuild && node private/build.js --environment testing && node private/build.js",
-    "build:zip": "run prebuild && node private/build.js --environment testing --zip && node private/build.js --zip",
+    "build": "run prebuild && node bin/build.js",
+    "build:all": "run prebuild && node bin/build.js --environment testing && node bin/build.js",
+    "build:zip": "run prebuild && node bin/build.js --environment testing --zip && node bin/build.js --zip",
     "build:prod": "run build",
     "build:test": "run build --environment testing",
-    "prebuild": "tsc --project tsconfig.build.json",
+    "prebuild": "tsup-node private/build.ts --format esm --out-dir bin",
     "prepare": "is-ci || husky install",
     "serve": "vite",
     "test": "jest"
@@ -54,6 +54,7 @@
     "prettier": "^2.0.0",
     "puppeteer": "^14.1.0",
     "sass": "^1.76.0",
+    "tsup": "^8.0.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.10",
     "yargs": "^15.3.1"

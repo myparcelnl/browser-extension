@@ -25,9 +25,9 @@ on:
         type: string
         required: true
 
-    target:
-      type: string
-      required: true
+      target:
+        type: string
+        required: true
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'

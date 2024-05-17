@@ -83,7 +83,7 @@ export const manifest = defineManifest((env) => {
     // https://developer.chrome.com/docs/extensions/develop/migrate/publish-mv3#label-beta
     Object.assign(manifest, {
       name: `${manifest.name} BETA`,
-      description: `THIS EXTENSION IS FOR BETA TESTING. ${manifest.description}`,
+      description: `THIS EXTENSION IS FOR BETA TESTING`,
     });
   } else if (Environment.Development === environment) {
     Object.assign(manifest, {

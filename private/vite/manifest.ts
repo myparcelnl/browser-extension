@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import * as child_process from 'node:child_process';
 import {defineManifest} from '@crxjs/vite-plugin';
 import {Environment} from '../../src/constants.js';
 import packageJson from '../../package.json' assert {type: 'json'};
@@ -8,9 +9,13 @@ import {getEnvironment} from './getEnvironment.js';
 
 const {version} = packageJson;
 
-const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
+const [major, minor, patch] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
 
-const ucfirst = (string: string): string => string.charAt(0).toUpperCase() + string.slice(1);
+// Use the amount of commits since the last tag to determine the version label
+const commitsSinceLastTag = child_process
+  .execSync('git rev-list $(git describe --tags --abbrev=0)..HEAD --count')
+  .toString()
+  .trim();
 
 // @ts-expect-error todo: fix type error
 // eslint-disable-next-line max-lines-per-function
@@ -20,7 +25,12 @@ export const manifest = defineManifest((env) => {
 
   const isProd = environment === Environment.Production;
 
+  const label = isProd ? 0 : commitsSinceLastTag;
+
   const manifest = {
+    name: '__MSG_appName__',
+    short_name: '__MSG_appName__',
+    description: '__MSG_appDescription__',
     background: {
       service_worker: 'src/serviceWorker.ts',
       type: 'module',
@@ -63,15 +73,24 @@ export const manifest = defineManifest((env) => {
         128: `assets/icons/icon-${platform}-128px.png`,
       },
     },
-
     ...platformConfig[platform]?.manifest,
   } satisfies chrome.runtime.ManifestV3;
 
+  // Changes for development and testing environments
   if (!isProd) {
-    // Changes for development and testing environments
+    Object.assign(manifest, {options_page: 'assets/options/options.html'});
+  }
+
+  if (Environment.Testing === environment) {
+    // https://developer.chrome.com/docs/extensions/develop/migrate/publish-mv3#label-beta
     Object.assign(manifest, {
-      options_page: 'assets/options/options.html',
-      name: `${manifest.name} (${ucfirst(environment)})`,
+      name: `${manifest.name} BETA`,
+      description: `THIS EXTENSION IS FOR BETA TESTING. ${manifest.description}`,
+    });
+  } else if (Environment.Development === environment) {
+    Object.assign(manifest, {
+      name: `${manifest.name} [${environment}]`,
+      description: `${manifest.description} [${environment}]`,
     });
   }
 

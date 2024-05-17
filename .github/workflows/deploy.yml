@@ -1,0 +1,98 @@
+name: 'Publish extensions 🚀'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The environment to publish the extensions to'
+        required: true
+        default: 'testing'
+        options:
+          - 'production'
+          - 'testing'
+
+      target:
+        required: true
+        description: 'The target to publish the extensions to'
+        default: 'trustedTesters'
+        options:
+          - 'default'
+          - 'trustedTesters'
+
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+
+    target:
+      type: string
+      required: true
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: 'Publish ${{ inputs.environment }} extensions to ${{ inputs.target }}'
+    runs-on: ubuntu-22.04
+    needs: build
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+
+      - name: 'Prepare'
+        id: prepare
+        env:
+          IS_TESTING: ${{ inputs.environment == 'testing' }}
+        shell: bash
+        # language=bash
+        run: |
+          if [ $IS_TESTING == true ]; then
+            echo "zip-path-myparcel=dist/myparcel-testing.zip" >> $GITHUB_OUTPUT
+            echo "zip-path-flespakket=dist/flespakket-testing.zip" >> $GITHUB_OUTPUT
+            echo "zip-path-sendmyparcel=dist/sendmyparcel-testing.zip" >> $GITHUB_OUTPUT
+          else
+            echo "zip-path-myparcel=dist/myparcel.zip" >> $GITHUB_OUTPUT
+            echo "zip-path-flespakket=dist/flespakket.zip" >> $GITHUB_OUTPUT
+            echo "zip-path-sendmyparcel=dist/sendmyparcel.zip" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 'Publish MyParcel extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: ${{ steps.prepare.outputs.zip-path-myparcel }}
+          publish: true
+          publish-target: ${{ inputs.target }}
+          extension-id: ${{ vars.EXTENSION_ID_MYPARCEL }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+
+      - name: 'Publish Flespakket testing extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: ${{ steps.prepare.outputs.zip-path-flespakket }}
+          publish: true
+          publish-target: ${{ inputs.target }}
+          extension-id: ${{ vars.EXTENSION_ID_FLESPAKKET }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+
+      - name: 'Publish SendMyParcel testing extension'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: ${{ steps.prepare.outputs.zip-path-sendmyparcel }}
+          publish: true
+          publish-target: ${{ inputs.target }}
+          extension-id: ${{ vars.EXTENSION_ID_SENDMYPARCEL }}
+          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}

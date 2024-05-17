@@ -13,7 +13,7 @@ runs:
       id: hash
       env:
         # The shared part of the hash.
-        HASH_DEPENDENCIES: ${{ hashFiles('**/yarn.lock', '**/package.json', 'tsconfig.json') }}
+        HASH_SHARED: ${{ hashFiles('**/yarn.lock', '**/package.json', 'tsconfig.json', '.github/actions/build/action.yml') }}
         # The hash for the builder that will build the extension
         HASH_BUILDER: ${{ hashFiles('private/build.ts', 'src/constants.ts') }}
         # The hash for the extension build
@@ -21,8 +21,8 @@ runs:
       shell: bash
       # language=bash
       run: |
-        echo "hash-builder=$HASH_DEPENDENCIES-$HASH_BUILDER" >> $GITHUB_OUTPUT
-        echo "hash-source=$HASH_DEPENDENCIES-$HASH_EXTENSION" >> $GITHUB_OUTPUT
+        echo "hash-builder=$HASH_SHARED-$HASH_BUILDER" >> $GITHUB_OUTPUT
+        echo "hash-source=$HASH_SHARED-$HASH_EXTENSION" >> $GITHUB_OUTPUT
 
     - name: 'Cache extension build'
       uses: actions/cache@v4

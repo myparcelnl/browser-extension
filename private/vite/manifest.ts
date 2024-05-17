@@ -28,8 +28,6 @@ export const manifest = defineManifest((env) => {
   const label = isProd ? 0 : commitsSinceLastTag;
 
   const manifest = {
-    name: '__MSG_appName__',
-    short_name: '__MSG_appName__',
     description: '__MSG_appDescription__',
     background: {
       service_worker: 'src/serviceWorker.ts',

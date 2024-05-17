@@ -8,6 +8,8 @@ import {PlatformName, Environment} from '../../src/constants.js';
 export const platformConfig: PlatformConfig = Object.freeze({
   [PlatformName.MyParcel]: {
     manifest: {
+      name: 'MyParcel',
+      short_name: 'MyParcel',
       externally_connectable: {
         matches: ['*://*.myparcel.nl/*'],
       },
@@ -20,6 +22,8 @@ export const platformConfig: PlatformConfig = Object.freeze({
   },
   [PlatformName.Flespakket]: {
     manifest: {
+      name: 'Flespakket',
+      short_name: 'Flespakket',
       externally_connectable: {
         matches: ['*://*.flespakket.nl/*'],
       },
@@ -32,6 +36,8 @@ export const platformConfig: PlatformConfig = Object.freeze({
   },
   [PlatformName.SendMyParcel]: {
     manifest: {
+      name: 'SendMyParcel',
+      short_name: 'SendMyParcel',
       externally_connectable: {
         matches: ['*://*.sendmyparcel.be/*'],
       },

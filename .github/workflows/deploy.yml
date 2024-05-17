@@ -37,7 +37,6 @@ jobs:
   deploy:
     name: 'Publish ${{ inputs.environment }} extensions to ${{ inputs.target }}'
     runs-on: ubuntu-22.04
-    needs: build
     environment:
       name: ${{ inputs.environment }}
     steps:

@@ -37,6 +37,5 @@ export enum ActionNames {
   popupConnected = 'popupConnected',
   saveSettings = 'saveSettings',
   savedSettings = 'savedSettings',
-  stopListening = 'stopListening',
   stopMapping = 'stopMapping',
 }

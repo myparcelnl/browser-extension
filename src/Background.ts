@@ -1,6 +1,5 @@
 import {
   type MessageGetContentFromPopup,
-  type MessageDataWithUrl,
   type StoredExtensionSettings,
   type AnyFn,
   type MessageFromPopup,
@@ -10,6 +9,8 @@ import {
   type ContentConnectedMessage,
   type FoundContentMessage,
   type SaveSettingsMessage,
+  type AnyMessage,
+  type MappedFieldMessage,
 } from './types/index.js';
 import {isProd, isCrxMessage, ActionNames} from './helpers/index.js';
 import Logger from './helpers/Logger.js';
@@ -34,7 +35,7 @@ export default class Background {
   /**
    * Current active tab.
    */
-  public static activeTab: undefined | chrome.tabs.Tab;
+  private static activeTab: undefined | chrome.tabs.Tab;
 
   /**
    * ID of the last window the browser was focused on.
@@ -57,6 +58,15 @@ export default class Background {
   private static settings: StoredExtensionSettings;
 
   /**
+   * Adds the id and url of the active tab to the message if not already present.
+   */
+  public static addActiveTabToMessage<Action extends ActionNames>(message: AnyMessage<Action>): AnyMessage<Action> {
+    const {id, url} = this.activeTab ?? {};
+
+    return {id, url, ...message};
+  }
+
+  /**
    * Loads config file then binds all events and scripts.
    */
   public static async boot(): Promise<void> {
@@ -69,11 +79,8 @@ export default class Background {
     this.bindContentScript();
   }
 
-  /**
-   * Get the active tab URL if available.
-   */
-  public static getUrl(): string | undefined {
-    return this.activeTab?.url;
+  public static getActiveTab(): undefined | chrome.tabs.Tab {
+    return this.activeTab;
   }
 
   /**
@@ -81,7 +88,14 @@ export default class Background {
    */
   public static async openPopup(): Promise<void> {
     if (this.popupWindow) {
-      this.moveFocus(this.popupWindow);
+      try {
+        this.moveFocus(this.popupWindow);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+
+        this.popupWindow = undefined;
+      }
     } else {
       this.popupWindow = await this.createPopup();
     }
@@ -101,16 +115,14 @@ export default class Background {
     }
 
     if (this.isWebsite(resolvedTab)) {
-      this.activeTab = resolvedTab;
-
       Logger.success(`Active tab: ${resolvedTab.url}`);
+      this.setActiveTab(resolvedTab);
+
+      await this.confirmContentConnection(resolvedTab);
     } else {
       Logger.info('No active tab found.');
-
-      this.activeTab = undefined;
+      this.setActiveTab(undefined);
     }
-
-    await this.confirmContentConnection({id: tab?.id, url: resolvedTab.url});
 
     return this.activeTab;
   }
@@ -176,14 +188,10 @@ export default class Background {
   }
 
   /**
-   * Clean up on closing of popup. Tells content connection to stop listening and resets variables and extension icon.
+   * Clean up on closing of popup.
    */
   private static closePopup() {
-    Connection.sendToContent({action: ActionNames.stopListening});
-
     Connection.popup = undefined;
-
-    this.activeTab = undefined;
     this.popupWindow = undefined;
 
     this.setIcon();
@@ -196,7 +204,7 @@ export default class Background {
     let settings: undefined | StoredExtensionSettings = undefined;
 
     // Don't send to popup if the tab is not active.
-    if (message.id && !this.isActiveTab(message.id)) {
+    if (!message.id || !this.isActiveTab(message.id)) {
       return;
     }
 
@@ -234,30 +242,29 @@ export default class Background {
   private static contentListener<Action extends ActionNames>(message: MessageFromContent<Action>) {
     Logger.request(CONTENT, message, true);
 
+    const resolvedMessage = this.addActiveTabToMessage(message);
+
     switch (message.action) {
       case ActionNames.contentConnected:
         // Confirm the connection and pass the content script its id.
-        Connection.sendToContent({...message, action: ActionNames.contentConnected});
-        Connection.flushQueue({type: CONTENT, id: message.id});
+        Connection.sendToContent({...resolvedMessage, action: ActionNames.contentConnected});
+        Connection.flushQueue({type: CONTENT, id: resolvedMessage.id});
 
-        void this.confirmContentConnection({
-          ...message,
-          url: message.url ?? this.activeTab?.url,
-        } as MessageDataWithUrl);
+        void this.confirmContentConnection(resolvedMessage);
         break;
 
       case ActionNames.mappedField:
-        BackgroundActions.saveMappedField(message);
+        BackgroundActions.saveMappedField(resolvedMessage as MappedFieldMessage);
 
         this.moveFocus(this.popupWindow);
         break;
 
       case ActionNames.deleteFields:
-        void deleteMappedFields(message as DeleteFieldsMessage);
+        void deleteMappedFields(resolvedMessage as DeleteFieldsMessage);
         break;
 
       case ActionNames.foundContent:
-        Connection.sendToPopup(message as unknown as FoundContentMessage);
+        Connection.sendToPopup(resolvedMessage as unknown as FoundContentMessage);
         break;
     }
   }
@@ -426,7 +433,7 @@ export default class Background {
    */
   private static async onTabUpdated(
     tabId: number | undefined,
-    data: {status: string},
+    data: {status?: string},
     tab: chrome.tabs.Tab | undefined,
   ): Promise<void> {
     Logger.event(`onTabUpdated – ${tabId} – ${data.status}`);
@@ -461,7 +468,7 @@ export default class Background {
     Logger.event('changeFocus', windowId);
 
     this.lastWindowId = windowId;
-    this.activeTab = undefined;
+    this.setActiveTab(undefined);
     this.setIcon();
 
     await this.activateTab();
@@ -484,27 +491,26 @@ export default class Background {
    */
   private static popupListener<Action extends ActionNames>(message: MessageFromPopup<Action>) {
     Logger.request(POPUP, message, true);
+    const resolvedMessage = this.addActiveTabToMessage(message);
 
-    message.url = message.url ?? this.activeTab?.url;
-
-    switch (message.action) {
+    switch (resolvedMessage.action) {
       case ActionNames.popupConnected:
         Connection.flushQueue({type: POPUP});
 
-        void this.confirmContentConnection(message);
+        void this.confirmContentConnection(resolvedMessage);
         break;
 
       case ActionNames.mapField:
         this.moveFocus();
-        Connection.sendToContent(message as MessageFromPopup<ActionNames.mapField>);
+        Connection.sendToContent(resolvedMessage as MessageFromPopup<ActionNames.mapField>);
         break;
 
       case ActionNames.deleteFields:
-        void deleteMappedFields(message as DeleteFieldsMessage);
+        void deleteMappedFields(resolvedMessage as DeleteFieldsMessage);
         break;
 
       case ActionNames.saveSettings:
-        void this.setGlobalSettings((message as SaveSettingsMessage).settings);
+        void this.setGlobalSettings((resolvedMessage as SaveSettingsMessage).settings);
         break;
 
       case ActionNames.getSettings:
@@ -515,7 +521,7 @@ export default class Background {
         break;
 
       case ActionNames.getContent:
-        void BackgroundActions.getContent(message as MessageGetContentFromPopup);
+        void BackgroundActions.getContent(resolvedMessage as MessageGetContentFromPopup);
         break;
 
       /**
@@ -525,6 +531,10 @@ export default class Background {
         Connection.sendToContent(message as StopMappingMessage);
         break;
     }
+  }
+
+  private static setActiveTab(tab: undefined | chrome.tabs.Tab) {
+    this.activeTab = tab;
   }
 
   /**

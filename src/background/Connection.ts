@@ -70,18 +70,13 @@ export default class Connection {
    * Send data to injected content script.
    */
   public static sendToContent<Action extends ActionNames>(message: MessageToContent<Action>): void {
-    const tabId = message.id ?? Background.activeTab?.id;
-    const connectionType = {type: CONTENT, id: tabId} satisfies ConnectionType;
-    const resolvedMessage: MessageToContent<Action> = {...message, id: tabId};
-
-    const port = this.getContentPort(tabId);
-
-    if (!port) {
-      this.addToQueue(connectionType, resolvedMessage);
-      return;
-    }
+    const resolvedMessage = Background.addActiveTabToMessage(message);
+    const activeTabId = resolvedMessage.id;
+    const connectionType = {type: CONTENT, id: activeTabId} satisfies ConnectionType;
 
     try {
+      const port = this.getContentPort(activeTabId);
+
       port.postMessage({
         ...resolvedMessage,
         ...(import.meta.env.DEV
@@ -96,8 +91,6 @@ export default class Connection {
       Logger.error('sendToContent', e);
       this.addToQueue(connectionType, resolvedMessage);
 
-      const activeTabId = Background.activeTab?.id;
-
       if (!activeTabId) {
         return;
       }
@@ -110,19 +103,19 @@ export default class Connection {
    * Send data to popup.
    */
   public static sendToPopup<Action extends ActionNames>(message: MessageToPopup<Action>): void {
-    message.url = Background.getUrl();
+    const resolvedMessage = Background.addActiveTabToMessage<Action>(message);
 
     if (!this.popup) {
-      this.addToQueue({type: POPUP}, message);
+      this.addToQueue({type: POPUP}, resolvedMessage);
       return;
     }
 
     try {
-      this.popup?.postMessage(message);
-      Logger.request(POPUP, message);
+      this.popup?.postMessage(resolvedMessage);
+      Logger.request(POPUP, resolvedMessage);
     } catch (e) {
       Logger.error('sendToPopup', e);
-      this.addToQueue({type: POPUP}, message);
+      this.addToQueue({type: POPUP}, resolvedMessage);
       this.popup = undefined;
     }
   }
@@ -141,10 +134,16 @@ export default class Connection {
     queue.add(JSON.stringify(message));
   }
 
-  private static getContentPort(tabId?: number): chrome.runtime.Port | undefined {
-    const resolvedTabId = tabId ?? Background.activeTab?.id;
+  private static getContentPort(tabId?: number): chrome.runtime.Port {
+    const activeTab = Background.getActiveTab();
+    const resolvedTabId = tabId ?? activeTab?.id;
 
-    return resolvedTabId ? this.contentPorts.get(resolvedTabId) : undefined;
+    if (!resolvedTabId || !this.contentPorts.has(resolvedTabId)) {
+      throw new Error('No content port found.');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.contentPorts.get(resolvedTabId)!;
   }
 
   /**

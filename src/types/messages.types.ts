@@ -207,10 +207,6 @@ interface ToContentMessageMap {
   [ActionNames.contentConnected]: ContentConnectedMessage;
   [ActionNames.getContent]: GetContentMessageToContent;
   [ActionNames.mapField]: MapFieldMessage;
-  /**
-   * Disable the listeners on the content script.
-   */
-  [ActionNames.stopListening]: MessageData<ActionNames.stopListening>;
   [ActionNames.stopMapping]: StopMappingMessage;
 }
 

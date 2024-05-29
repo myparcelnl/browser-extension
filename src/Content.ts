@@ -5,11 +5,12 @@ import {
   type MapFieldMessage,
   type ContentConnectedMessage,
   type GetContentMessageToContent,
+  type FoundContentMessage,
+  type MappedFieldMessage,
 } from './types/index.js';
 import {ActionNames} from './helpers/index.js';
 import Logger from './helpers/Logger.js';
 import Selection from './content/Selection.js';
-import ContentActions from './content/ContentActions.js';
 import {BACKGROUND} from './constants.js';
 
 interface Listeners {
@@ -67,16 +68,23 @@ export default class Content {
   public static sendToBackground(message: MessageFromContent): void {
     Logger.request(BACKGROUND, message);
 
-    this.backgroundConnection.postMessage({...message, id: this.identifier});
+    this.backgroundConnection.postMessage(this.addIdentifierToMessage(message));
+  }
+
+  private static addIdentifierToMessage<
+    Action extends ActionNames,
+    Message extends MessageToContent<Action> | MessageFromContent<Action>,
+  >(message: Message): Message {
+    return {...message, id: this.identifier};
   }
 
   /**
    * Listener for messages from the service worker.
    */
   private static backgroundListener<Action extends ActionNames>(message: MessageToContent<Action>): void {
-    Logger.request(BACKGROUND, {...message, id: this.identifier}, true);
+    const resolvedMessage = this.addIdentifierToMessage(message);
 
-    const resolvedMessage = {...message, id: message.id ?? this.identifier};
+    Logger.request(BACKGROUND, resolvedMessage, true);
 
     switch (message.action) {
       case ActionNames.contentConnected:
@@ -87,31 +95,52 @@ export default class Content {
        * Map an element to a field.
        */
       case ActionNames.mapField:
-        void ContentActions.mapField(resolvedMessage as MapFieldMessage);
+        void this.mapField(resolvedMessage as MapFieldMessage);
         break;
 
       /**
        * Find the content on the current page.
        */
       case ActionNames.getContent:
-        void ContentActions.getContent(resolvedMessage as GetContentMessageToContent);
+        void this.getContent(resolvedMessage as GetContentMessageToContent);
         break;
 
-      /**
-       * Remove listener and connection to extension.
-       */
-      case ActionNames.stopListening:
-        this.backgroundConnection.onMessage.removeListener(this.listeners.background);
-        this.backgroundConnection.disconnect();
-        break;
-
-      /**
-       * Remove listener and connection to extension.
-       */
       case ActionNames.stopMapping:
         Selection.stopMapping();
         break;
     }
+  }
+
+  /**
+   * Get values using previously mapped fields (if any).
+   */
+  private static getContent(message: GetContentMessageToContent): void {
+    const {selectors, action, ...requestProperties} = message;
+    const values = Selection.getElementsContent(message.selectors ?? {});
+
+    Content.sendToBackground({
+      ...requestProperties,
+      action: ActionNames.foundContent,
+      url: window.location.href,
+      values,
+    } satisfies FoundContentMessage);
+  }
+
+  /**
+   * Start creating new field mapping.
+   */
+  private static async mapField(message: MapFieldMessage): Promise<void> {
+    const {field, url} = message;
+    const path = await Selection.startMapping(message.strings);
+    const elementContent = Selection.getSelectorContent(path);
+
+    Content.sendToBackground({
+      action: ActionNames.mappedField,
+      url,
+      field,
+      path,
+      content: elementContent,
+    } satisfies MappedFieldMessage);
   }
 
   private static setIdentifier(message: ContentConnectedMessage): void {

@@ -6,18 +6,18 @@ on:
       environment:
         description: 'The environment to publish the extensions to'
         required: true
-        default: 'testing'
+        type: choice
         options:
-          - 'production'
           - 'testing'
+          - 'production'
 
       target:
-        required: true
         description: 'The target to publish the extensions to'
-        default: 'trustedTesters'
+        required: true
+        type: choice
         options:
-          - 'default'
           - 'trustedTesters'
+          - 'default'
 
   workflow_call:
     inputs:
@@ -34,35 +34,105 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.prerelease.outputs.version || steps.testing.outputs.version }}
+      released: ${{ steps.prerelease.outputs.released || steps.testing.outputs.released }}
+    steps:
+      - uses: myparcelnl/actions/setup-git-credentials@v4
+        if: inputs.environment == 'production'
+        id: credentials
+        with:
+          app-id: ${{ secrets.MYPARCEL_APP_ID }}
+          private-key: ${{ secrets.MYPARCEL_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        if: inputs.environment == 'production'
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ steps.credentials.outputs.token }}
+
+      - uses: myparcelnl/actions/yarn-install@v4
+        if: inputs.environment == 'production'
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+
+      - uses: myparcelnl/actions/semantic-release@v4
+        name: 'Determine new version'
+        if: inputs.environment == 'production'
+        id: prerelease
+        with:
+          token: ${{ steps.credentials.outputs.token }}
+          dry-run: true
+
+      - id: testing
+        if: inputs.environment != 'production'
+        shell: bash
+        #language=bash
+        run: |
+          echo "version=(testing)" >> $GITHUB_OUTPUT
+          echo "released=false" >> $GITHUB_OUTPUT
+
   deploy:
-    name: 'Publish ${{ inputs.environment }} extensions to ${{ inputs.target }}'
+    name: 'Publish ${{ inputs.environment }} ${{ needs.prepare.outputs.version }} extensions to ${{ inputs.target }}'
+    needs:
+      - prepare
     runs-on: ubuntu-22.04
     environment:
       name: ${{ inputs.environment }}
     steps:
+      - uses: myparcelnl/actions/setup-git-credentials@v4
+        id: credentials
+        with:
+          app-id: ${{ secrets.MYPARCEL_APP_ID }}
+          private-key: ${{ secrets.MYPARCEL_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # needed for finding last git tag
+          fetch-depth: 0
+          token: ${{ steps.credentials.outputs.token }}
+
+      ###
+      # This is also done by semantic-release itself, but we want to know if the build step passes before running
+      #  semantic-release. The new version needs to be in the build, so we need to update it before building.
+      ###
+      - name: 'Update version in package.json'
+        if: inputs.environment == 'production' && needs.prepare.outputs.released == 'true'
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        shell: bash
+        #language=bash
+        run: |
+          npm version --no-git-tag-version "$VERSION"
 
       - uses: ./.github/actions/build
         with:
           node-version: ${{ vars.NODE_VERSION }}
 
+      - uses: myparcelnl/actions/semantic-release@v4
+        if: inputs.environment == 'production' && needs.prepare.outputs.released == 'true'
+        id: release
+        with:
+          token: ${{ steps.credentials.outputs.token }}
+          write-summary: true
+
       - name: 'Prepare'
         id: prepare
         env:
-          IS_TESTING: ${{ inputs.environment == 'testing' }}
+          IS_PRODUCTION: ${{ inputs.environment == 'production' }}
         shell: bash
         # language=bash
         run: |
-          if [ $IS_TESTING == true ]; then
-            echo "zip-path-myparcel=dist/myparcel-testing.zip" >> $GITHUB_OUTPUT
-            echo "zip-path-flespakket=dist/flespakket-testing.zip" >> $GITHUB_OUTPUT
-            echo "zip-path-sendmyparcel=dist/sendmyparcel-testing.zip" >> $GITHUB_OUTPUT
-          else
+          if [ $IS_PRODUCTION == true ]; then
             echo "zip-path-myparcel=dist/myparcel.zip" >> $GITHUB_OUTPUT
             echo "zip-path-flespakket=dist/flespakket.zip" >> $GITHUB_OUTPUT
             echo "zip-path-sendmyparcel=dist/sendmyparcel.zip" >> $GITHUB_OUTPUT
+          else
+            echo "zip-path-myparcel=dist/myparcel-testing.zip" >> $GITHUB_OUTPUT
+            echo "zip-path-flespakket=dist/flespakket-testing.zip" >> $GITHUB_OUTPUT
+            echo "zip-path-sendmyparcel=dist/sendmyparcel-testing.zip" >> $GITHUB_OUTPUT
           fi
 
       - name: 'Publish MyParcel extension'

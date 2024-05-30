@@ -1,31 +1,32 @@
 {
   "name": "@myparcel/chrome-extension",
   "version": "2.7.2",
+  "private": true,
   "description": "MyParcel Chrome Extension",
   "repository": {
     "url": "git+ssh://git@github.com/myparcelnl/browser-extension.git"
   },
-  "type": "module",
   "license": "MIT",
   "author": "Edie Lemoine <edie@myparcel.nl>",
+  "type": "module",
   "scripts": {
+    "prebuild": "tsup-node private/build.ts --format esm --out-dir bin",
     "build": "run prebuild && node bin/build.js",
     "build:all": "run prebuild && node bin/build.js --environment testing && node bin/build.js",
-    "build:zip": "run prebuild && node bin/build.js --environment testing --zip && node bin/build.js --zip",
     "build:prod": "run build",
     "build:test": "run build --environment testing",
-    "prebuild": "tsup-node private/build.ts --format esm --out-dir bin",
+    "build:zip": "run prebuild && node bin/build.js --environment testing --zip && node bin/build.js --zip",
     "prepare": "is-ci || husky install",
     "serve": "vite",
     "test": "jest"
   },
-  "dependencies": {
-    "unique-selector": "^0.5.0"
-  },
-  "prettier": "@myparcel/prettier-config",
   "lint-staged": {
     "*.{js,cjs,mjs}": "eslint --fix",
     "*.{json,md,yml,html,css,scss}": "prettier --write"
+  },
+  "prettier": "@myparcel/prettier-config",
+  "dependencies": {
+    "unique-selector": "^0.5.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.23",
@@ -34,7 +35,9 @@
     "@myparcel-eslint/eslint-config-node": "^1.3.1",
     "@myparcel-eslint/eslint-config-prettier": "^1.3.1",
     "@myparcel-eslint/eslint-config-prettier-typescript": "^1.3.1",
+    "@myparcel/semantic-release-config": "^5.0.1",
     "@myparcel/ts-utils": "^1.14.0",
+    "@semantic-release/git": "^10.0.1",
     "@types/archiver": "^6.0.2",
     "@types/chrome": "^0.0.267",
     "@types/jest": "^25.2.3",
@@ -54,6 +57,7 @@
     "prettier": "^2.0.0",
     "puppeteer": "^14.1.0",
     "sass": "^1.76.0",
+    "semantic-release": "^23.1.1",
     "tsup": "^8.0.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.10",

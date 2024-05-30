@@ -137,6 +137,7 @@ jobs:
 
       - name: 'Publish MyParcel extension'
         uses: mnao305/chrome-extension-upload@v5.0.0
+        continue-on-error: true
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-myparcel }}
           publish: true
@@ -148,6 +149,7 @@ jobs:
 
       - name: 'Publish Flespakket testing extension'
         uses: mnao305/chrome-extension-upload@v5.0.0
+        continue-on-error: true
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-flespakket }}
           publish: true
@@ -159,6 +161,7 @@ jobs:
 
       - name: 'Publish SendMyParcel testing extension'
         uses: mnao305/chrome-extension-upload@v5.0.0
+        continue-on-error: true
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-sendmyparcel }}
           publish: true

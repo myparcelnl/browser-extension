@@ -11,24 +11,6 @@ on:
           - 'testing'
           - 'production'
 
-      target:
-        description: 'The target to publish the extensions to'
-        required: true
-        type: choice
-        options:
-          - 'trustedTesters'
-          - 'default'
-
-  workflow_call:
-    inputs:
-      environment:
-        type: string
-        required: true
-
-      target:
-        type: string
-        required: true
-
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
@@ -76,7 +58,7 @@ jobs:
           echo "released=false" >> $GITHUB_OUTPUT
 
   deploy:
-    name: 'Publish ${{ inputs.environment }} ${{ needs.prepare.outputs.version }} extensions to ${{ inputs.target }}'
+    name: 'Publish ${{ inputs.environment }} ${{ needs.prepare.outputs.version }} extensions'
     needs:
       - prepare
     runs-on: ubuntu-22.04
@@ -126,10 +108,12 @@ jobs:
         # language=bash
         run: |
           if [ $IS_PRODUCTION == true ]; then
+            echo "target=default" >> $GITHUB_OUTPUT
             echo "zip-path-myparcel=dist/myparcel.zip" >> $GITHUB_OUTPUT
             echo "zip-path-flespakket=dist/flespakket.zip" >> $GITHUB_OUTPUT
             echo "zip-path-sendmyparcel=dist/sendmyparcel.zip" >> $GITHUB_OUTPUT
           else
+            echo "target=trustedTesters" >> $GITHUB_OUTPUT
             echo "zip-path-myparcel=dist/myparcel-testing.zip" >> $GITHUB_OUTPUT
             echo "zip-path-flespakket=dist/flespakket-testing.zip" >> $GITHUB_OUTPUT
             echo "zip-path-sendmyparcel=dist/sendmyparcel-testing.zip" >> $GITHUB_OUTPUT
@@ -141,7 +125,7 @@ jobs:
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-myparcel }}
           publish: true
-          publish-target: ${{ inputs.target }}
+          publish-target: ${{ steps.prepare.outputs.target }}
           extension-id: ${{ vars.EXTENSION_ID_MYPARCEL }}
           client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
@@ -153,7 +137,7 @@ jobs:
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-flespakket }}
           publish: true
-          publish-target: ${{ inputs.target }}
+          publish-target: ${{ steps.prepare.outputs.target }}
           extension-id: ${{ vars.EXTENSION_ID_FLESPAKKET }}
           client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
@@ -165,7 +149,7 @@ jobs:
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-sendmyparcel }}
           publish: true
-          publish-target: ${{ inputs.target }}
+          publish-target: ${{ steps.prepare.outputs.target }}
           extension-id: ${{ vars.EXTENSION_ID_SENDMYPARCEL }}
           client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}

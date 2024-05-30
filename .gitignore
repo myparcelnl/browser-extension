@@ -1,7 +1,5 @@
 .DS_Store
 node_modules/
-dist/
-
 
 .yarn/*
 !.yarn/releases
@@ -9,3 +7,11 @@ dist/
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
+
+# Built files
+bin/
+dist/
+
+# Temporary build files
+*.tsbuildinfo
+vite.config.ts.timestamp-*

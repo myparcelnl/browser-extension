@@ -1,3 +1,8 @@
+// $primary is defined in vite.config.js
+
+//noinspection SassScssUnresolvedVariable
+$secondary: darken($primary, 5);
+
 $white: #fff;
 $dark-gray: #222;
 $black: #000;

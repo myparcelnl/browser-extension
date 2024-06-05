@@ -46,8 +46,7 @@ export interface MessageDataWithPresetAndFields<Action extends ActionNames = Act
 /**
  * Popup to background: getContent
  */
-export interface GetContentMessageFromPopup<Action extends ActionNames = ActionNames>
-  extends MessageDataWithUrl<Action> {
+export interface GetContentMessageFromPopup<Action extends ActionNames = ActionNames> extends MessageData<Action> {
   preset: Record<string, string>;
   presetChosenManually: boolean;
   presetName: string;

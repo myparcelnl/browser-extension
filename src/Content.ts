@@ -59,7 +59,7 @@ export default class Content {
     this.backgroundConnection.onMessage.addListener(this.listeners.background);
     this.backgroundConnection.onDisconnect.addListener(this.listeners.disconnect);
 
-    this.sendToBackground({action: ActionNames.contentConnected, url: window.location.href, settings: null});
+    this.sendToBackground({action: ActionNames.contentConnected, settings: null});
   }
 
   /**
@@ -121,7 +121,6 @@ export default class Content {
     Content.sendToBackground({
       ...requestProperties,
       action: ActionNames.foundContent,
-      url: window.location.href,
       values,
     } satisfies FoundContentMessage);
   }

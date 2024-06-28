@@ -51,7 +51,7 @@ export const manifest = defineManifest((env) => {
     content_scripts: [
       {
         js: ['src/contentScript.ts'],
-        all_frames: true,
+        all_frames: false,
         exclude_matches: [
           '*://backoffice.flespakket.nl/*',
           '*://backoffice.myparcel.nl/*',

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.2](https://github.com/myparcelnl/browser-extension/compare/v2.8.1...v2.8.2) (2024-07-02)
+
+
+### :bug: Bug Fixes
+
+* stop injecting content scripts in iframes ([#11](https://github.com/myparcelnl/browser-extension/issues/11)) ([bb82ee3](https://github.com/myparcelnl/browser-extension/commit/bb82ee351079cc766bc0a79aab2b4aec625c248b))
+
 ## [2.8.1](https://github.com/myparcelnl/browser-extension/compare/v2.8.0...v2.8.1) (2024-06-14)
 
 

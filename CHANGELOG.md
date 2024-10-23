@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.3](https://github.com/myparcelnl/browser-extension/compare/v2.8.2...v2.8.3) (2024-10-23)
+
+
+### :bug: Bug Fixes
+
+* **deps:** update dependencies ([c6f81d2](https://github.com/myparcelnl/browser-extension/commit/c6f81d205785112461d88530fbe847fc978dc349)), closes [crxjs/chrome-extension-tools#918](https://github.com/crxjs/chrome-extension-tools/issues/918)
+
 ## [2.8.2](https://github.com/myparcelnl/browser-extension/compare/v2.8.1...v2.8.2) (2024-07-02)
 
 

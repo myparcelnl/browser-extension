@@ -131,7 +131,7 @@ jobs:
           client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
 
-      - name: 'Publish Flespakket testing extension'
+      - name: 'Publish Flespakket extension'
         uses: mnao305/chrome-extension-upload@v5.0.0
         continue-on-error: true
         with:
@@ -143,7 +143,7 @@ jobs:
           client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
 
-      - name: 'Publish SendMyParcel testing extension'
+      - name: 'Publish SendMyParcel extension'
         uses: mnao305/chrome-extension-upload@v5.0.0
         continue-on-error: true
         with:

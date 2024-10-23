@@ -63,8 +63,9 @@
     "vite": "^5.2.10",
     "yargs": "^15.3.1"
   },
-  "packageManager": "yarn@4.1.1",
+  "packageManager": "yarn@4.5.1",
   "volta": {
-    "node": "20.12.2"
+    "node": "20.12.2",
+    "yarn": "4.5.1"
   }
 }

@@ -42,7 +42,6 @@ export const CONTEXT_MENU = Object.freeze({
 
 export enum PlatformName {
   MyParcel = 'myparcel',
-  Flespakket = 'flespakket',
   SendMyParcel = 'sendmyparcel',
 }
 

@@ -20,20 +20,6 @@ export const platformConfig: PlatformConfig = Object.freeze({
       [Environment.Production]: 'https://extension.myparcel.nl',
     },
   },
-  [PlatformName.Flespakket]: {
-    manifest: {
-      name: 'Flespakket',
-      short_name: 'Flespakket',
-      externally_connectable: {
-        matches: ['*://*.flespakket.nl/*'],
-      },
-    },
-    urls: {
-      [Environment.Development]: 'https://extension.dev.flespakket.nl',
-      [Environment.Testing]: 'https://remote1.extension.testing.flespakket.nl',
-      [Environment.Production]: 'https://extension.flespakket.nl',
-    },
-  },
   [PlatformName.SendMyParcel]: {
     manifest: {
       name: 'SendMyParcel',

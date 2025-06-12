@@ -53,10 +53,8 @@ export const manifest = defineManifest((env) => {
         js: ['src/contentScript.ts'],
         all_frames: false,
         exclude_matches: [
-          '*://backoffice.flespakket.nl/*',
           '*://backoffice.myparcel.nl/*',
           '*://backoffice.sendmyparcel.be/*',
-          '*://extension.flespakket.nl/*',
           '*://extension.myparcel.nl/*',
           '*://extension.sendmyparcel.be/*',
         ],

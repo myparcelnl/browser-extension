@@ -110,12 +110,10 @@ jobs:
           if [ $IS_PRODUCTION == true ]; then
             echo "target=default" >> $GITHUB_OUTPUT
             echo "zip-path-myparcel=dist/myparcel.zip" >> $GITHUB_OUTPUT
-            echo "zip-path-flespakket=dist/flespakket.zip" >> $GITHUB_OUTPUT
             echo "zip-path-sendmyparcel=dist/sendmyparcel.zip" >> $GITHUB_OUTPUT
           else
             echo "target=trustedTesters" >> $GITHUB_OUTPUT
             echo "zip-path-myparcel=dist/myparcel-testing.zip" >> $GITHUB_OUTPUT
-            echo "zip-path-flespakket=dist/flespakket-testing.zip" >> $GITHUB_OUTPUT
             echo "zip-path-sendmyparcel=dist/sendmyparcel-testing.zip" >> $GITHUB_OUTPUT
           fi
 
@@ -127,18 +125,6 @@ jobs:
           publish: true
           publish-target: ${{ steps.prepare.outputs.target }}
           extension-id: ${{ vars.EXTENSION_ID_MYPARCEL }}
-          client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
-
-      - name: 'Publish Flespakket extension'
-        uses: mnao305/chrome-extension-upload@v5.0.0
-        continue-on-error: true
-        with:
-          file-path: ${{ steps.prepare.outputs.zip-path-flespakket }}
-          publish: true
-          publish-target: ${{ steps.prepare.outputs.target }}
-          extension-id: ${{ vars.EXTENSION_ID_FLESPAKKET }}
           client-id: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}

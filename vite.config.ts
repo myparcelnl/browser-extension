@@ -14,10 +14,6 @@ const modifySassForPlatform = (platform: PlatformName) => {
     case PlatformName.SendMyParcel:
       sass += `$primary: #068d94;`;
       break;
-
-    case PlatformName.Flespakket:
-      sass += `$primary: #ff8c00;`;
-      break;
   }
 
   return sass;

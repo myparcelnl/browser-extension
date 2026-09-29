@@ -1337,7 +1337,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.16.15"
     archiver: "npm:^7.0.1"
-    chalk: "npm:^5.3.0"
+    chalk: "npm:^6.0.1"
     chrome-webstore-upload: "npm:^3.1.4"
     commander: "npm:^12.1.0"
     eslint: "npm:^8.0.0"
@@ -4310,6 +4310,13 @@ __metadata:
   version: 5.3.0
   resolution: "chalk@npm:5.3.0"
   checksum: 10c0/8297d436b2c0f95801103ff2ef67268d362021b8210daf8ddbe349695333eb3610a71122172ff3b0272f1ef2cf7cc2c41fdaa4715f52e49ffe04c56340feed09
+  languageName: node
+  linkType: hard
+
+"chalk@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "chalk@npm:6.0.1"
+  checksum: 10c0/4c58238fa874f531b5201bf99ebd374742be31f8e306c7783d930856aec305f2dea3e07531a8805b2a7ba92807296e39ced52e9f673703e0264d96e83998a429
   languageName: node
   linkType: hard
 

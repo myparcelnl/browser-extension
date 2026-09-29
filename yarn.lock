@@ -1346,7 +1346,7 @@ __metadata:
     is-ci: "npm:^3.0.1"
     jest: "npm:^29.7.0"
     jest-puppeteer: "npm:^10.1.4"
-    jest-webextension-mock: "npm:^3.9.0"
+    jest-webextension-mock: "npm:^4.2.0"
     lint-staged: "npm:^15.2.10"
     prettier: "npm:^2.0.0"
     puppeteer: "npm:^23.6.0"
@@ -8071,10 +8071,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-webextension-mock@npm:^3.9.0":
-  version: 3.9.0
-  resolution: "jest-webextension-mock@npm:3.9.0"
-  checksum: 10c0/9da3f5ee68a0ce11b75db0403ed71ed1da0e227b71f23bca49672db47f2d7ba0f2f66020468ae5e416c4f9ae029d1e3ce1674a4056f68ccabdfafd2e593f2972
+"jest-webextension-mock@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "jest-webextension-mock@npm:4.2.0"
+  checksum: 10c0/ef5882d36c8c992fb0a357562911ed7c18ed67be565ed79495d5f5b56dc945f5e93cc05acd892f9db0711c55fd212c202b2b6b00f03e65c470a051ff45714411
   languageName: node
   linkType: hard
 

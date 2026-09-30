@@ -29,7 +29,7 @@ jobs:
           app-id: ${{ secrets.MYPARCEL_APP_ID }}
           private-key: ${{ secrets.MYPARCEL_APP_PRIVATE_KEY }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: inputs.environment == 'production'
         with:
           fetch-depth: 0
@@ -71,7 +71,7 @@ jobs:
           app-id: ${{ secrets.MYPARCEL_APP_ID }}
           private-key: ${{ secrets.MYPARCEL_APP_PRIVATE_KEY }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           token: ${{ steps.credentials.outputs.token }}
@@ -118,7 +118,7 @@ jobs:
           fi
 
       - name: 'Publish MyParcel extension'
-        uses: mnao305/chrome-extension-upload@v5.0.0
+        uses: mnao305/chrome-extension-upload@v7.0.0
         continue-on-error: true
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-myparcel }}
@@ -130,7 +130,7 @@ jobs:
           refresh-token: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
 
       - name: 'Publish SendMyParcel extension'
-        uses: mnao305/chrome-extension-upload@v5.0.0
+        uses: mnao305/chrome-extension-upload@v7.0.0
         continue-on-error: true
         with:
           file-path: ${{ steps.prepare.outputs.zip-path-sendmyparcel }}

@@ -1262,29 +1262,28 @@ __metadata:
   linkType: hard
 
 "@myparcel-dev/eslint-config-prettier-typescript@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@myparcel-dev/eslint-config-prettier-typescript@npm:1.4.0"
+  version: 1.4.1
+  resolution: "@myparcel-dev/eslint-config-prettier-typescript@npm:1.4.1"
   dependencies:
-    "@myparcel-dev/eslint-config-prettier": "npm:^1.4.0"
+    "@myparcel-dev/eslint-config-prettier": "npm:^1.4.1"
     "@myparcel-dev/eslint-config-typescript": "npm:^1.4.0"
   peerDependencies:
     eslint: 7 - 8
     prettier: ">= 2"
-  checksum: 10c0/4f68a775370ac46091e356060e7432ec7d47e9fda1ea1554f34ddcaddcfa824a9d31c7cba1f988ce99c17a9e7fdac47d66f37891d0e32d10946ef212aa6dacef
+  checksum: 10c0/4398f6a98bdc5076a0cc440fe6c6eaff79e9b9d3f5f2a6811e2fa3ae55ede089f809159f543f08a3d486507d5ad47ad5844d5aaa36988259e491a66e6bbf4523
   languageName: node
   linkType: hard
 
-"@myparcel-dev/eslint-config-prettier@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@myparcel-dev/eslint-config-prettier@npm:1.4.0"
+"@myparcel-dev/eslint-config-prettier@npm:^1.4.0, @myparcel-dev/eslint-config-prettier@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@myparcel-dev/eslint-config-prettier@npm:1.4.1"
   dependencies:
-    "@myparcel/prettier-config": "npm:>= 1"
     eslint-config-prettier: "npm:1 - 8"
     eslint-plugin-prettier: "npm:1 - 4"
   peerDependencies:
     eslint: 7 - 8
     prettier: ">= 2"
-  checksum: 10c0/2af0c9c09cb6d7ca480d25567984e07243b6ab934d39676a0da529d9e7fada7c97df3a18b1c646e6ea036e487c7fe43e366f70c091dec7e031bf6858c8e8231f
+  checksum: 10c0/867f28100bfff9f59220fa96951bc2208c0adf79f272613580f362be9f7b599d6ac7529fa1f43b2d72abbf278b73a7f18bcb581b83b7535c0781ee276cb603a0
   languageName: node
   linkType: hard
 
@@ -1312,9 +1311,9 @@ __metadata:
   linkType: hard
 
 "@myparcel-dev/prettier-config@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@myparcel-dev/prettier-config@npm:2.0.1"
-  checksum: 10c0/04952affe76ff080c883c92e511004365bdb47956882616f275e48318dcd36029bd80de75bd812ec7bb4615dcfc0f41a48e64a19868b1570f4556354af9f0190
+  version: 2.0.3
+  resolution: "@myparcel-dev/prettier-config@npm:2.0.3"
+  checksum: 10c0/e8600fdc7aef57b50c8fbd16dd0844f634e9d54a5fba5d823353680536dcb0adc08293b4d128b0bf0d85f56efce0fe2a3b19f470e719c09600ef67173dc5cebf
   languageName: node
   linkType: hard
 
@@ -1333,7 +1332,7 @@ __metadata:
     "@myparcel/ts-utils": "npm:^1.14.0"
     "@semantic-release/git": "npm:^10.0.1"
     "@types/archiver": "npm:^6.0.3"
-    "@types/chrome": "npm:^0.0.279"
+    "@types/chrome": "npm:^0.3.5"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.16.15"
     archiver: "npm:^7.0.1"
@@ -1360,16 +1359,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@myparcel/prettier-config@npm:>= 1":
-  version: 1.1.0
-  resolution: "@myparcel/prettier-config@npm:1.1.0"
-  checksum: 10c0/3253c037b7cb0fc0bd622b7be579e5ff1056fdf7fce86fc0ffba614cc4cad464deebe62928890b78baa749353cd7535caece717e50809ab428e2565c7c6fd02f
-  languageName: node
-  linkType: hard
-
 "@myparcel/semantic-release-config@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@myparcel/semantic-release-config@npm:5.0.1"
+  version: 5.1.0
+  resolution: "@myparcel/semantic-release-config@npm:5.1.0"
   dependencies:
     "@iwavesmedia/semantic-release-composer": "npm:^1.0.0"
     "@semantic-release/changelog": "npm:^6.0.1"
@@ -1381,7 +1373,7 @@ __metadata:
     "@semantic-release/release-notes-generator": "npm:^10.0.0"
     conventional-changelog-conventionalcommits: "npm:^4.0.0 || ^5.0.0"
     semantic-release: "npm:^21.0.0"
-  checksum: 10c0/0b487504f38163167dd7c0e410ca9fee60b3d9b3004fcaf580320a2d70d5448471856b47780d022bad25fcdf9ee1d541f2e1b5101c898fe40a4485ab86cc65ef
+  checksum: 10c0/e43369a6cd7b65ba1adf8470edf36f98a1f46cadf83304ff92f7eed3105af3b59a4e0edf96046bd8700ebf192ac7938683ec3defe77798e3a03770df3d6c2d6a
   languageName: node
   linkType: hard
 
@@ -3136,13 +3128,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.279":
-  version: 0.0.279
-  resolution: "@types/chrome@npm:0.0.279"
+"@types/chrome@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "@types/chrome@npm:0.3.5"
   dependencies:
     "@types/filesystem": "npm:*"
     "@types/har-format": "npm:*"
-  checksum: 10c0/ceccbad43d850d24c3232844982016560e96a437ad456b05f6989a60d817ef4753a12d2bbc41354561afc4df555dac11678f1c3cf1faf406f1c1791c87fa779b
+  checksum: 10c0/824d673a6820d8490217a54736f53ae0d883affb5d290232cb7ef9d69e94111a25b0e3520beb5be48dc806707459ca0a08033caf30f189eac7af7a534f38a54a
   languageName: node
   linkType: hard
 
@@ -4427,12 +4419,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "chokidar@npm:4.0.1"
+"chokidar@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "chokidar@npm:5.0.0"
   dependencies:
-    readdirp: "npm:^4.0.1"
-  checksum: 10c0/4bb7a3adc304059810bb6c420c43261a15bb44f610d77c35547addc84faa0374265c3adc67f25d06f363d9a4571962b02679268c40de07676d260de1986efea9
+    readdirp: "npm:^5.0.0"
+  checksum: 10c0/42fc907cb2a7ff5c9e220f84dae75380a77997f851c2a5e7865a2cf9ae45dd407a23557208cdcdbf3ac8c93341135a1748e4c48c31855f3bfa095e5159b6bdec
   languageName: node
   linkType: hard
 
@@ -6164,15 +6156,15 @@ __metadata:
   linkType: hard
 
 "fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "fast-glob@npm:3.3.2"
+  version: 3.3.3
+  resolution: "fast-glob@npm:3.3.3"
   dependencies:
     "@nodelib/fs.stat": "npm:^2.0.2"
     "@nodelib/fs.walk": "npm:^1.2.3"
     glob-parent: "npm:^5.1.2"
     merge2: "npm:^1.3.0"
-    micromatch: "npm:^4.0.4"
-  checksum: 10c0/42baad7b9cd40b63e42039132bde27ca2cb3a4950d0a0f9abe4639ea1aa9d3e3b40f98b1fe31cbc0cc17b664c9ea7447d911a152fa34ec5b72977b125a6fc845
+    micromatch: "npm:^4.0.8"
+  checksum: 10c0/f6aaa141d0d3384cf73cbcdfc52f475ed293f6d5b65bfc5def368b09163a9f7e5ec2b3014d80f733c405f58e470ee0cc451c2937685045cddcdeaa24199c43fe
   languageName: node
   linkType: hard
 
@@ -7106,11 +7098,11 @@ __metadata:
   linkType: hard
 
 "husky@npm:^9.1.6":
-  version: 9.1.6
-  resolution: "husky@npm:9.1.6"
+  version: 9.1.7
+  resolution: "husky@npm:9.1.7"
   bin:
     husky: bin.js
-  checksum: 10c0/705673db4a247c1febd9c5df5f6a3519106cf0335845027bb50a15fba9b1f542cb2610932ede96fd08008f6d9f49db0f15560509861808b0031cdc0e7c798bac
+  checksum: 10c0/35bb110a71086c48906aa7cd3ed4913fb913823715359d65e32e0b964cb1e255593b0ae8014a5005c66a68e6fa66c38dcfa8056dbbdfb8b0187c0ffe7ee3a58f
   languageName: node
   linkType: hard
 
@@ -7155,10 +7147,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immutable@npm:^4.0.0":
-  version: 4.3.9
-  resolution: "immutable@npm:4.3.9"
-  checksum: 10c0/394faa90ac8f2f62824e6c639705efdb8313787d6bc7864e28a48ee36aa2ba4b724eaf54a701ad991c278967a412b09143dd24fd19e3e2b0204eb481a5afa6ef
+"immutable@npm:^5.1.5":
+  version: 5.1.9
+  resolution: "immutable@npm:5.1.9"
+  checksum: 10c0/ae7032b60b81b682f3e7e4df13e1ec9a401a603eb81b15bb3e37331ed6666e318c71994c6936e1462eb443d32d04769396562a7e2669da22457c8ba279c03ad2
   languageName: node
   linkType: hard
 
@@ -9130,7 +9122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5, micromatch@npm:~4.0.8":
+"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5, micromatch@npm:^4.0.8, micromatch@npm:~4.0.8":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -11302,10 +11294,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readdirp@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "readdirp@npm:4.0.2"
-  checksum: 10c0/a16ecd8ef3286dcd90648c3b103e3826db2b766cdb4a988752c43a83f683d01c7059158d623cbcd8bdfb39e65d302d285be2d208e7d9f34d022d912b929217dd
+"readdirp@npm:^5.0.0":
+  version: 5.1.1
+  resolution: "readdirp@npm:5.1.1"
+  checksum: 10c0/5e99755684b9104761e48801828f4d2614efa33b1698629929c5985184dc63a7f8233c827832c40dc7be16b00cc871d303cf9de396d2fb74b9465ee2aa2424a1
   languageName: node
   linkType: hard
 
@@ -11605,16 +11597,19 @@ __metadata:
   linkType: hard
 
 "sass@npm:^1.80.3":
-  version: 1.80.3
-  resolution: "sass@npm:1.80.3"
+  version: 1.105.1
+  resolution: "sass@npm:1.105.1"
   dependencies:
     "@parcel/watcher": "npm:^2.4.1"
-    chokidar: "npm:^4.0.0"
-    immutable: "npm:^4.0.0"
+    chokidar: "npm:^5.0.0"
+    immutable: "npm:^5.1.5"
     source-map-js: "npm:>=0.6.2 <2.0.0"
+  dependenciesMeta:
+    "@parcel/watcher":
+      optional: true
   bin:
     sass: sass.js
-  checksum: 10c0/fa08043fc36b854717b6eaf6247ee11341d0aff5e17a645965071866bd677930c9c9467d82ed5a4a666d7897a82be8a61427cd81b808e6b9e2d3b32cf278bebd
+  checksum: 10c0/07246d9a9cc3c7974d28e03b394791c65d6a8f701d4ed2f130f5cb72ff3ef5626e5e66afb067348b2ae87011c52e18cd29f294025a6430851ee8617ef8c94f38
   languageName: node
   linkType: hard
 

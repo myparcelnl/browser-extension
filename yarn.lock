@@ -1363,6 +1363,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@myparcel-dev/ts-utils@npm:^1.15.3":
+  version: 1.15.3
+  resolution: "@myparcel-dev/ts-utils@npm:1.15.3"
+  checksum: 10c0/c9c8149672d677bb29d8aa3e1abaf47988eab69ebd5bfdb00af8db34312ec1b4555f2eb2afadcea70a08711529ee67593c08cba6d4e6cc3fdc897b0e237cf8c4
+  languageName: node
+  linkType: hard
+
 "@myparcel/chrome-extension@workspace:.":
   version: 0.0.0-use.local
   resolution: "@myparcel/chrome-extension@workspace:."
@@ -1375,7 +1382,7 @@ __metadata:
     "@myparcel-dev/eslint-config-prettier-typescript": "npm:^1.4.0"
     "@myparcel-dev/prettier-config": "npm:^2.0.1"
     "@myparcel-dev/semantic-release-config": "npm:^7.0.2"
-    "@myparcel/ts-utils": "npm:^1.14.0"
+    "@myparcel-dev/ts-utils": "npm:^1.15.3"
     "@semantic-release/git": "npm:^10.0.1"
     "@types/archiver": "npm:^6.0.3"
     "@types/chrome": "npm:^0.0.279"
@@ -1404,13 +1411,6 @@ __metadata:
     yargs: "npm:^17.7.2"
   languageName: unknown
   linkType: soft
-
-"@myparcel/ts-utils@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "@myparcel/ts-utils@npm:1.14.0"
-  checksum: 10c0/13bf9521403e9761303cde9916932e12bdd50096a678de19282899809430086071e071851f49ce58fe3a9afb0b78fd807a5e0b7aa88344c30dfdae010b061866
-  languageName: node
-  linkType: hard
 
 "@napi-rs/lzma-linux-x64-gnu@npm:1.5.1":
   version: 1.5.1

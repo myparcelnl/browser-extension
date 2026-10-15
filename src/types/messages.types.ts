@@ -1,4 +1,4 @@
-import {type MakeRequired} from '@myparcel/ts-utils';
+import {type MakeRequired} from '@myparcel-dev/ts-utils';
 import {type ActionNames} from '../helpers/index.js';
 import {type StoredExtensionSettings} from './generic.types.js';
 

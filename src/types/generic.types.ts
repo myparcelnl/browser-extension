@@ -1,4 +1,4 @@
-import {type RequireOnly} from '@myparcel/ts-utils';
+import {type RequireOnly} from '@myparcel-dev/ts-utils';
 import {type Environment, type PlatformName} from '../constants.js';
 
 export type PlatformConfig = Record<

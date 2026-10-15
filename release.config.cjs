@@ -5,13 +5,14 @@ const {
   addReleaseNotesGeneratorPlugin,
   addChangelogPlugin,
   addNpmPlugin,
-} = require('@myparcel/semantic-release-config/src/plugins/index.js');
-const {addGitHubPlugin, addGitPlugin} = require('@myparcel/semantic-release-config/src/plugins');
-const mainConfig = require('@myparcel/semantic-release-config');
+  addGitHubPlugin,
+  addGitPlugin,
+} = require('@myparcel-dev/semantic-release-config/src/plugins');
+const mainConfig = require('@myparcel-dev/semantic-release-config');
 
 module.exports = {
   ...mainConfig,
-  extends: '@myparcel/semantic-release-config',
+  extends: '@myparcel-dev/semantic-release-config',
   branches: [{name: 'main'}],
   plugins: [
     addCommitAnalyzerPlugin(),

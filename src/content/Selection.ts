@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import {isOfType} from '@myparcel/ts-utils';
+import {isOfType} from '@myparcel-dev/ts-utils';
 import {type AnyFn} from '../types/index.js';
 import tooltipHTML from './tooltip.html?raw';
 import {isTextElement} from './isTextElement.js';

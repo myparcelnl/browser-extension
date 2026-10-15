@@ -1,7 +1,7 @@
 import util from 'util';
 import path from 'path';
 import puppeteer from 'puppeteer';
-import {scripts} from '../package.json' assert {type: 'json'};
+import packageJson from '../package.json' with {type: 'json'};
 
 const exec = util.promisify(require('child_process').exec);
 
@@ -13,7 +13,7 @@ describe.skip('Build and install Chrome extensions', () => {
    * Try to build the extension
    */
   test('Extension can build', async () => {
-    const {stderr} = await exec(scripts.build);
+    const {stderr} = await exec(packageJson.scripts.build);
     expect(stderr).toBeFalsy();
   }, 30000);
 

@@ -2,7 +2,7 @@
 import * as child_process from 'node:child_process';
 import {defineManifest} from '@crxjs/vite-plugin';
 import {Environment} from '../../src/constants.js';
-import packageJson from '../../package.json' assert {type: 'json'};
+import packageJson from '../../package.json' with {type: 'json'};
 import {platformConfig} from './platformConfig.js';
 import {getPlatform} from './getPlatform.js';
 import {getEnvironment} from './getEnvironment.js';

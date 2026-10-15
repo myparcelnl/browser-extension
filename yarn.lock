@@ -424,9 +424,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crxjs/vite-plugin@npm:^2.0.0-beta.26":
-  version: 2.7.1
-  resolution: "@crxjs/vite-plugin@npm:2.7.1"
+"@crxjs/vite-plugin@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@crxjs/vite-plugin@npm:3.0.0"
   dependencies:
     "@webcomponents/custom-elements": "npm:^1.5.0"
     acorn-walk: "npm:^8.3.5"
@@ -444,7 +444,7 @@ __metadata:
     tinyglobby: "npm:^0.2.17"
   peerDependencies:
     vite: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 10c0/5a17a9a24c034432faacc3b916757630ff7fee7699202ceffa49606945ee793a1e6b6b791344fdc64f59e706b5cbf2a624c132f8af7440ad5cca0b25d0d35911
+  checksum: 10c0/f06c302dafda0ba973bd14ad48991717db10df6ac7af67260ce04db28fef367e7f96eb58b1b4d7ef294cad1ec4b2043eee5564489cbaa2efa1571ca383db2b1c
   languageName: node
   linkType: hard
 
@@ -1374,7 +1374,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@myparcel/chrome-extension@workspace:."
   dependencies:
-    "@crxjs/vite-plugin": "npm:^2.0.0-beta.26"
+    "@crxjs/vite-plugin": "npm:^3.0.0"
     "@myparcel-dev/eslint-config-esnext": "npm:^1.4.0"
     "@myparcel-dev/eslint-config-import": "npm:^1.3.0"
     "@myparcel-dev/eslint-config-node": "npm:^1.4.0"

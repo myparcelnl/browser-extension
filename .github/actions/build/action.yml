@@ -25,14 +25,14 @@ runs:
         echo "hash-source=$HASH_SHARED-$HASH_EXTENSION" >> $GITHUB_OUTPUT
 
     - name: 'Cache extension build'
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       id: dist-cache
       with:
         path: dist/*.zip
         key: '${{ runner.os }}-dist-${{ steps.hash.outputs.hash-source }}'
 
     - name: 'Cache extension builder'
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       id: bin-cache
       if: steps.dist-cache.outputs.cache-hit != 'true'
       with:
@@ -41,7 +41,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-bin-
 
-    - uses: myparcelnl/actions/yarn-install@v4
+    - uses: myparcelnl/actions/yarn-install@v5
       if: steps.dist-cache.outputs.cache-hit != 'true'
       with:
         node-version: ${{ inputs.node-version }}
@@ -61,7 +61,7 @@ runs:
         node bin/build.js --environment production --zip
         node bin/build.js --environment testing --zip
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: build
         path: dist/*.zip

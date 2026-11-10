@@ -1360,9 +1360,9 @@ __metadata:
   linkType: hard
 
 "@myparcel-dev/prettier-config@npm:^2.0.1":
-  version: 2.0.3
-  resolution: "@myparcel-dev/prettier-config@npm:2.0.3"
-  checksum: 10c0/e8600fdc7aef57b50c8fbd16dd0844f634e9d54a5fba5d823353680536dcb0adc08293b4d128b0bf0d85f56efce0fe2a3b19f470e719c09600ef67173dc5cebf
+  version: 2.0.4
+  resolution: "@myparcel-dev/prettier-config@npm:2.0.4"
+  checksum: 10c0/9a49d0b0fe1e9883f781a1fcf19716d1389455d55455ad463431e8a2262f9dad6ff806821288c69e90878e2a440fb3d6ab69d68197a9785f9c999de41b2f2559
   languageName: node
   linkType: hard
 
@@ -1385,9 +1385,9 @@ __metadata:
   linkType: hard
 
 "@myparcel-dev/ts-utils@npm:^1.15.3":
-  version: 1.15.3
-  resolution: "@myparcel-dev/ts-utils@npm:1.15.3"
-  checksum: 10c0/c9c8149672d677bb29d8aa3e1abaf47988eab69ebd5bfdb00af8db34312ec1b4555f2eb2afadcea70a08711529ee67593c08cba6d4e6cc3fdc897b0e237cf8c4
+  version: 1.15.4
+  resolution: "@myparcel-dev/ts-utils@npm:1.15.4"
+  checksum: 10c0/f5c519c62aec46e545a89487616a6b2e1e879a8e680969bb793ea7f3263fc3430d3c687a638ddc488f98c52aa374394796702e990f2a83b54209866db4faf721
   languageName: node
   linkType: hard
 
@@ -1406,7 +1406,7 @@ __metadata:
     "@myparcel-dev/ts-utils": "npm:^1.15.3"
     "@semantic-release/git": "npm:^10.0.1"
     "@types/archiver": "npm:^6.0.3"
-    "@types/chrome": "npm:^0.0.279"
+    "@types/chrome": "npm:^0.3.7"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.16.15"
     archiver: "npm:^7.0.1"
@@ -1971,11 +1971,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@puppeteer/browsers@npm:3.2.5":
-  version: 3.2.5
-  resolution: "@puppeteer/browsers@npm:3.2.5"
+"@puppeteer/browsers@npm:3.2.6":
+  version: 3.2.6
+  resolution: "@puppeteer/browsers@npm:3.2.6"
   dependencies:
-    modern-tar: "npm:^0.8.5"
+    modern-tar: "npm:^0.8.6"
     yargs: "npm:^18.0.0"
   peerDependencies:
     proxy-agent: ">=8.0.1"
@@ -1987,7 +1987,7 @@ __metadata:
       optional: true
   bin:
     browsers: lib/main-cli.js
-  checksum: 10c0/c9d5ebc9a37821a611bfedbcd2c0ae45495f35294889ae76645d24ac180bbbafb8cb06d2498199b75a93292fde1f629308b8923f29807f5a44f23798ce7a54cf
+  checksum: 10c0/f1e7c67c329c8ee623494d27b848dea18e2b73b457938452c5bbfbe1290d8e2f9669a1e16b3884355a28ed8249345ae615fb66fda533de9c8e99a8a14d51686d
   languageName: node
   linkType: hard
 
@@ -2508,13 +2508,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.279":
-  version: 0.0.279
-  resolution: "@types/chrome@npm:0.0.279"
+"@types/chrome@npm:^0.3.7":
+  version: 0.3.7
+  resolution: "@types/chrome@npm:0.3.7"
   dependencies:
-    "@types/filesystem": "npm:*"
     "@types/har-format": "npm:*"
-  checksum: 10c0/ceccbad43d850d24c3232844982016560e96a437ad456b05f6989a60d817ef4753a12d2bbc41354561afc4df555dac11678f1c3cf1faf406f1c1791c87fa779b
+  checksum: 10c0/5019eec11d621f1bdc2152ab2566fac5ddbbdf7511f1d5efb560037c41e8e54fdf5f73fd253c61bdb7ac6c251f0d2962fe671af22b1ff50011c8dd396d20f95b
   languageName: node
   linkType: hard
 
@@ -2522,22 +2521,6 @@ __metadata:
   version: 1.0.9
   resolution: "@types/estree@npm:1.0.9"
   checksum: 10c0/3ad3286ca2988cd550dafb8f2ad599c8474868e954fa601a36655bdfefd8039f7c714b8c1c7f2ae219ffbd58bd4660e66fa7479a0120fc02d4777057d4865387
-  languageName: node
-  linkType: hard
-
-"@types/filesystem@npm:*":
-  version: 0.0.36
-  resolution: "@types/filesystem@npm:0.0.36"
-  dependencies:
-    "@types/filewriter": "npm:*"
-  checksum: 10c0/3ebec32f0494b0a2612187d148e9f253ff55672c53f566d9a1e6d891eb6e2372df93c252b594b2775bc53e6660c4c37fdb05dc1b26e72b60a31010da8e1f7317
-  languageName: node
-  linkType: hard
-
-"@types/filewriter@npm:*":
-  version: 0.0.33
-  resolution: "@types/filewriter@npm:0.0.33"
-  checksum: 10c0/363ef9a658a961ceae04f52934562e4ebdcdc3a2564dd8544f593d77113c16574938b6ba4fea0bee418c37bda0668c1e03dfedb6adf00d55853f51fb3a59247b
   languageName: node
   linkType: hard
 
@@ -4263,10 +4246,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devtools-protocol@npm:0.0.1696802":
-  version: 0.0.1696802
-  resolution: "devtools-protocol@npm:0.0.1696802"
-  checksum: 10c0/33d9a5ead6ab5b71b581ab41782a960bba2f2a4d5a73e5130a50f3441f6cebf876c8e310cf144174def16dc26d0eb30619beaaadc31ca2170819dd9819be874e
+"devtools-protocol@npm:0.0.1704951":
+  version: 0.0.1704951
+  resolution: "devtools-protocol@npm:0.0.1704951"
+  checksum: 10c0/edb1db2c0d91e2cd84739b20dd7f51f599f978ab49186f181b833acd31bf87fcfdab47db20ab802b285ce78706910a227276f910575943ad9999da5e944e8211
   languageName: node
   linkType: hard
 
@@ -7957,7 +7940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"modern-tar@npm:^0.8.5":
+"modern-tar@npm:^0.8.6":
   version: 0.8.6
   resolution: "modern-tar@npm:0.8.6"
   checksum: 10c0/d04756042d2aaca9795a97cdb74ac38974fc501a23f6fc54ec0027083fc60a8a5e5b7c7ce89d99b81f9e7f59cb2cbdc73c2fb861acc82f8bec1ca6c86717b48b
@@ -9110,33 +9093,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:25.14.0":
-  version: 25.14.0
-  resolution: "puppeteer-core@npm:25.14.0"
+"puppeteer-core@npm:25.16.0":
+  version: 25.16.0
+  resolution: "puppeteer-core@npm:25.16.0"
   dependencies:
-    "@puppeteer/browsers": "npm:3.2.5"
+    "@puppeteer/browsers": "npm:3.2.6"
     chromium-bidi: "npm:157.0.8090-0"
-    devtools-protocol: "npm:0.0.1696802"
+    devtools-protocol: "npm:0.0.1704951"
     typed-query-selector: "npm:^2.12.3"
     webdriver-bidi-protocol: "npm:1.0.1"
     ws: "npm:^8.22.0"
-  checksum: 10c0/6344b15d691a8e1f5b9a6ac2c4f6b694dd652ff61f820f46d5280433030b388838dad7c985d8056beb6b95bb4eac99a86d18678ada73dbeeee8a8e53aea3c3c3
+  checksum: 10c0/ff5fc3c6b89aa698718926d5852b0111edc4927350285ac25fad73be0f1ea098d60ff3b604109f81f5e8a7c60d7f549c722cdf1c991d330db60cf8171d6ddf53
   languageName: node
   linkType: hard
 
 "puppeteer@npm:^25.14.0":
-  version: 25.14.0
-  resolution: "puppeteer@npm:25.14.0"
+  version: 25.16.0
+  resolution: "puppeteer@npm:25.16.0"
   dependencies:
-    "@puppeteer/browsers": "npm:3.2.5"
+    "@puppeteer/browsers": "npm:3.2.6"
     chromium-bidi: "npm:157.0.8090-0"
-    devtools-protocol: "npm:0.0.1696802"
+    devtools-protocol: "npm:0.0.1704951"
     lilconfig: "npm:^3.1.3"
-    puppeteer-core: "npm:25.14.0"
+    puppeteer-core: "npm:25.16.0"
     typed-query-selector: "npm:^2.12.3"
   bin:
     puppeteer: lib/puppeteer/node/cli.js
-  checksum: 10c0/ced234a644f174f483cc55615ebc735280fd1a244fa0b64e073956ed002aaf9f958a1ed44b994ee723412f3711d26c4cb05829a300d1a7725caceeb0b616fca2
+  checksum: 10c0/adb82944b1768d73f7540cac185667c9288a4f84ecddd9627d89e729dfeb6b461ac86c24b87944e2d7d20439299c4c8a5e40d944b7cf40fc5cf4db5e24624074
   languageName: node
   linkType: hard
 
@@ -9677,8 +9660,8 @@ __metadata:
   linkType: hard
 
 "sass@npm:^1.80.3":
-  version: 1.105.1
-  resolution: "sass@npm:1.105.1"
+  version: 1.108.1
+  resolution: "sass@npm:1.108.1"
   dependencies:
     "@parcel/watcher": "npm:^2.4.1"
     chokidar: "npm:^5.0.0"
@@ -9689,7 +9672,7 @@ __metadata:
       optional: true
   bin:
     sass: sass.js
-  checksum: 10c0/07246d9a9cc3c7974d28e03b394791c65d6a8f701d4ed2f130f5cb72ff3ef5626e5e66afb067348b2ae87011c52e18cd29f294025a6430851ee8617ef8c94f38
+  checksum: 10c0/4a7bc41997b0a3b5ec14947571babb84a56587fab155f26af12a4dadf359139e642c1c368e9bbacc7ba874283e821bc600c5d85e1aeb103fb5462cce2491d0a5
   languageName: node
   linkType: hard
 

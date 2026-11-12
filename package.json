@@ -38,7 +38,7 @@
     "@myparcel-dev/prettier-config": "^2.0.1",
     "@myparcel-dev/semantic-release-config": "^7.0.2",
     "@myparcel-dev/ts-utils": "^1.15.3",
-    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/git": "^11.0.1",
     "@types/archiver": "^6.0.3",
     "@types/chrome": "^0.0.279",
     "@types/jest": "^29.5.14",

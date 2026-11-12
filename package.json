@@ -55,7 +55,7 @@
     "jest-puppeteer": "^10.1.4",
     "jest-webextension-mock": "^3.9.0",
     "lint-staged": "^15.2.10",
-    "prettier": "^2.0.0",
+    "prettier": "^3.9.10",
     "puppeteer": "^25.14.0",
     "sass": "^1.80.3",
     "semantic-release": "^25.0.9",

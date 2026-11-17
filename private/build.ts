@@ -52,13 +52,13 @@ const callback = async (platform: string, {environment, watch, zip}) => {
       const buildName = isProd ? platform : `${platform}-${environment}`;
       const outDir = `dist/${buildName}`;
 
-      const command: string[] = ['vite', 'build', '--mode', environment, '--outDir', outDir];
+      const command: string[] = ['exec', 'vite', 'build', '--mode', environment, '--outDir', outDir];
 
       if (watch) {
         command.push('--watch');
       }
 
-      const viteCommand = spawnSync('npx', command, {
+      const viteCommand = spawnSync('pnpm', command, {
         stdio: 'inherit',
         cwd: process.cwd(),
         env: {

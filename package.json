@@ -11,11 +11,11 @@
   "type": "module",
   "scripts": {
     "prebuild": "tsup-node private/build.ts --format esm --out-dir bin",
-    "build": "run prebuild && node bin/build.js",
-    "build:all": "run prebuild && node bin/build.js --environment testing && node bin/build.js",
-    "build:prod": "run build",
-    "build:test": "run build --environment testing",
-    "build:zip": "run prebuild && node bin/build.js --environment testing --zip && node bin/build.js --zip",
+    "build": "pnpm run prebuild && node bin/build.js",
+    "build:all": "pnpm run prebuild && node bin/build.js --environment testing && node bin/build.js",
+    "build:prod": "pnpm run build",
+    "build:test": "pnpm run build --environment testing",
+    "build:zip": "pnpm run prebuild && node bin/build.js --environment testing --zip && node bin/build.js --zip",
     "prepare": "is-ci || husky install",
     "serve": "vite",
     "test": "jest"
@@ -36,7 +36,7 @@
     "@myparcel-dev/eslint-config-prettier": "^1.4.0",
     "@myparcel-dev/eslint-config-prettier-typescript": "^1.4.0",
     "@myparcel-dev/prettier-config": "^2.0.1",
-    "@myparcel-dev/semantic-release-config": "^7.0.2",
+    "@myparcel-dev/semantic-release-config": "^8.1.0",
     "@myparcel-dev/ts-utils": "^1.15.3",
     "@semantic-release/git": "^10.0.1",
     "@types/archiver": "^6.0.3",
@@ -64,9 +64,20 @@
     "vite": "^6.4.3",
     "yargs": "^17.7.2"
   },
-  "packageManager": "yarn@4.12.0",
-  "volta": {
-    "node": "24.15.0",
-    "yarn": "4.12.0"
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": "^24.21"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.21",
+      "onFail": "download"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.11",
+      "onFail": "download"
+    }
   }
 }

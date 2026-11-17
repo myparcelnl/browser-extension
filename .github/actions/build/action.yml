@@ -1,11 +1,6 @@
 name: 'Build extensions'
 description: 'Build all extensions and upload an artifact with the zips'
 
-inputs:
-  node-version:
-    description: 'The Node version to use'
-    required: true
-
 runs:
   using: composite
   steps:
@@ -13,7 +8,7 @@ runs:
       id: hash
       env:
         # The shared part of the hash.
-        HASH_SHARED: ${{ hashFiles('**/yarn.lock', '**/package.json', 'tsconfig.json', '.github/actions/build/action.yml') }}
+        HASH_SHARED: ${{ hashFiles('pnpm-lock.yaml', '**/package.json', 'tsconfig.json', '.github/actions/build/action.yml') }}
         # The hash for the builder that will build the extension
         HASH_BUILDER: ${{ hashFiles('private/build.ts', 'src/constants.ts') }}
         # The hash for the extension build
@@ -41,17 +36,18 @@ runs:
         restore-keys: |
           ${{ runner.os }}-bin-
 
-    - uses: myparcelnl/actions/yarn-install@v4
+    - uses: pnpm/setup@v3
       if: steps.dist-cache.outputs.cache-hit != 'true'
       with:
-        node-version: ${{ inputs.node-version }}
+        cache: true
+        require-lockfile: true
 
     - name: 'Build builder'
       if: steps.dist-cache.outputs.cache-hit != 'true' && steps.bin-cache.outputs.cache-hit != 'true'
       shell: bash
       #language=bash
       run: |
-        yarn prebuild
+        pnpm prebuild
 
     - name: 'Build extensions'
       if: steps.dist-cache.outputs.cache-hit != 'true'

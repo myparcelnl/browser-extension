@@ -2,16 +2,23 @@
 
 ## Installation
 
+Prerequisites:
+
+- Node.js 24, version 24.21 or later
+- pnpm 12, version 12.11 or later
+
+Volta must not be installed: its `yarn` ignores `packageManager` and `devEngines`.
+
 Run the following scripts to get the dev environment up and running:
 
 ```bash
-yarn
+pnpm install
 ```
 
 ### Local development
 
 ```bash
-yarn serve
+pnpm serve
 ```
 
 ### Create build
@@ -19,32 +26,32 @@ yarn serve
 Build all:
 
 ```bash
-yarn build:all
+pnpm build:all
 ```
 
 Build all and zip the builds:
 
 ```bash
-yarn build:zip
+pnpm build:zip
 ```
 
 Build all for specific environment:
 
 ```bash
-yarn build --environment testing
-yarn build --environment production
+pnpm build --environment testing
+pnpm build --environment production
 ```
 
 Build only `myparcel` for specific environment:
 
 ```bash
-yarn build myparcel --environment testing
-yarn build myparcel --environment production
+pnpm build myparcel --environment testing
+pnpm build myparcel --environment production
 ```
 
 ### Load extension
 
-In your Chromium browser, go to `chrome://extensions` and turn on developer mode if you haven't already. Press the "Load unpacked" button in the top left and select the folder of the extension you want from `dist`. To load the HMR extension (`yarn serve`), select the entire `dist` folder.
+In your Chromium browser, go to `chrome://extensions` and turn on developer mode if you haven't already. Press the "Load unpacked" button in the top left and select the folder of the extension you want from `dist`. To load the HMR extension (`pnpm serve`), select the entire `dist` folder.
 
 You need to run the backoffice locally as well and change the `browserExtensionId` in the dev config for the platform you're trying to use to the id of the extension you just added. You can find this id in `chrome://extensions`.
 
@@ -81,7 +88,7 @@ flowchart TD
 
 #### Popup
 
-When you open the extension (via the browser button) it will load the backoffice in a popup. The backoffice URL is based on the current environment and platform. If you use the sendmyparcel extension made with `yarn serve` the initial popup URL will be `extension.dev.sendmyparcel.be/browser-extension/create-shipment`.
+When you open the extension (via the browser button) it will load the backoffice in a popup. The backoffice URL is based on the current environment and platform. If you use the sendmyparcel extension made with `pnpm serve` the initial popup URL will be `extension.dev.sendmyparcel.be/browser-extension/create-shipment`.
 
 The backoffice will be in a different "mode", most routes are not loaded. On loading the backoffice it will "boot" the browser extension and send a `popupConnected` message to the background script.
 

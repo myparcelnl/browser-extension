@@ -176,31 +176,31 @@ importers:
     devDependencies:
       '@crxjs/vite-plugin':
         specifier: ^2.0.0-beta.26
-        version: 2.7.1(supports-color@8.1.1)(vite@6.4.5(@types/node@20.19.43)(sass@1.105.1)(yaml@2.9.1))
+        version: 2.7.1(supports-color@8.1.1)(vite@6.4.5(@types/node@20.19.43)(sass@1.108.2)(yaml@2.9.1))
       '@myparcel-dev/eslint-config-esnext':
         specifier: ^1.4.0
-        version: 1.4.0(eslint@8.57.1(supports-color@8.1.1))
+        version: 1.4.1(eslint@8.57.1(supports-color@8.1.1))
       '@myparcel-dev/eslint-config-import':
         specifier: ^1.3.0
-        version: 1.3.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)
+        version: 1.3.1(@typescript-eslint/parser@5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)
       '@myparcel-dev/eslint-config-node':
         specifier: ^1.4.0
-        version: 1.4.0(eslint@8.57.1(supports-color@8.1.1))
+        version: 1.4.1(eslint@8.57.1(supports-color@8.1.1))
       '@myparcel-dev/eslint-config-prettier':
         specifier: ^1.4.0
         version: 1.4.1(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)
       '@myparcel-dev/eslint-config-prettier-typescript':
         specifier: ^1.4.0
-        version: 1.4.1(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 1.4.2(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)(supports-color@8.1.1)(typescript@5.9.3)
       '@myparcel-dev/prettier-config':
         specifier: ^2.0.1
-        version: 2.0.3
+        version: 2.0.6
       '@myparcel-dev/semantic-release-config':
         specifier: ^8.1.0
         version: 8.1.0(@visulima/yaml@1.0.0)(json5@2.2.3)(supports-color@8.1.1)(typescript@5.9.3)
       '@myparcel-dev/ts-utils':
         specifier: ^1.15.3
-        version: 1.15.3
+        version: 1.15.7
       '@semantic-release/git':
         specifier: ^10.0.1
         version: 10.0.1(semantic-release@25.0.9(supports-color@8.1.1)(typescript@5.9.3))(supports-color@8.1.1)
@@ -208,8 +208,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.4
       '@types/chrome':
-        specifier: ^0.0.279
-        version: 0.0.279
+        specifier: ^0.3.7
+        version: 0.3.7
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14
@@ -245,7 +245,7 @@ importers:
         version: 29.7.0(@types/node@20.19.43)(supports-color@8.1.1)
       jest-puppeteer:
         specifier: ^10.1.4
-        version: 10.1.4(debug@4.4.3(supports-color@8.1.1))(puppeteer@25.14.0)(supports-color@8.1.1)(typescript@5.9.3)
+        version: 10.1.4(debug@4.4.3(supports-color@8.1.1))(puppeteer@25.17.0)(supports-color@8.1.1)(typescript@5.9.3)
       jest-webextension-mock:
         specifier: ^3.9.0
         version: 3.9.1
@@ -260,10 +260,10 @@ importers:
         version: 2.8.8
       puppeteer:
         specifier: ^25.14.0
-        version: 25.14.0
+        version: 25.17.0
       sass:
         specifier: ^1.80.3
-        version: 1.105.1
+        version: 1.108.2
       semantic-release:
         specifier: ^25.0.9
         version: 25.0.9(supports-color@8.1.1)(typescript@5.9.3)
@@ -275,7 +275,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.4.3
-        version: 6.4.5(@types/node@20.19.43)(sass@1.105.1)(yaml@2.9.1)
+        version: 6.4.5(@types/node@20.19.43)(sass@1.108.2)(yaml@2.9.1)
       yargs:
         specifier: ^17.7.2
         version: 17.7.3
@@ -943,28 +943,28 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@myparcel-dev/eslint-config-es6@1.4.0':
-    resolution: {integrity: sha512-qVM8QG8lYpmLFpi7lMjcL2Peki1FvxD83EOWv/7lDVyINqXnO8+g75mdMkVrHMmQBRh2j1xGPPHL+8GwUGm4zg==}
+  '@myparcel-dev/eslint-config-es6@1.4.1':
+    resolution: {integrity: sha512-j18e3X9kYBFRZwHTa7z5pbLD7QdTOrSYb0+TJNlz1gXxSS3IedMzKywQmHW8SeNPX/cAX/91sZ13yZecWh8ltA==}
     peerDependencies:
       eslint: 7 - 8
 
-  '@myparcel-dev/eslint-config-esnext@1.4.0':
-    resolution: {integrity: sha512-1hlq8ENBVKIbvlRgVusYYPC0teoJ5JE/y88Xj3LqJx4CIE7M5RBZGyeZ1vcQzSIX71KJMIQ05M8H+D2d4f1/kQ==}
+  '@myparcel-dev/eslint-config-esnext@1.4.1':
+    resolution: {integrity: sha512-pBRDEY3YMNVtrI/mMveb947wXwzvK01qIXMAyYKc1wBqnv4L1uic5eyayb6b1G1x2HFCtd+2ZVlMb0Rl9JsawQ==}
     peerDependencies:
       eslint: 7 - 8
 
-  '@myparcel-dev/eslint-config-import@1.3.0':
-    resolution: {integrity: sha512-tr0SFqWUuBbu+Ysz6c5gEeH3Qx+UQRfiClQEQ9/gT7VCTxXENmkyRL3PrzN7vUl5huscrMxAxHjQGUvSU+2BTA==}
+  '@myparcel-dev/eslint-config-import@1.3.1':
+    resolution: {integrity: sha512-0CX5azAWE8WRaMeJWRu006iteConX4cXzm7QrK59md33QCwgFCaWYDTT0Qfn3yCBfdVw+acpjAVUWXSkMB6i/A==}
     peerDependencies:
       eslint: 7 - 8
 
-  '@myparcel-dev/eslint-config-node@1.4.0':
-    resolution: {integrity: sha512-UADV4QUlkCbV9/97v2wRL7gPc9MtUlm+YD1zl4vmL0MNXuUnamamiCUx1CeSqqbJGTs5zDWsauhnaAHbealWYg==}
+  '@myparcel-dev/eslint-config-node@1.4.1':
+    resolution: {integrity: sha512-7ZXjoaVPz6tefQXAZ4E1L/4rc8d2Z9JF12QUi2vG3kq9bfFVqxOAa1XUBYu0+EAe4qh2qVmVWxOslFK9cSadig==}
     peerDependencies:
       eslint: 7 - 8
 
-  '@myparcel-dev/eslint-config-prettier-typescript@1.4.1':
-    resolution: {integrity: sha512-TlVgP2bWxURPYkTR3y4eq4f/Zs9lUyVqnqEEGDp65omDHrHlAShQHnw6JZhJFeO3VdzBqfYcpXsfrwwZh85Llg==}
+  '@myparcel-dev/eslint-config-prettier-typescript@1.4.2':
+    resolution: {integrity: sha512-NlR1WLv9rMOgH/EXwG/DWBctrC2XcNfXyc8IxUc2Gr8ldLOtTECEXsyKpfcuQPAmuqxyY5e1ovtiNUNzQTuyQA==}
     peerDependencies:
       eslint: 7 - 8
       prettier: '>= 2'
@@ -975,25 +975,26 @@ packages:
       eslint: 7 - 8
       prettier: '>= 2'
 
-  '@myparcel-dev/eslint-config-typescript@1.4.0':
-    resolution: {integrity: sha512-d9P0Z8vsgqJZ98tslSN0cOnSezGwt8KMWAnWxNSkr6aKF5ThbxirwJLcSxWQj9YfohTGG7x7cweLneJvFg0qWQ==}
+  '@myparcel-dev/eslint-config-typescript@1.4.1':
+    resolution: {integrity: sha512-/8TCCaJ+FW6E3KXIEpTqGmNmman6pAjV2s1w+L2bfCQkHXFFCKUectD2ZqBpFfGY2wYSdL3NSk3BRIO76Rd/7w==}
     peerDependencies:
       eslint: 7 - 8
 
-  '@myparcel-dev/eslint-config@1.4.0':
-    resolution: {integrity: sha512-XfhmyB/scRLnXqpjDFRINPubldccChackaz+nFIpj+Uco8MQkBDjmUV6AP4wwBHKzGT0O4XM0FELk8ubrEvSow==}
+  '@myparcel-dev/eslint-config@1.4.1':
+    resolution: {integrity: sha512-kNi8zFxMGP9rj7kANcXrS2qprXdSZgdpdDLuf/g6ofN9wBRUEQn7d2zS4WXx5ehiLja0mKuFyAn4bgatjpNDaw==}
     peerDependencies:
       eslint: 7 - 8
 
-  '@myparcel-dev/prettier-config@2.0.3':
-    resolution: {integrity: sha512-Sr3SlngpnmR/LUj7Dm+Icns1FHwLjSa2MvqqUnOGIjcJDYrnZbkY3ZcQrtAHjqVSx+RmV8VhdMi4Qx3iQx5CYw==}
+  '@myparcel-dev/prettier-config@2.0.6':
+    resolution: {integrity: sha512-k+ZSa4MSshRYKCKQ1JKNXv0PDfTC4SD/b9/pYb9vvDaZQAIeVbsPaD28XXLuqJN4690rOvSLU0FH23jWu478/g==}
+    engines: {node: ^24.21}
 
   '@myparcel-dev/semantic-release-config@8.1.0':
     resolution: {integrity: sha512-ZS7dtyH27NjfGiQF5Q7ZLgrRy/n00n9PUXAdwuAF6NNRyecdCBCJDVj4PBN/iuYauJvYzl4sVE7rkGZng+F3qA==}
     engines: {node: ^24.21}
 
-  '@myparcel-dev/ts-utils@1.15.3':
-    resolution: {integrity: sha512-NpA6QHVJWDzrQ7wDpyuSZl4/5/9vQeK2sHRtjfVmL7cJuFPvCNAELNLzzfaxxIVZxSjH560N8gZpA3b+1PeOsw==}
+  '@myparcel-dev/ts-utils@1.15.7':
+    resolution: {integrity: sha512-rdBuy4JWXDsnMoEvf22srzmOiBeSfZfpURLzzGmjbM6eDpChTxGQhMKfFIg2w3n5fmzdcV716fNen/In+0hgjA==}
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     resolution: {integrity: sha512-oTXEIha4SsuXdTA4Iyskj0kpdx2yVXdhd75c2v3xGrHFfVMsbhTPZU/nMPL4sWKo4pBHm3aucLaqGlF696dTyQ==}
@@ -1166,8 +1167,8 @@ packages:
     resolution: {integrity: sha512-//0sR/cow/s4ICQaYoAobOl4aU8cjU6x/V24V7XkKotb9+O+3zySIYp146vpaobYHnxa4pZX8NkV54Z5AwbDKA==}
     engines: {node: '>=12'}
 
-  '@puppeteer/browsers@3.2.5':
-    resolution: {integrity: sha512-UoCo3Pynbm37aLEEoydSiG+t24ui7sLD40+07CKxzxNy4PpSowJMkvlLIiV67XjP1lMVynhQVnuwlTABqBH8LQ==}
+  '@puppeteer/browsers@3.2.7':
+    resolution: {integrity: sha512-B3C/v8OEEaJYcN1IzzgbPmt+GbFANr4Mf/NrqNuGk/dIchrv6quNqxgT+A6qE0Ge0MN95NjKUddcR1JMpYRMWA==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -1428,17 +1429,11 @@ packages:
   '@types/babel__traverse@7.28.0':
     resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
 
-  '@types/chrome@0.0.279':
-    resolution: {integrity: sha512-wl0IxQ2OQiMazPZM5LimHQ7Jwd72/O8UvvzyptplXT2S4eUqXH5C0n8S+v8PtKhyX89p0igCPpNy3Bwksyk57g==}
+  '@types/chrome@0.3.7':
+    resolution: {integrity: sha512-jWZgbHqWbTL1a5+PoyN0OJutNyejWgyZ5MdcvKo6iJE1TNRtXR3FxsC4WzNl52yZWPidfWC8NV/VUNZf+OFKcA==}
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
-
-  '@types/filesystem@0.0.36':
-    resolution: {integrity: sha512-vPDXOZuannb9FZdxgHnqSwAG/jvdGM8Wq+6N4D/d80z+D4HWH+bItqsZaVRQykAn6WEVeEkLm2oQigyHtgb0RA==}
-
-  '@types/filewriter@0.0.33':
-    resolution: {integrity: sha512-xFU8ZXTw4gd358lb2jw25nxY9QAgqn2+bKKjKOYfNCzN4DKCFetK7sPtrlpg66Ywe3vWY9FNxprZawAh9wfJ3g==}
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -2219,8 +2214,8 @@ packages:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
 
-  devtools-protocol@0.0.1696802:
-    resolution: {integrity: sha512-FO5/SENfvc2K8wRnWQflKcwuoTH4dBkXCWTQ9ebIWtuX8JM5+ZvCotaEmkfh21pO7TvIKGTM3hG4xFiq9WTwmg==}
+  devtools-protocol@0.0.1717327:
+    resolution: {integrity: sha512-3RDLDzyvv8XAYf1L+TL1og0EEk0eOW1Jn0yi88uG6Bj8fUKO1ZKfgNtwbJkqf5SWdPDS4VGEPxwdUWz78V6Xcg==}
 
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
@@ -3321,8 +3316,8 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
-  lilconfig@3.1.3:
-    resolution: {integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==}
+  lilconfig@3.1.5:
+    resolution: {integrity: sha512-aRAOI9Ia43ygL4o1EOmC/sc/0OFxrm7qcQngiIyWaqVnSnz932ybJ07zyCcgMNGSDP8Yxaf88Xj1zHEXmvQ4SA==}
     engines: {node: '>=14'}
 
   lines-and-columns@1.2.4:
@@ -4071,12 +4066,12 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  puppeteer-core@25.14.0:
-    resolution: {integrity: sha512-LQitnes3tBeVbdZ7V/4iwJPLZGgkl9uBVK0W7YYMh68j/3Y9eNuvj4yl+Fdo7zN0SuajOMrhd7aPj3DifK8k6A==}
+  puppeteer-core@25.17.0:
+    resolution: {integrity: sha512-YAgBitkd+K9gxRt+wzBAFTTkGjkC8aC2o4OxofsU8JUy2nnK/RflTCJ9bRCvCMNbq9TPhqFk4Phz98otN9FrGg==}
     engines: {node: '>=22.12.0'}
 
-  puppeteer@25.14.0:
-    resolution: {integrity: sha512-+s1Iqbl9DsGLOaQdgCQyhtgHZsF9hi4Iu8iuBqxzraxUXoRG1QkYQI0CA1/VsNK1gZWJfs50BL/oOb1L+Yz8Yg==}
+  puppeteer@25.17.0:
+    resolution: {integrity: sha512-J+OQNlI7I6ZjHhF6Q8M+LgiUGldF7meer5EqMJBZMHgnFN3zcehOhpz/x0bYDEEvbEiXzKzmqSRP3QT+5accjQ==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -4229,8 +4224,8 @@ packages:
     resolution: {integrity: sha512-x/+Cz4YrimQxQccJf5mKEbIa1NzeCRNI5Ecl/ekmlYaampdNLPalVyIcCZNNH3MvmqBugV5TMYZXv0ljslUlaw==}
     engines: {node: '>= 0.4'}
 
-  sass@1.105.1:
-    resolution: {integrity: sha512-1CnAWPyrrnVQzXGB/DUep1vYCKCm1CIBr+YxjjiW6wk9qtzemnGP4qicH56T2F9S4Hjtv/Ne3jDz8JqfdDU4oA==}
+  sass@1.108.2:
+    resolution: {integrity: sha512-kugK8djotnG9HQRPTOf36asKYlxg8rWWsNLYHOgWDIVOiZQqlRfKBgF4XXM6kfw146kIDMvm57B4GIkvDSyTzA==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -4776,8 +4771,8 @@ packages:
   web-worker@1.5.0:
     resolution: {integrity: sha512-RiMReJrTAiA+mBjGONMnjVDP2u3p9R1vkcGz6gDIrOMT3oGuYwX2WRMYI9ipkphSuE5XKEhydbhNEJh4NY9mlw==}
 
-  webdriver-bidi-protocol@1.0.1:
-    resolution: {integrity: sha512-WXWs/aXF2a6Al1Z2/V/7Gp2oPZOAAmHjJOTmv4KCXRJ122IMj3tSSMc6a4q3K4QOmhQbse/Ahr+oTVJOU2dUiw==}
+  webdriver-bidi-protocol@1.0.2:
+    resolution: {integrity: sha512-nghazPI+J5RrLZ+qb6vMjC6l1/tnwqr2muVEax4Ufd6eIdcjeqNnhLsAxTG9s+7Zf4umgf0DrEwDC8CoU91nAA==}
 
   which-boxed-primitive@1.1.1:
     resolution: {integrity: sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==}
@@ -4835,8 +4830,8 @@ packages:
     resolution: {integrity: sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
 
-  ws@8.22.0:
-    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
+  ws@8.23.0:
+    resolution: {integrity: sha512-wCkmX8QMOrKjgO8HW2WyDbTSGeqkocxgDzS9iR79rEAexty6/2qzilx3Ag8Tqf9ykop3irLKle0MtVn5qjVnoQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -5147,7 +5142,7 @@ snapshots:
 
   '@conventional-changelog/template@1.4.1': {}
 
-  '@crxjs/vite-plugin@2.7.1(supports-color@8.1.1)(vite@6.4.5(@types/node@20.19.43)(sass@1.105.1)(yaml@2.9.1))':
+  '@crxjs/vite-plugin@2.7.1(supports-color@8.1.1)(vite@6.4.5(@types/node@20.19.43)(sass@1.108.2)(yaml@2.9.1))':
     dependencies:
       '@webcomponents/custom-elements': 1.6.0
       acorn-walk: 8.3.5
@@ -5163,7 +5158,7 @@ snapshots:
       rollup: 2.80.0
       rxjs: 7.5.7
       tinyglobby: 0.2.17
-      vite: 6.4.5(@types/node@20.19.43)(sass@1.105.1)(yaml@2.9.1)
+      vite: 6.4.5(@types/node@20.19.43)(sass@1.108.2)(yaml@2.9.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -5578,17 +5573,17 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@myparcel-dev/eslint-config-es6@1.4.0(eslint@8.57.1(supports-color@8.1.1))':
+  '@myparcel-dev/eslint-config-es6@1.4.1(eslint@8.57.1(supports-color@8.1.1))':
     dependencies:
-      '@myparcel-dev/eslint-config': 1.4.0(eslint@8.57.1(supports-color@8.1.1))
+      '@myparcel-dev/eslint-config': 1.4.1(eslint@8.57.1(supports-color@8.1.1))
       eslint: 8.57.1(supports-color@8.1.1)
 
-  '@myparcel-dev/eslint-config-esnext@1.4.0(eslint@8.57.1(supports-color@8.1.1))':
+  '@myparcel-dev/eslint-config-esnext@1.4.1(eslint@8.57.1(supports-color@8.1.1))':
     dependencies:
-      '@myparcel-dev/eslint-config-es6': 1.4.0(eslint@8.57.1(supports-color@8.1.1))
+      '@myparcel-dev/eslint-config-es6': 1.4.1(eslint@8.57.1(supports-color@8.1.1))
       eslint: 8.57.1(supports-color@8.1.1)
 
-  '@myparcel-dev/eslint-config-import@1.3.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)':
+  '@myparcel-dev/eslint-config-import@1.3.1(@typescript-eslint/parser@5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       eslint: 8.57.1(supports-color@8.1.1)
       eslint-plugin-i: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)
@@ -5599,15 +5594,15 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  '@myparcel-dev/eslint-config-node@1.4.0(eslint@8.57.1(supports-color@8.1.1))':
+  '@myparcel-dev/eslint-config-node@1.4.1(eslint@8.57.1(supports-color@8.1.1))':
     dependencies:
-      '@myparcel-dev/eslint-config': 1.4.0(eslint@8.57.1(supports-color@8.1.1))
+      '@myparcel-dev/eslint-config': 1.4.1(eslint@8.57.1(supports-color@8.1.1))
       eslint: 8.57.1(supports-color@8.1.1)
 
-  '@myparcel-dev/eslint-config-prettier-typescript@1.4.1(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)(supports-color@8.1.1)(typescript@5.9.3)':
+  '@myparcel-dev/eslint-config-prettier-typescript@1.4.2(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
       '@myparcel-dev/eslint-config-prettier': 1.4.1(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)
-      '@myparcel-dev/eslint-config-typescript': 1.4.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@myparcel-dev/eslint-config-typescript': 1.4.1(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       eslint: 8.57.1(supports-color@8.1.1)
       prettier: 2.8.8
     transitivePeerDependencies:
@@ -5621,10 +5616,10 @@ snapshots:
       eslint-plugin-prettier: 4.2.5(eslint-config-prettier@8.10.2(eslint@8.57.1(supports-color@8.1.1)))(eslint@8.57.1(supports-color@8.1.1))(prettier@2.8.8)
       prettier: 2.8.8
 
-  '@myparcel-dev/eslint-config-typescript@1.4.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
+  '@myparcel-dev/eslint-config-typescript@1.4.1(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
-      '@myparcel-dev/eslint-config-es6': 1.4.0(eslint@8.57.1(supports-color@8.1.1))
-      '@myparcel-dev/eslint-config-esnext': 1.4.0(eslint@8.57.1(supports-color@8.1.1))
+      '@myparcel-dev/eslint-config-es6': 1.4.1(eslint@8.57.1(supports-color@8.1.1))
+      '@myparcel-dev/eslint-config-esnext': 1.4.1(eslint@8.57.1(supports-color@8.1.1))
       '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       eslint: 8.57.1(supports-color@8.1.1)
@@ -5632,11 +5627,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@myparcel-dev/eslint-config@1.4.0(eslint@8.57.1(supports-color@8.1.1))':
+  '@myparcel-dev/eslint-config@1.4.1(eslint@8.57.1(supports-color@8.1.1))':
     dependencies:
       eslint: 8.57.1(supports-color@8.1.1)
 
-  '@myparcel-dev/prettier-config@2.0.3': {}
+  '@myparcel-dev/prettier-config@2.0.6': {}
 
   '@myparcel-dev/semantic-release-config@8.1.0(@visulima/yaml@1.0.0)(json5@2.2.3)(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
@@ -5659,7 +5654,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@myparcel-dev/ts-utils@1.15.3': {}
+  '@myparcel-dev/ts-utils@1.15.7': {}
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
@@ -5814,7 +5809,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@puppeteer/browsers@3.2.5':
+  '@puppeteer/browsers@3.2.7':
     dependencies:
       modern-tar: 0.8.6
       yargs: 18.2.0
@@ -6081,18 +6076,11 @@ snapshots:
     dependencies:
       '@babel/types': 7.29.8
 
-  '@types/chrome@0.0.279':
+  '@types/chrome@0.3.7':
     dependencies:
-      '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.16
 
   '@types/estree@1.0.9': {}
-
-  '@types/filesystem@0.0.36':
-    dependencies:
-      '@types/filewriter': 0.0.33
-
-  '@types/filewriter@0.0.33': {}
 
   '@types/graceful-fs@4.1.9':
     dependencies:
@@ -6603,9 +6591,9 @@ snapshots:
 
   chrome-webstore-upload@3.2.0: {}
 
-  chromium-bidi@157.0.8090-0(devtools-protocol@0.0.1696802):
+  chromium-bidi@157.0.8090-0(devtools-protocol@0.0.1717327):
     dependencies:
-      devtools-protocol: 0.0.1696802
+      devtools-protocol: 0.0.1717327
       mitt: 3.0.1
       zod: 4.6.7
 
@@ -6887,7 +6875,7 @@ snapshots:
 
   detect-newline@3.1.0: {}
 
-  devtools-protocol@0.0.1696802: {}
+  devtools-protocol@0.0.1717327: {}
 
   diff-sequences@29.6.3: {}
 
@@ -8132,11 +8120,11 @@ snapshots:
     optionalDependencies:
       jest-resolve: 29.7.0
 
-  jest-puppeteer@10.1.4(debug@4.4.3(supports-color@8.1.1))(puppeteer@25.14.0)(supports-color@8.1.1)(typescript@5.9.3):
+  jest-puppeteer@10.1.4(debug@4.4.3(supports-color@8.1.1))(puppeteer@25.17.0)(supports-color@8.1.1)(typescript@5.9.3):
     dependencies:
       expect-puppeteer: 10.1.4
       jest-environment-puppeteer: 10.1.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
-      puppeteer: 25.14.0
+      puppeteer: 25.17.0
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -8353,7 +8341,7 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  lilconfig@3.1.3: {}
+  lilconfig@3.1.5: {}
 
   lines-and-columns@1.2.4: {}
 
@@ -8363,7 +8351,7 @@ snapshots:
       commander: 13.1.0
       debug: 4.4.3(supports-color@8.1.1)
       execa: 8.0.1
-      lilconfig: 3.1.3
+      lilconfig: 3.1.5
       listr2: 8.3.3
       micromatch: 4.0.8
       pidtree: 0.6.1
@@ -8801,7 +8789,7 @@ snapshots:
 
   postcss-load-config@6.0.1(postcss@8.5.30)(yaml@2.9.1):
     dependencies:
-      lilconfig: 3.1.3
+      lilconfig: 3.1.5
     optionalDependencies:
       postcss: 8.5.30
       yaml: 2.9.1
@@ -8847,27 +8835,27 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-core@25.14.0:
+  puppeteer-core@25.17.0:
     dependencies:
-      '@puppeteer/browsers': 3.2.5
-      chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1696802)
-      devtools-protocol: 0.0.1696802
+      '@puppeteer/browsers': 3.2.7
+      chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1717327)
+      devtools-protocol: 0.0.1717327
       typed-query-selector: 2.12.3
-      webdriver-bidi-protocol: 1.0.1
-      ws: 8.22.0
+      webdriver-bidi-protocol: 1.0.2
+      ws: 8.23.0
     transitivePeerDependencies:
       - bufferutil
       - proxy-agent
       - utf-8-validate
       - yauzl
 
-  puppeteer@25.14.0:
+  puppeteer@25.17.0:
     dependencies:
-      '@puppeteer/browsers': 3.2.5
-      chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1696802)
-      devtools-protocol: 0.0.1696802
-      lilconfig: 3.1.3
-      puppeteer-core: 25.14.0
+      '@puppeteer/browsers': 3.2.7
+      chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1717327)
+      devtools-protocol: 0.0.1717327
+      lilconfig: 3.1.5
+      puppeteer-core: 25.17.0
       typed-query-selector: 2.12.3
     transitivePeerDependencies:
       - bufferutil
@@ -9085,7 +9073,7 @@ snapshots:
       es-errors: 1.3.0
       is-regex: 1.2.1
 
-  sass@1.105.1:
+  sass@1.108.2:
     dependencies:
       chokidar: 5.0.0
       immutable: 5.1.9
@@ -9639,7 +9627,7 @@ snapshots:
 
   verkit@0.5.0: {}
 
-  vite@6.4.5(@types/node@20.19.43)(sass@1.105.1)(yaml@2.9.1):
+  vite@6.4.5(@types/node@20.19.43)(sass@1.108.2)(yaml@2.9.1):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.7)
@@ -9650,7 +9638,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.19.43
       fsevents: 2.3.3
-      sass: 1.105.1
+      sass: 1.108.2
       yaml: 2.9.1
 
   wait-on@8.0.5(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
@@ -9670,7 +9658,7 @@ snapshots:
 
   web-worker@1.5.0: {}
 
-  webdriver-bidi-protocol@1.0.1: {}
+  webdriver-bidi-protocol@1.0.2: {}
 
   which-boxed-primitive@1.1.1:
     dependencies:
@@ -9752,7 +9740,7 @@ snapshots:
       imurmurhash: 0.1.4
       signal-exit: 3.0.7
 
-  ws@8.22.0: {}
+  ws@8.23.0: {}
 
   xtend@4.0.2: {}
 
